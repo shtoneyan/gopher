@@ -13,7 +13,7 @@ class RobustTrainer():
     """Custom training loop with flags incoporated"""
     def __init__(self, model, loss, optimizer,
                   input_window, bin_size, num_targets, metrics, ori_bpnet_flag,
-                  rev_comp,crop,smooth,smooth_window,sigma):
+                  rev_comp,crop,sigma):
         #Added for data augmentation
         self.window_size = input_window
         self.bin_size = bin_size
@@ -24,8 +24,6 @@ class RobustTrainer():
         self.ori_bpnet_flag = ori_bpnet_flag
         self.rev_comp = rev_comp
         self.crop = crop
-        self.smooth = smooth
-        self.smooth_window = smooth_window
         self.sigma =sigma
         self.num_targets = num_targets
 
@@ -41,14 +39,9 @@ class RobustTrainer():
     @tf.function
     #change
     def robust_train_step(self,x,y,metrics):
-        #smooth
-        if self.smooth == 'average':
-            y = smooth_average(y,self.smooth_window)
-        elif self.smooth == 'gauss':
-            y = smooth_gaussian(y,self.sigma)
 
         #random crop window
-        if self.crop == 'r_crop':
+        if self.crop == True:
             x,y = random_crop(x, y,self.window_size)
             if self.bin_size > 1:
                 y = bin_resolution(y,self.bin_size)
@@ -62,12 +55,6 @@ class RobustTrainer():
 
         with tf.GradientTape() as tape:
             preds = self.model(x, training=True)
-
-            #crop binned pred + target for context crop
-            if self.crop == 'c_crop':
-                if self.bin_size > 1:
-                    y = bin_resolution(y,self.bin_size)
-                y,preds = random_crop(y,preds,int(self.window_size/self.bin_size))
 
             #bpnet original shape adjustment
             if self.ori_bpnet_flag == True:
@@ -88,22 +75,14 @@ class RobustTrainer():
     @tf.function
     def test_step(self,x,y,metrics,training = False):
         """test step for a mini-batch and always center crop window"""
-        if self.crop == 'r_crop':
+        if self.crop == True:
             x,y = center_crop(x,y,int(self.window_size))
             y = bin_resolution(y,self.bin_size)
         elif self.crop == False:
             y = bin_resolution(y,self.bin_size)
 
-        if self.smooth == 'average':
-            y = smooth_average(y,self.smooth_window)
-        elif self.smooth == 'gauss':
-            y = smooth_gaussian(y,self.sigma)
 
         preds = self.model(x, training=training)
-
-        if self.crop =='c_crop':
-            y = bin_resolution(y,self.bin_size)
-            y,preds = center_crop(y,preds,int(self.window_size/self.bin_size))
 
         if self.ori_bpnet_flag == True:
             true_cov = tf.math.log(tf.math.reduce_sum(y,axis=1)+1)
@@ -437,30 +416,6 @@ def bin_resolution(y,bin_size):
     y_bin = tf.math.reduce_mean(tf.reshape(y,(y_dim[0],int(y_dim[1]/bin_size),bin_size,y_dim[2])),axis = 2)
     return y_bin
 
-def smooth_average(y,smooth_window = 10):
-    y_dim = y.shape
-    y_smooth = tf.nn.avg_pool(y,smooth_window, 1, 'SAME')
-    return y_smooth
-
-def smooth_gaussian(y,sigma = 2):
-
-    size = int(4*sigma + 0.5)
-
-    y = tf.expand_dims(y, axis=3)
-    kernel = gaussian_kernel(size=size, mean=0.0, std=sigma)
-    conv = tf.nn.conv2d(y, kernel, strides=[1,1,1,1], padding="SAME")
-    conv = tf.squeeze(conv,axis=-1)
-    return conv
-
-def gaussian_kernel(size, mean, std):
-    d = tfp.distributions.Normal(tf.cast(mean, tf.float32), tf.cast(std, tf.float32))
-    vals = d.prob(tf.range(start=-size, limit=size+1, dtype=tf.float32))
-    gauss_kernel = vals / tf.reduce_sum(vals)
-    gauss_kernel = tf.expand_dims(gauss_kernel, axis=-1)
-    gauss_kernel = tf.expand_dims(gauss_kernel, axis=-1)
-    gauss_kernel = tf.expand_dims(gauss_kernel, axis=-1)
-
-    return gauss_kernel
 
 def progress_bar(iter, num_batches, start_time, bar_length=30, **kwargs):
   """plots a progress bar to show remaining time for a full epoch.
