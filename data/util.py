@@ -25,21 +25,6 @@ def make_directory(path):
     else:
         print("Directory already exists!")
 
-def shift_unmap(shift_size, output_unmap, unmap_path='/home/shush/genomes/GRCh38_unmap.bed'):
-    unmap = pd.read_csv(unmap_path,  sep='\t', header=None)
-    first_shift = pd.DataFrame(['chr8', '0', '0']).T
-    complete_unmap = pd.concat([first_shift, unmap])
-    complete_unmap.reset_index(inplace=True)
-    new_ends = pd.to_numeric(complete_unmap[2])+shift_size
-    shift_unmap = pd.DataFrame([complete_unmap[0], complete_unmap[1], new_ends]).T
-    interm_bed = 'nonmerged_shifted.bed'
-    shift_unmap.to_csv(interm_bed, index=None, sep='\t', header=None)
-    cmd = 'bedtools merge -i {} > {}; rm {}'.format(interm_bed, output_unmap, interm_bed)
-
-    process = subprocess.Popen(cmd, shell=True)
-    output, error = process.communicate()
-    print(error)
-
 def exec_par(cmds, max_proc=None, verbose=False):
     total = len(cmds)
     finished = 0
