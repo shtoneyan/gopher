@@ -32,9 +32,7 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
   'lr_metric':'loss', 'lr_criterion':'min', 'verbose' : True,
   'log_wandb':True,'rev_comp' : True,'crop' : True,
   'record_test':False, 'alpha':False,  'loss_params':[],
-  'sigma':20,'log_loss':False}
-
-# 'r_crop''smooth' : False,'smooth_window':10,
+  'sigma':20}
 
   for key in default_config.keys():
       if key in config.keys():
@@ -55,9 +53,6 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
 
 
   loss = eval(loss_type_str)(loss_params=default_config['loss_params'])
-  if default_config['log_loss']:
-      loss = logclass(loss)
-
 
   trainset = util.make_dataset(data_dir, 'train', util.load_stats(data_dir), batch_size=default_config['batch_size'])
   validset = util.make_dataset(data_dir, 'valid', util.load_stats(data_dir), batch_size=59)
