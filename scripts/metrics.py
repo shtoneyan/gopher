@@ -1,18 +1,12 @@
 import numpy as np
 import pandas as pd
-from pathlib import Path
 import tensorflow as tf
-import yaml
-import h5py
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import seaborn as sns
-import pandas as pd
 import scipy
-from scipy.fft import fft
 import sklearn.metrics as skm
 from tensorflow.python.keras import backend as K
-import seaborn as sns
 from scipy.spatial import distance
 from scipy import stats
 
@@ -87,109 +81,6 @@ def get_poiss_nll(y_true, y_pred):
     y_true += 1
     return y_pred - y_true * np.log(y_pred)
 
-
-def metric_pearsonr(y, pred):
-    y_true = tf.cast(y, 'float32')
-    y_pred = tf.cast(pred, 'float32')
-
-    product = tf.reduce_sum(tf.multiply(y_true, y_pred), axis=[0,1])
-    true_sum = tf.reduce_sum(y_true, axis=[0,1])
-    true_sumsq = tf.reduce_sum(tf.math.square(y_true), axis=[0,1])
-    pred_sum = tf.reduce_sum(y_pred, axis=[0,1])
-    pred_sumsq = tf.reduce_sum(tf.math.square(y_pred), axis=[0,1])
-    count = tf.ones_like(y_true)
-    count = tf.reduce_sum(count, axis=[0,1])
-    true_mean = tf.divide(true_sum, count)
-    true_mean2 = tf.math.square(true_mean)
-    pred_mean = tf.divide(pred_sum, count)
-    pred_mean2 = tf.math.square(pred_mean)
-
-    term1 = product
-    term2 = -tf.multiply(true_mean, pred_sum)
-    term3 = -tf.multiply(pred_mean, true_sum)
-    term4 = tf.multiply(count, tf.multiply(true_mean, pred_mean))
-    covariance = term1 + term2 + term3 + term4
-
-    true_var = true_sumsq - tf.multiply(count, true_mean2)
-    pred_var = pred_sumsq - tf.multiply(count, pred_mean2)
-    tp_var = tf.multiply(tf.math.sqrt(true_var), tf.math.sqrt(pred_var))
-    correlation = tf.divide(covariance, tp_var)
-    return correlation
-
-def metric_r2(y, pred):
-
-    y_true = tf.cast(y, 'float32')
-    y_pred = tf.cast(pred, 'float32')
-    shape = y_true.shape[-1]
-    true_sum = tf.reduce_sum(y_true, axis=[0,1])
-    true_sumsq = tf.reduce_sum(tf.math.square(y_true), axis=[0,1])
-    product = tf.reduce_sum(tf.multiply(y_true, y_pred), axis=[0,1])
-    pred_sumsq = tf.reduce_sum(tf.math.square(y_pred), axis=[0,1])
-    count = tf.ones_like(y_true)
-    count = tf.reduce_sum(count, axis=[0,1])
-
-    true_mean = tf.divide(true_sum, count)
-    true_mean2 = tf.math.square(true_mean)
-
-    total = true_sumsq - tf.multiply(count, true_mean2)
-
-    resid1 = pred_sumsq
-    resid2 = -2*product
-    resid3 = true_sumsq
-    resid = resid1 + resid2 + resid3
-
-    r2 = tf.ones_like(shape, dtype=tf.float32) - tf.divide(resid, total)
-    return r2
-
-
-
-def pearsonr_per_seq(y, pred, summarize=False):
-    y_true = tf.cast(y, 'float32')
-    y_pred = tf.cast(pred, 'float32')
-
-    product = tf.reduce_sum(tf.multiply(y_true, y_pred), axis=[1])
-
-    true_sum = tf.reduce_sum(y_true, axis=[1])
-    true_sumsq = tf.reduce_sum(tf.math.square(y_true), axis=[1])
-    pred_sum = tf.reduce_sum(y_pred, axis=[1])
-    pred_sumsq = tf.reduce_sum(tf.math.square(y_pred), axis=[1])
-
-    count = tf.ones_like(y_true)
-    count = tf.reduce_sum(count, axis=[1])
-
-    true_mean = tf.divide(true_sum, count)
-    true_mean2 = tf.math.square(true_mean)
-    pred_mean = tf.divide(pred_sum, count)
-    pred_mean2 = tf.math.square(pred_mean)
-
-    term1 = product
-    term2 = -tf.multiply(true_mean, pred_sum)
-    term3 = -tf.multiply(pred_mean, true_sum)
-    term4 = tf.multiply(count, tf.multiply(true_mean, pred_mean))
-    covariance = term1 + term2 + term3 + term4
-
-    true_var = true_sumsq - tf.multiply(count, true_mean2)
-    pred_var = pred_sumsq - tf.multiply(count, pred_mean2)
-    tp_var = tf.multiply(tf.math.sqrt(true_var), tf.math.sqrt(pred_var))
-    correlation = tf.divide(covariance, tp_var)
-    if summarize:
-        nonan_corr = np.nanmean(correlation.numpy(), axis=0)
-        # nonan_corr = tf.boolean_mask(correlation, tf.math.is_finite(correlation))
-        return nonan_corr
-    else:
-        return correlation
-
-
-# def calculate_pearsonr(target,pred):
-#     pearson_profile =np.zeros((target.shape[2],len(target)))
-#
-#     for task_i in range(0,target.shape[2]):
-#         for sample_i in range(0,len(target)):
-#             pearson_profile[task_i,sample_i]=(pearsonr(target[sample_i][:,task_i],pred[sample_i][:,task_i])[0])
-#
-#     return pearson_profile
-
-
 def pearson_volin(pearson_profile,tasks,figsize=(20,5)):
     pd_dict = {}
     for i in range(0,len(tasks)):
@@ -199,7 +90,6 @@ def pearson_volin(pearson_profile,tasks,figsize=(20,5)):
     fig, ax = plt.subplots(figsize=figsize)
     ax = sns.violinplot(data=pearsonr_pd)
     return fig
-
 
 def pearson_box(pearson_profile,tasks,figsize=(20,5)):
     pd_dict = {}
