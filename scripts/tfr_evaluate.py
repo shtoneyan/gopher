@@ -9,6 +9,25 @@ from scipy import stats
 import util
 import metrics
 
+def open_bw(bw_filename, chrom_size_path):
+    '''This function opens a new bw file'''
+    assert not os.path.isfile(bw_filename), 'Bw at {} alread exists!'.format(bw_filename)
+    chrom_sizes = read_chrom_size(chrom_size_path) # load chromosome sizes
+    bw = pyBigWig.open(bw_filename, "w") # open bw
+    bw.addHeader([(k, v) for k, v in chrom_sizes.items()], maxZooms=0)
+    return bw # bw file
+
+def get_vals_per_range(bw_path, bed_path):
+    '''This function reads bw (specific ranges of bed file) into numpy array'''
+    bw = pyBigWig.open(bw_path)
+    bw_list = []
+    for line in open(bed_path):
+        cols = line.strip().split()
+        vals = bw.values(cols[0], int(cols[1]), int(cols[2]))
+        bw_list.append(vals)
+    bw.close()
+    return bw_list
+
 def get_config(run_path):
     '''This function returns config of a wandb run as a dictionary'''
     config_file = os.path.join(run_path, 'files', 'config.yaml')
