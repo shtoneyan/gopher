@@ -1,29 +1,19 @@
 #!/usr/bin/env python
-
 import json
 import os
 import h5py
 import sys
 import util
-from optparse import OptionParser
-from natsort import natsorted
 import numpy as np
 import tensorflow as tf
-from modelzoo import *
-from loss import *
-from loss import logclass
-from tensorflow.keras.callbacks import ModelCheckpoint
-import dataset
-# import trainer_class
+import modelzoo
+import loss
 import time
 import wandb
-from wandb.keras import WandbCallback
-from wandb_callbacks import *
-#import bpnet_original_fit as bpnet_fit
 import custom_fit
 
 def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
-               output_dir, config={},):
+               output_dir, config={}):
 
   default_config = {'num_epochs':30, 'batch_size':64, 'shuffle':True,
   'metrics':['mse','pearsonr', 'poisson'], 'es_start_epoch':1,
@@ -48,11 +38,11 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
       os.mkdir(output_dir)
 
   optimizer = tf.keras.optimizers.Adam(learning_rate=default_config['l_rate'])
-  model = eval(model_name_str) # get model function from model zoo
+  model = eval('modelzoo.'+model_name_str) # get model function from model zoo
   output_len = window_size // bin_size
 
 
-  loss = eval(loss_type_str)(loss_params=default_config['loss_params'])
+  loss = eval('loss.'+loss_type_str)(loss_params=default_config['loss_params'])
 
   trainset = util.make_dataset(data_dir, 'train', util.load_stats(data_dir), batch_size=default_config['batch_size'])
   validset = util.make_dataset(data_dir, 'valid', util.load_stats(data_dir), batch_size=59)
@@ -119,11 +109,9 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
   history = trainer.get_metrics('train')
   history = trainer.get_metrics('val', history)
   model.save(os.path.join(output_dir, "best_model.h5"))
-
   return history
 
 def train_config(config=None):
-
   with wandb.init(config=config) as run:
 
     config = wandb.config
