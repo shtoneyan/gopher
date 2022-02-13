@@ -2,19 +2,11 @@ import sys
 import json
 import os
 import glob
-from scipy.stats import pearsonr
-import shutil
-import hashlib
-import sys
 import pandas as pd
 import numpy as np
 import tensorflow as tf
 from natsort import natsorted
 import tensorflow as tf
-from collections import OrderedDict
-# import metrics
-import scipy
-import yaml
 
 def bin_resolution(y,bin_size):
     y_dim = y.shape
@@ -167,23 +159,7 @@ def window_shift(X,Y,window_size,shift_num,both_seq = False):
     relative_shift_idx =shift_idx - center_idx
 
     return np.array(shift_x),np.array(shift_y),relative_shift_idx
-#
-# def evaluate_shift(X,Y,model,window_size,shift_num):
-#     shift_x,shift_y,shift_idx = window_shift(X,Y,window_size,shift_num)
-#     pred_y = model.predict(shift_x)
-#     if pred_y.shape[1] < shift_y.shape[1]:
-#         bin_size =  int(shift_y.shape[1] / pred_y.shape[1])
-#         pred_y = np.repeat(pred_y,bin_size,axis = 1)
-#         shift_y = bin_resolution(shift_y,bin_size)
-#         shift_y = np.repeat(shift_y,bin_size,axis=1)
-#     p_r_list = []
-#     for i,pred in enumerate(pred_y):
-#         task_pr = []
-#         for task in range(pred.shape[1]):
-#             p_r = scipy.stats.pearsonr(shift_y[i,task],pred[task])[0]
-#             task_pr.append(p_r)
-#         p_r_list.append(task_pr)
-#     return np.array(p_r_list),np.array(shift_idx)
+
 
 def convert_tfr_to_np(testset, number_data_types=2):
     all_data = [[] for i in range(number_data_types)]
