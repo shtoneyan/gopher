@@ -71,120 +71,6 @@ def batch_pred_robustness_test(testset, sts, model, batch_size=64,
             center_ground_truth_1K.append(Y.numpy()[:,conserve_start:conserve_end+1,:])
     return predictions_and_variance, center_1K_coordinates, center_ground_truth_1K
 
-def batch_robustness_test(selected_read,selected_target,model,visualize = True,ground_truth = True, batch_size = 50,
-                            smooth_saliency = True, shift_num = 10, window_size = 2048):
-    var_saliency_list = []
-    var_pred_list = []
-    chop_size = selected_read.shape[1]
-    center_idx = int(0.5*(chop_size-window_size))
-    center_range = np.array(range(center_idx,center_idx+window_size))
-    conserve_size = window_size*2 - chop_size
-    conserve_start = chop_size//2 - conserve_size//2
-    conserve_end = conserve_start + conserve_size-1
-
-    i = 0
-    while i < len(selected_read):
-        if i+ batch_size < len(selected_read):
-            seq = selected_read[i:i+batch_size]
-            target = selected_target[i:i+batch_size]
-            batch_n = batch_size
-            i = i+batch_size
-        else:
-            seq = selected_read[i:len(selected_read)]
-            target = selected_target[i:len(selected_read)]
-            batch_n = len(selected_read) - i
-            i = len(selected_read)
-
-
-        shifted_seq,_,shift_idx = util.window_shift(seq,seq,window_size,shift_num)
-        #get prediction for shifted read
-        shift_pred = model.predict(shifted_seq)
-        bin_size = window_size / shift_pred.shape[1]
-        shift_pred = np.repeat(shift_pred,bin_size,axis = 1)
-
-        # #get saliency for shifted read
-        center_seq,_ = custom_fit.center_crop(seq,seq,window_size)
-        center_pred = model.predict(center_seq)
-        short_max_task = np.argmax(np.sum(center_pred,axis=1),axis = 1)
-        max_task = np.repeat(short_max_task,shift_num)
-        # shift_saliency = complete_saliency(shifted_seq,model,class_index = max_task[0])
-        # shift_saliency = shift_saliency * shifted_seq
-
-        #Select conserve part only
-        crop_start_i = conserve_start - shift_idx - center_idx
-        crop_idx = crop_start_i[:,None] + np.arange(conserve_size)
-        crop_idx = crop_idx.reshape(conserve_size*shift_num*batch_n)
-        crop_row_idx = np.repeat(range(0,shift_num*batch_n),conserve_size)
-        crop_f_index = np.vstack((crop_row_idx,crop_idx)).T.reshape(shift_num*batch_n,conserve_size,2)
-
-        #get saliency 1k part
-        # shift_saliency_1k=tf.gather_nd(shift_saliency,crop_f_index)
-
-        # sep_saliency =np.array(np.array_split(shift_saliency_1k,batch_n))
-        # average_saliency = np.average(np.array(sep_saliency),axis = 1)
-
-        # var_saliency = np.var(np.sum(sep_saliency,axis = -1),axis = 1)
-        # var_saliency_sum = np.sum(var_saliency,axis = 1)
-
-        #get pred 1k part
-        shift_pred_1k=tf.gather_nd(shift_pred[range(shift_pred.shape[0]),:,max_task],crop_f_index)
-        sep_pred = np.array(np.array_split(shift_pred_1k,batch_n))
-        var_pred = np.var(sep_pred,axis = 1)
-        var_pred_sum = np.sum(var_pred,axis = 1)
-
-        #add var result to list
-        # var_saliency_list.append(var_saliency_sum)
-        var_pred_list.append(var_pred_sum)
-
-        if visualize == True:
-        #make 2 subplots per sequence
-            for a in range(0,batch_n):
-
-                fig, (ax1, ax2,ax3) = plt.subplots(3,1,figsize = (15,15))
-                if ground_truth == True:
-                    #plot ground truth pred
-                    # sns.lineplot(x = range(500,1024),
-                    #             y = np.squeeze(target[a,:,short_max_task[a]])[1524:2048],ax = ax1,color = 'black')
-                    sns.lineplot(x = range(0,1024),y = np.squeeze(target[a,:,short_max_task[a]]),ax = ax1,color = 'black')
-                    ax1.set(xlabel='Position', ylabel='Coverage')
-
-
-                for shift_n in range(0,shift_num):
-                    #visualize prediction
-                    sns.lineplot(x = center_range + shift_idx[a*shift_num+shift_n],
-                                 y = shift_pred[a*shift_num + shift_n,:,short_max_task[a]],ax = ax1,
-                                 alpha = 0.35)
-                    # shift_i = shift_idx[a*shift_num+shift_n]
-                    # sns.lineplot(x = range(500,1024),
-                    #             y = shift_pred[a*shift_num + shift_n,:,short_max_task[a]][512-shift_i+500:1536-shift_i],
-                    #             ax = ax1,alpha = 0.35)
-
-                    #visualize saliency
-                    tmp_saliency = shift_saliency[a*shift_num + shift_n]
-                    sns.lineplot(x = center_range + shift_idx[shift_n],
-                                y =np.sum(tmp_saliency.numpy(),axis = 1),ax=ax2,
-                                alpha = 0.35)
-
-                if smooth_saliency==True:
-                    #plot average saliency
-                    sns.lineplot(x = range(conserve_start,conserve_end+1),
-                             y = np.sum(average_saliency[a],axis = 1),
-                             ax = ax2, color = 'lightblue' )
-
-                line_saliency = np.sum(average_saliency[a],axis = 1)
-
-                sns.lineplot(x = range(0,conserve_size),
-                             y = line_saliency,
-                             ax = ax3)
-                ax3.fill_between(range(0,conserve_size),
-                                line_saliency-var_saliency[a],
-                                line_saliency+var_saliency[a], alpha=.8,
-                                color = 'black')
-
-                plt.tight_layout()
-                plt.show()
-
-    return np.concatenate(var_pred_list)
 
 def plot_saliency(saliency_map):
 
@@ -381,89 +267,6 @@ def vcf_binary(ref,alt,model,shift_num=10,window_size=2048,batch_size = 64,layer
 
     return vcf_diff_list
 
-
-def visualize_vcf(ref,alt,model,vcf_output,cagi_df):
-    idx = {'A':0,'C':1,'G':2,'T':3}
-    #ref and alternative prediction for the task with most signal
-    for exp in cagi_df['8'].unique():
-
-
-        exp_df = cagi_df[cagi_df['8']==exp]
-        idx_df = exp_df[['0','1','2']].drop_duplicates().sort_values(by=['1'])
-        exp_len = len(exp_df['1'].unique())
-        effect_size = np.zeros((4,exp_len))
-        predict_size = np.zeros((4,exp_len))
-
-        #plot max difference in prediction and saliency
-        max_idx = exp_df.index[np.argmax(np.absolute(vcf_output[exp_df.index]))]
-        max_ref = ref[max_idx:max_idx+1]
-        max_alt = alt[max_idx:max_idx+1]
-        ref_pred = model.predict(max_ref)
-        alt_pred = model.predict(max_alt)
-        if len(ref_pred.shape) == 2:
-            ref_pred = np.expand_dims(ref_pred,1)
-            alt_pred = np.expand_dims(alt_pred,1)
-
-        ref_pred_cov = np.sum(ref_pred,axis = 1)
-        alt_pred_cov = np.sum(alt_pred,axis = 1)
-        diff = np.absolute(np.log2(alt_pred_cov / ref_pred_cov))
-        max_task = np.argmax(diff,axis = 1)
-        ref_pred = np.squeeze(ref_pred[:,:,max_task],axis = (0,2))
-        alt_pred = np.squeeze(alt_pred[:,:,max_task],axis = (0,2))
-
-
-        input_size = ref.shape[1]
-        pred_size = ref_pred.shape[0]
-        bin_size = input_size / pred_size
-
-        full_ref_pred = np.repeat(ref_pred,bin_size)
-        full_alt_pred = np.repeat(alt_pred,bin_size)
-
-        plt.figure(figsize = (20,2))
-        plt.plot(full_ref_pred,label = 'reference', color = 'black')
-        plt.plot(full_alt_pred,label = 'alternative',color = 'red')
-        plt.xlabel('Position')
-        plt.ylabel('Coverage')
-        plt.legend()
-
-        for pos in range(0,exp_len):
-            row = idx_df.iloc[pos]
-            loci_df = exp_df[(exp_df['0']==row['0'])&(exp_df['1']==row['1'])&(exp_df['2']==row['2'])]
-            loci_idx = loci_df.index
-            ref_allele = loci_df['3'].drop_duplicates().values
-            alt_allele = loci_df['4'].values.tolist()
-            diff = loci_df['6'].values
-
-            #alternative allele
-            effect_size[itemgetter(*alt_allele)(idx),pos] =diff
-            predict_size [itemgetter(*alt_allele)(idx),pos] =vcf_output[loci_idx]
-
-            #reference allele
-            effect_size[idx[ref_allele[0]],pos] = 0
-            predict_size[idx[ref_allele[0]],pos] = 0
-
-
-        plt.figure(figsize = (20,2))
-        ax = sns.heatmap(effect_size,cmap = 'vlag',
-                         center = 0,
-                         #annot = exp_annot,fmt = '',
-                        cbar_kws = dict(use_gridspec=False,location="bottom"));
-        ax.tick_params(left=True, bottom=False);
-        ax.set_yticklabels(['A','C','G','T']);
-        ax.set_xticklabels([]);
-        ax.set_title(exp+' ground truth')
-
-        plt.figure(figsize = (20,2))
-        ax = sns.heatmap(predict_size,cmap = 'vlag',
-                         center = 0,
-                         #annot = pred_annot,fmt = '',
-                         cbar_kws = dict(use_gridspec=False,location="bottom"));
-        ax.tick_params(left=True, bottom=False);
-        ax.set_yticklabels(['A','C','G','T']);
-        ax.set_xticklabels([])
-        ax.set_title(exp+' mutagenesis')
-
-
 def complete_saliency(X,model,class_index,func = tf.math.reduce_mean):
   """fast function to generate saliency maps"""
   # if not tf.is_tensor(X):
@@ -506,7 +309,7 @@ def peak_saliency_map(X, model, class_index,window_size,func=tf.math.reduce_mean
             outputs = func(tf.gather_nd(pred[:,:,class_index],batch_indices),axis=2)
 
         return tape.gradient(outputs, X)
-        
+
 def fasta2list(fasta_file):
     fasta_coords = []
     seqs = []
