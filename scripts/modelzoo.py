@@ -1,6 +1,5 @@
 import tensorflow as tf
 import tensorflow.keras as keras
-# import tensorflow_probability as tfp
 import numpy as np
 import os,yaml
 from loss import *
@@ -502,54 +501,6 @@ class StochasticReverseComplement(tf.keras.layers.Layer):
     #   return seq_1hot, tf.constant(False)
     return seq_1hot, tf.constant(False)
 
-
-class StochasticShift(tf.keras.layers.Layer):
-  """Stochastically shift a one hot encoded DNA sequence."""
-  def __init__(self, shift_max=0, pad='uniform',  **kwargs):
-    super(StochasticShift, self).__init__(**kwargs)
-    self.shift_max = shift_max
-    self.augment_shifts = tf.range(-self.shift_max, self.shift_max+1)
-    self.pad = pad
-
-  def call(self, seq_1hot, training=None):
-    # if training:
-    #   shift_i = tf.random.uniform(shape=[], minval=0, dtype=tf.int64,
-    #                               maxval=len(self.augment_shifts))
-    #   shift = tf.gather(self.augment_shifts, shift_i)
-    #   sseq_1hot = tf.cond(tf.not_equal(shift, 0),
-    #                       lambda: shift_sequence(seq_1hot, shift),
-    #                       lambda: seq_1hot)
-    #   return sseq_1hot
-    # else:
-    return seq_1hot
-
-  def get_config(self):
-    config = super().get_config().copy()
-    config.update({
-      'shift_max': self.shift_max,
-      'pad': self.pad
-    })
-    return config
-
-class SwitchReverse(tf.keras.layers.Layer):
-  """Reverse predictions if the inputs were reverse complemented."""
-  def __init__(self, **kwargs):
-    super(SwitchReverse, self).__init__(**kwargs)
-  def call(self, x_reverse):
-    x = x_reverse[0]
-    reverse = x_reverse[1]
-
-    xd = len(x.shape)
-    if xd == 3:
-      rev_axes = [1]
-    elif xd == 4:
-      rev_axes = [1,2]
-    else:
-      raise ValueError('Cannot recognize SwitchReverse input dimensions %d.' % xd)
-
-    return tf.keras.backend.switch(reverse,
-                                   tf.reverse(x, axis=rev_axes),
-                                   x)
 
 
 def shift_sequence(seq, shift, pad_value=0.25):

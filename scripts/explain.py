@@ -7,7 +7,7 @@ import pandas as pd
 import logomaker
 import subprocess
 import os, shutil, h5py,scipy
-import util
+import utils
 import custom_fit
 import seaborn as sns
 import tfomics

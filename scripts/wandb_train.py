@@ -3,7 +3,7 @@ import json
 import os
 import h5py
 import sys
-import util
+import utils
 import numpy as np
 import tensorflow as tf
 import modelzoo

@@ -15,7 +15,7 @@ from tqdm import tqdm
 import glob
 from scipy.stats import mannwhitneyu
 from statannotations.Annotator import Annotator
-import tfr_evaluate, util
+import tfr_evaluate, utils
 from test_to_bw_fast import read_model, get_config
 import explain
 import embed

@@ -7,7 +7,7 @@ from scipy import stats
 import pandas as pd
 from scipy.stats import mannwhitneyu
 from statannotations.Annotator import Annotator
-import tfr_evaluate, util
+import tfr_evaluate, utils
 import explain
 import embed
 from tqdm import tqdm

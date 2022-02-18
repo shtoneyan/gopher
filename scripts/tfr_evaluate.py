@@ -6,7 +6,7 @@ import yaml
 import pandas as pd
 import numpy as np
 from scipy import stats
-import util
+import utils
 import metrics
 
 def open_bw(bw_filename, chrom_size_path):
