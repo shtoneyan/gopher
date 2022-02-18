@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from modelzoo import GELU
 from tqdm import tqdm
-import tfr_evaluate, util
+import tfr_evaluate, utils
 import explain
 import embed
 import metrics

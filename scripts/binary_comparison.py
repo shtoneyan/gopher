@@ -1,5 +1,5 @@
 import tensorflow as tf
-import util
+import utils
 import numpy as np
 import h5py
 import scipy

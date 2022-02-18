@@ -2,7 +2,7 @@ import tfr_evaluate
 import subprocess
 import numpy as np
 import pandas as pd
-import util
+import utils
 import umap.umap_ as umap
 
 def select(embeddings, lower_lim_1=None,
