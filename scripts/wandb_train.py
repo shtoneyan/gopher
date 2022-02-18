@@ -7,7 +7,7 @@ import utils
 import numpy as np
 import tensorflow as tf
 import modelzoo
-import loss
+import losses
 import time
 import wandb
 import custom_fit
