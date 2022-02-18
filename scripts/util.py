@@ -6,9 +6,13 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from natsort import natsorted
-import tensorflow as tf
 
 def bin_resolution(y,bin_size):
+    """
+    :param y:
+    :param bin_size:
+    :return:
+    """
     y_dim = y.shape
     y_bin = tf.math.reduce_mean(tf.reshape(y,(y_dim[0],int(y_dim[1]/bin_size),bin_size,y_dim[2])),axis = 2)
     return y_bin
