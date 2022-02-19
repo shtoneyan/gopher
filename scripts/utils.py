@@ -158,6 +158,15 @@ def make_dataset(data_dir, split_label, data_stats, batch_size=64, seed=None,
 
 
 def window_shift(X, Y, window_size, shift_num, both_seq=False):
+    """
+
+    :param X:
+    :param Y:
+    :param window_size:
+    :param shift_num:
+    :param both_seq:
+    :return:
+    """
     if len(X.shape) == 2:
         X = np.expand_dims(X, axis=0)
 

@@ -14,6 +14,17 @@ import custom_fit
 
 def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
                output_dir, config={}):
+    """
+
+    :param model_name_str: func name defined in the modelzoo.py
+    :param loss_type_str: loss func name defines in losses.py
+    :param window_size: input length for the model
+    :param bin_size: bin resolution
+    :param data_dir: dataset path
+    :param output_dir: output where to save the model
+    :param config: set of parameters for defining a run
+    :return: training metrics history
+    """
 
   default_config = {'num_epochs':30, 'batch_size':64, 'shuffle':True,
   'metrics':['mse','pearsonr', 'poisson'], 'es_start_epoch':1,
@@ -112,6 +123,11 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
   return history
 
 def train_config(config=None):
+    """
+
+    :param config:
+    :return:
+    """
   with wandb.init(config=config) as run:
 
     config = wandb.config
