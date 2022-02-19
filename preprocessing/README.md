@@ -1,4 +1,3 @@
 # groundhog
 
-<img src="./crop_gh.png" width="100" height='100'>
-Toolset for training quantitative sequence to function models.
+This directory contains scripts for converting bigwig files into tfrecord files that are optimized for speeding up training with tensorflow. 
