@@ -137,9 +137,6 @@ def train_config(config=None):
 
     with wandb.init(config=config) as run:
         config = wandb.config
-        #     print(config.data_dir)
-        #     print(config.l_rate)
-
         history = fit_robust(config.model_fn, config.loss_fn,
                              config.window_size, config.bin_size, config.data_dir,
                              output_dir=wandb.run.dir, config=config)
