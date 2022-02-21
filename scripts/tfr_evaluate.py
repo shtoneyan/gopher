@@ -496,4 +496,4 @@ def evaluate_project(run_dir_list=None, project_dir=None, wandb_project_name=Non
     assert run_dirs, 'No run paths found'
     csv_filename = output_prefix + '.csv'  # filename
     result_path = os.path.join(output_dir, csv_filename)  # output path
-    # process_run_list(run_dirs, result_path) # process a list of runs for evaluation
+    process_run_list(run_dirs, result_path) # process a list of runs for evaluation
