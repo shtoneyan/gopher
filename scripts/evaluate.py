@@ -264,7 +264,8 @@ def evaluate_run_whole(model, bin_size, testset, targets):
 
 
 def extract_IDR_datasets(
-        path_pattern='/mnt/1a18a49e-9a31-4dbf-accd-3fb8abbfab2d/shush/15_IDR_test_sets_6K/cell_line_*/i_6144_w_1/'):
+        path_pattern='/mnt/1a18a49e-9a31-4dbf-accd-3fb8abbfab2d/shush/15_IDR_test_sets_6K/cell_line_*/i_6144_w_1/',
+        batch_size=32):
     """
     get cell line specific IDR datasets from multiple subdirectories
     :param path_pattern: pattern that includes each subdir of cell lines
@@ -275,7 +276,7 @@ def extract_IDR_datasets(
     target_dataset = {}
     for path in paths:
         sts = utils.load_stats(path)
-        testset_6K = utils.make_dataset(path, 'test', sts, batch_size=512, shuffle=False)
+        testset_6K = utils.make_dataset(path, 'test', sts, batch_size=batch_size, shuffle=False)
         target = pd.read_csv(path + 'targets.txt', sep='\t')['identifier'].values[0]
         i = [f for f in path.split('/') if 'cell_line' in f][0].split('_')[-1]
         testset_2K = testset_6K.map(lambda x, y: (split_into_2k_chunks(x), split_into_2k_chunks(y)))
@@ -327,7 +328,7 @@ def get_run_metadata(run_dir):
 
 
 def collect_whole_testset(data_dir='/home/shush/profile/QuantPred/datasets/chr8/complete/random_chop/i_2048_w_1/',
-                          coords=False, batch_size=512):
+                          coords=False, batch_size=32):
     """
     Collects a test fold of a given testset without shuffling it
     :param data_dir: testset directory
@@ -342,7 +343,8 @@ def collect_whole_testset(data_dir='/home/shush/profile/QuantPred/datasets/chr8/
 
 
 def collect_datasets(data_dir='/home/shush/profile/QuantPred/datasets/chr8/complete/random_chop/i_2048_w_1/',
-                     idr_data_dir_pattern='/mnt/1a18a49e-9a31-4dbf-accd-3fb8abbfab2d/shush/15_IDR_test_sets_6K/cell_line_*/i_6144_w_1/'):
+                     idr_data_dir_pattern='/mnt/1a18a49e-9a31-4dbf-accd-3fb8abbfab2d/shush/15_IDR_test_sets_6K/cell_line_*/i_6144_w_1/',
+                     batch_size=32):
     """
     Collects whole and IDR specific testsets
     :param data_dir: whole testset directory
@@ -350,9 +352,9 @@ def collect_datasets(data_dir='/home/shush/profile/QuantPred/datasets/chr8/compl
     :return: whole testset, all prediction targets, dictionary of  cell line specific IDR testsets
     """
     # get testset
-    testset, targets = collect_whole_testset(data_dir)
+    testset, targets = collect_whole_testset(data_dir, batch_size=batch_size)
     # get cell line specific IDR testsets in 6K
-    target_dataset_idr = extract_IDR_datasets(idr_data_dir_pattern)
+    target_dataset_idr = extract_IDR_datasets(idr_data_dir_pattern, batch_size=batch_size)
     return (testset, targets, target_dataset_idr)
 
 
@@ -403,7 +405,7 @@ def check_best_model_exists(run_dirs, error_output_filepath):
     return bad_runs
 
 
-def process_run_list(run_dirs, output_summary_filepath, data_dir, idr_data_dir_pattern):
+def process_run_list(run_dirs, output_summary_filepath, data_dir, idr_data_dir_pattern, batch_size):
     """
     Evaluate a set of runs
     :param run_dirs: iterable of run directories
@@ -411,7 +413,7 @@ def process_run_list(run_dirs, output_summary_filepath, data_dir, idr_data_dir_p
     :return:
     """
     # get datasets
-    testset, targets, target_dataset_idr = collect_datasets(data_dir, idr_data_dir_pattern)
+    testset, targets, target_dataset_idr = collect_datasets(data_dir, idr_data_dir_pattern, batch_size=batch_size)
     # check runs
     bad_runs = check_best_model_exists(run_dirs, output_summary_filepath.replace('.csv', '_ERROR.txt'))
     # process runs
@@ -468,7 +470,21 @@ def collect_sweep_dirs(sweep_id, wandb_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af3
 
 
 def evaluate_project(data_dir, idr_data_dir_pattern, run_dir_list=None, project_dir=None, wandb_project_name=None, wandb_dir=None, output_dir='output',
-                     output_prefix=None):
+                     output_prefix=None, batch_size=32):
+    """
+    Evaluates a set of runs useing whole and IDR test sets, raw and scaled predictions and multiple metrics.
+    :param data_dir: whole test set directory
+    :param idr_data_dir_pattern: path pattern to collect IDR test sets
+    :param run_dir_list: list of run paths to evaluate
+    :param project_dir: directory that includes all the runs to evaluate
+    :param wandb_project_name: WandB project to evaluate
+    :param wandb_dir: directory where runs are saved, needed if using project name
+    :param output_dir: directory where to save the result
+    :param output_prefix: file name for the result
+    :param batch_size: batch size for evaluation (set to smaller for bigger models)
+    :return: None
+    """
+    assert run_dir_list or project_dir or wandb_project_name, 'Must provide either list of runs, project dir or WandB project name!'
     utils.make_dir(output_dir)  # create output directory
     # option 1: project directory is provided with run outputs all of which should be evaluated
     if os.path.isdir(str(project_dir)):  # check if dir exists
@@ -486,16 +502,14 @@ def evaluate_project(data_dir, idr_data_dir_pattern, run_dir_list=None, project_
 
     # option 3: use WandB project name
     else:
-        try:  # see if WandB project can be found
-            assert os.path.isdir(str(wandb_dir)), 'WandB output directory not found!'
-            run_dir_list = collect_run_dirs(wandb_project_name, wandb_dir=wandb_dir)
-            if not output_prefix:
-                output_prefix = wandb_project_name
-            print('COLLECTING RUNS FROM PROJECT IN WANDB')
-        except ValueError:  # if project name not found throw an exception
-            raise Exception('Must provide run path list, output directory or WandB project name!')
+        assert os.path.isdir(str(wandb_dir)), 'WandB output directory not found!'
+        run_dir_list = collect_run_dirs(wandb_project_name, wandb_dir=wandb_dir)
+        if not output_prefix:
+            output_prefix = wandb_project_name
+        print('COLLECTING RUNS FROM PROJECT IN WANDB')
+
     assert run_dir_list, 'No run paths found'
     csv_filename = output_prefix + '.csv'  # filename
     result_path = os.path.join(output_dir, csv_filename)  # output path
     # process a list of runs for evaluation
-    process_run_list(run_dir_list, result_path, data_dir, idr_data_dir_pattern)
+    process_run_list(run_dir_list, result_path, data_dir, idr_data_dir_pattern, batch_size=batch_size)
