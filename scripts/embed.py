@@ -25,16 +25,16 @@ def select(embeddings, lower_lim_1=None,
         mask *= (embeddings['IDR']!=True).values
     return mask.astype(bool)
 
-def describe_run(run_path, columns_of_interest=['model_fn', 'bin_size', 'crop', 'rev_comp']):
-    metadata = tfr_evaluate.get_run_metadata(run_path)
-    if 'data_dir' in metadata.columns:
-        model_id = [metadata['data_dir'].values[0].split('/i_3072_w_1')[0].split('/')[-1]]
-    else:
-        model_id = []
-    for c in columns_of_interest:
-        if c in metadata.columns:
-            model_id.append(str(metadata[c].values[0]))
-    return ' '.join(model_id)
+# def describe_run(run_path, columns_of_interest=['model_fn', 'bin_size', 'crop', 'rev_comp']):
+#     metadata = tfr_evaluate.get_run_metadata(run_path)
+#     if 'data_dir' in metadata.columns:
+#         model_id = [metadata['data_dir'].values[0].split('/i_3072_w_1')[0].split('/')[-1]]
+#     else:
+#         model_id = []
+#     for c in columns_of_interest:
+#         if c in metadata.columns:
+#             model_id.append(str(metadata[c].values[0]))
+#     return ' '.join(model_id)
 
 def get_cell_line_overlaps(cell_line):
     cmd = 'bedtools intersect -f 0.5 -wa -a /home/shush/profile/QuantPred/datasets/chr8/complete/random_chop/i_2048_w_1/sequences.bed -b /home/shush/profile/QuantPred/datasets/cell_line_specific_test_sets/cell_line_{}/complete/peak_centered/i_2048_w_1.bed | uniq > chr8_cell_line_{}_IDR.bed'.format(cell_line, cell_line)

@@ -108,7 +108,7 @@ def get_true_pred(model, bin_size, testset):
     all_pred = []
     for i, (x, y) in enumerate(testset):
         p = model.predict(x)
-        binned_y = util.bin_resolution(y, bin_size) # change resolution
+        binned_y = utils.bin_resolution(y, bin_size)  # change resolution
         y = binned_y.numpy()
         all_truth.append(y)
         all_pred.append(p)
@@ -273,8 +273,8 @@ def extract_IDR_datasets(
     assert len(paths) > 0
     target_dataset = {}
     for path in paths:
-        sts = util.load_stats(path)
-        testset_6K = util.make_dataset(path, 'test', sts, batch_size=512, shuffle=False)
+        sts = utils.load_stats(path)
+        testset_6K = utils.make_dataset(path, 'test', sts, batch_size=512, shuffle=False)
         target = pd.read_csv(path + 'targets.txt', sep='\t')['identifier'].values[0]
         i = [f for f in path.split('/') if 'cell_line' in f][0].split('_')[-1]
         testset_2K = testset_6K.map(lambda x, y: (split_into_2k_chunks(x), split_into_2k_chunks(y)))
@@ -334,8 +334,8 @@ def collect_whole_testset(data_dir='/home/shush/profile/QuantPred/datasets/chr8/
     :param batch_size: batch size, important to set to smaller number for inference on large models
     :return:
     """
-    sts = util.load_stats(data_dir)
-    testset = util.make_dataset(data_dir, 'test', sts, batch_size=batch_size, shuffle=False, coords=coords)
+    sts = utils.load_stats(data_dir)
+    testset = utils.make_dataset(data_dir, 'test', sts, batch_size=batch_size, shuffle=False, coords=coords)
     targets = pd.read_csv(data_dir + 'targets.txt', sep='\t')['identifier'].values
     return testset, targets
 
@@ -398,7 +398,7 @@ def check_best_model_exists(run_dirs, error_output_filepath):
             bad_runs.append(run_dir)
             print('No saved model found, skipping run at ' + run_dir)
     if len(bad_runs) > 0:
-        util.writ_list_to_file(bad_runs, error_output_filepath)
+        utils.writ_list_to_file(bad_runs, error_output_filepath)
     return bad_runs
 
 
@@ -439,7 +439,16 @@ def collect_run_dirs(project_name, wandb_dir='paper_runs/*/*/*'):
     wandb.login()
     api = wandb.Api()
     runs = api.runs(project_name)
-    run_dirs = [glob.glob(wandb_dir + run.id)[0] for run in runs]
+    run_dirs = []
+    for run in runs:
+        matching_run_paths = glob.glob(wandb_dir + run.id)
+        if len(matching_run_paths) == 1:
+            run_dirs.append(matching_run_paths[0])
+        elif len(matching_run_paths) == 0:
+            print(run, 'FOLDER NOT FOUND')
+        else:
+            raise Exception('too many runs match id')
+
     return run_dirs
 
 
@@ -457,33 +466,34 @@ def collect_sweep_dirs(sweep_id, wandb_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af3
     return run_dirs
 
 
-if __name__ == '__main__':
-    run_dirs = []
-    # dir_of_all_runs = '/home/shush/profile/QuantPred/paper_runs/basenji/augmentation_basenji'
-    dir_of_all_runs = sys.argv[1]
-    output_dir = 'colab_eval'  # output dir
-    util.make_dir(output_dir)
-    # project name in wandb or name to use for saving if list of runs provided
-    project_name = 'COLAB_MODEL_SELECTION'
-
-    testset, targets, target_dataset_idr = collect_datasets()
-    # if pre-assembled directory of runs given then take all
-    if os.path.isdir(dir_of_all_runs):
-        run_dirs = [os.path.join(dir_of_all_runs, d) for d in os.listdir(dir_of_all_runs)
-                    if os.path.isfile(os.path.join(dir_of_all_runs, d, 'files/best_model.h5'))]
-        project_name = os.path.basename(dir_of_all_runs.rstrip('/'))
-        assert len(project_name) > 0, 'Invalid project name'
-        print('SELECTED ALL RUNS IN DIRECTORY: ' + dir_of_all_runs)
-        print('PROJECT NAME: ' + project_name)
-
-    # else check if list of runs also is absent then collect runs
-    elif len(run_dirs) == 0:
-        run_dirs = collect_run_dirs(project_name, wandb_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/shush/wandb/*/*')
-        print('COLLECTING RUNS FROM PROJECT IN WANDB')
-        print(run_dirs)
-    else:
+def evaluate_project(run_dir_list=None, project_dir=None, wandb_project_name=None, wandb_dir=None, output_dir='output',
+                     output_prefix=None):
+    utils.make_dir(output_dir)  # create output directory
+    # option 1: project directory is provided with run outputs all of which should be evaluated
+    if os.path.isdir(str(project_dir)):  # check if dir exists
+        # get all subdirs that have model saved
+        run_dirs = [os.path.join(project_dir, d) for d in os.listdir(project_dir)
+                    if os.path.isfile(os.path.join(project_dir, d, 'files/best_model.h5'))]
+        if not output_prefix:
+            output_prefix = os.path.basename(project_dir.rstrip('/'))  # if no project name use run dir name
+        print('SELECTED ALL RUNS IN DIRECTORY: ' + project_dir)
+    # option 2: use a list of predefined run paths
+    elif run_dir_list:
+        if not output_prefix:
+            output_prefix = 'evaluation_results'
         print('USING PREDEFINED LIST OF RUNS')
-    csv_filename = project_name + '.csv'
-    result_path = os.path.join(output_dir, csv_filename)
-    print(result_path)
-    process_run_list(run_dirs, result_path)
+
+    # option 3: use WandB project name
+    else:
+        try:  # see if WandB project can be found
+            assert os.path.isdir(str(wandb_dir)), 'WandB output directory not found!'
+            run_dirs = collect_run_dirs(wandb_project_name, wandb_dir=wandb_dir)
+            if not output_prefix:
+                output_prefix = wandb_project_name
+            print('COLLECTING RUNS FROM PROJECT IN WANDB')
+        except ValueError:  # if project name not found throw an exception
+            raise Exception('Must provide run path list, output directory or WandB project name!')
+    assert run_dirs, 'No run paths found'
+    csv_filename = output_prefix + '.csv'  # filename
+    result_path = os.path.join(output_dir, csv_filename)  # output path
+    # process_run_list(run_dirs, result_path) # process a list of runs for evaluation
