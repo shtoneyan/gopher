@@ -402,7 +402,7 @@ def check_best_model_exists(run_dirs, error_output_filepath):
     return bad_runs
 
 
-def process_run_list(run_dirs, output_summary_filepath):
+def process_run_list(run_dirs, output_summary_filepath, data_dir, idr_data_dir_pattern):
     """
     Evaluate a set of runs
     :param run_dirs: iterable of run directories
@@ -410,7 +410,7 @@ def process_run_list(run_dirs, output_summary_filepath):
     :return:
     """
     # get datasets
-    testset, targets, target_dataset_idr = collect_datasets()
+    testset, targets, target_dataset_idr = collect_datasets(data_dir, idr_data_dir_pattern)
     # check runs
     bad_runs = check_best_model_exists(run_dirs, output_summary_filepath.replace('.csv', '_ERROR.txt'))
     # process runs
@@ -466,13 +466,13 @@ def collect_sweep_dirs(sweep_id, wandb_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af3
     return run_dirs
 
 
-def evaluate_project(run_dir_list=None, project_dir=None, wandb_project_name=None, wandb_dir=None, output_dir='output',
+def evaluate_project(data_dir, idr_data_dir_pattern, run_dir_list=None, project_dir=None, wandb_project_name=None, wandb_dir=None, output_dir='output',
                      output_prefix=None):
     utils.make_dir(output_dir)  # create output directory
     # option 1: project directory is provided with run outputs all of which should be evaluated
     if os.path.isdir(str(project_dir)):  # check if dir exists
         # get all subdirs that have model saved
-        run_dirs = [os.path.join(project_dir, d) for d in os.listdir(project_dir)
+        run_dir_list = [os.path.join(project_dir, d) for d in os.listdir(project_dir)
                     if os.path.isfile(os.path.join(project_dir, d, 'files/best_model.h5'))]
         if not output_prefix:
             output_prefix = os.path.basename(project_dir.rstrip('/'))  # if no project name use run dir name
@@ -487,13 +487,14 @@ def evaluate_project(run_dir_list=None, project_dir=None, wandb_project_name=Non
     else:
         try:  # see if WandB project can be found
             assert os.path.isdir(str(wandb_dir)), 'WandB output directory not found!'
-            run_dirs = collect_run_dirs(wandb_project_name, wandb_dir=wandb_dir)
+            run_dir_list = collect_run_dirs(wandb_project_name, wandb_dir=wandb_dir)
             if not output_prefix:
                 output_prefix = wandb_project_name
             print('COLLECTING RUNS FROM PROJECT IN WANDB')
         except ValueError:  # if project name not found throw an exception
             raise Exception('Must provide run path list, output directory or WandB project name!')
-    assert run_dirs, 'No run paths found'
+    assert run_dir_list, 'No run paths found'
     csv_filename = output_prefix + '.csv'  # filename
     result_path = os.path.join(output_dir, csv_filename)  # output path
-    process_run_list(run_dirs, result_path) # process a list of runs for evaluation
+    # process a list of runs for evaluation
+    process_run_list(run_dir_list, result_path, data_dir, idr_data_dir_pattern)
