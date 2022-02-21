@@ -9,6 +9,7 @@ from scipy import stats
 import utils
 import metrics
 import re
+from modelzoo import GELU
 
 
 def open_bw(bw_filename, chrom_size_path):
