@@ -1,3 +1,6 @@
+# Credits: This script is taken from https://github.com/kundajelab/deeplift/blob/master/deeplift/dinuc_shuffle.py
+
+
 import numpy as np
 
 
