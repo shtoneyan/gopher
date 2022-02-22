@@ -10,6 +10,12 @@ import sklearn
 import modelzoo
 
 def cov_pearson(run_dir,profile_data_dir):
+    """
+
+    :param run_dir:
+    :param profile_data_dir:
+    :return:
+    """
     custom_layers = {'GELU':modelzoo.GELU}
     model = tf.keras.models.load_model(run_dir,custom_objects = custom_layers,compile=False)
 
@@ -37,6 +43,12 @@ def cov_pearson(run_dir,profile_data_dir):
     return r_list
 
 def binary_metrics(run_dir,binary_data_dir):
+    """
+
+    :param run_dir:
+    :param binary_data_dir:
+    :return:
+    """
     custom_layers = {'GELU':modelzoo.GELU}
     model = tf.keras.models.load_model(run_dir,custom_objects = custom_layers,compile=False)
     f = h5py.File(binary_data_dir,'r')
@@ -62,6 +74,12 @@ def binary_metrics(run_dir,binary_data_dir):
 
 
 def binary_to_profile(binary_model_dir,profile_data_dir):
+    """
+
+    :param binary_model_dir:
+    :param profile_data_dir:
+    :return:
+    """
     model = tf.keras.models.load_model(binary_model_dir,compile=True)
     intermediate_layer_model = tf.keras.Model(inputs=model.input,
                                   outputs=model.output.op.inputs[0].op.inputs[0])
@@ -88,6 +106,12 @@ def binary_to_profile(binary_model_dir,profile_data_dir):
     return r_list
 
 def profile_to_binary_dist(run_dir,binary_data_dir):
+    """
+    
+    :param run_dir:
+    :param binary_data_dir:
+    :return:
+    """
     model = modelzoo.load_model(run_dir,False)
     f = h5py.File(binary_data_dir,'r')
     test_x = f['x_test'][()]
