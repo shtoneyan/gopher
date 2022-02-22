@@ -14,13 +14,34 @@ import tfomics
 from operator import itemgetter
 
 def get_center_coordinates(coord, conserve_start, conserve_end):
+    """
+
+    :param coord:
+    :param conserve_start:
+    :param conserve_end:
+    :return:
+    """
     '''Extract coordinates according to robsutness test procedure'''
     chrom, start, end = str(np.array(coord)).strip('\"b\'').split('_')
     start, end = np.arange(int(start), int(end))[[conserve_start,conserve_end]]
     return (chrom, start, end)
 
-def batch_pred_robustness_test(testset, sts, model, batch_size=64,
+def batch_pred_robustness_test(testset, sts, model,
                            shift_num=20, window_size=2048, get_preds=True):
+    """
+    This function obtains a dictionary of robust predictions (predictions averaged across multiple shifts), center
+    predictions and variance based on robustness test for a given test set, center 1K coordinates and center 1K ground
+    truth values. During robustness test we shift a 2K window within a given input 3K sequence multiple times,
+    get predictions and calculate the center 1K (overlap region) average predictions as 'robust' prediction and
+    variance.
+    :param testset: testset in tf dataset format
+    :param sts:
+    :param model:
+    :param shift_num:
+    :param window_size:
+    :param get_preds:
+    :return:
+    """
     predictions_and_variance = {}
     predictions_and_variance['var'] = [] # prediction variance
     predictions_and_variance['robust_pred'] = [] # robust predictions
@@ -38,7 +59,6 @@ def batch_pred_robustness_test(testset, sts, model, batch_size=64,
     for t, (C, seq, Y) in enumerate(testset):
         batch_n = seq.shape[0]
         shifted_seq,_,shift_idx = util.window_shift(seq,seq,window_size,shift_num)
-
 
         #get prediction for shifted read
         shift_pred = model.predict(shifted_seq)

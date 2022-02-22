@@ -363,6 +363,13 @@ class MonitorMetrics():
 # Useful functions
 #------------------------------------------------------------------------------
 def ReverseComplement(seq_1hot,label_profile,chance = 0.5):
+    """
+
+    :param seq_1hot:
+    :param label_profile:
+    :param chance:
+    :return:
+    """
     rc_seq_1hot = tf.gather(seq_1hot, [3, 2, 1, 0], axis=-1)
     rc_seq_1hot = tf.reverse(rc_seq_1hot, axis=[1])
     rc_profile = tf.reverse(label_profile,axis=[1])
@@ -372,6 +379,13 @@ def ReverseComplement(seq_1hot,label_profile,chance = 0.5):
     return src_seq_1hot, src_profile
 
 def random_crop(x,y,window_size):
+    """
+
+    :param x:
+    :param y:
+    :param window_size:
+    :return:
+    """
     #cropping return x_crop and y_crop
     x_dim = x.shape
     if x_dim[1] > window_size:
@@ -391,6 +405,13 @@ def random_crop(x,y,window_size):
     return x_crop,y_crop
 
 def center_crop(x,y,window_size):
+    """
+
+    :param x:
+    :param y:
+    :param window_size:
+    :return:
+    """
     x_dim = x.shape
     if len(x_dim) == 2:
         x = np.expand_dims(x,axis = 0)
@@ -410,6 +431,12 @@ def center_crop(x,y,window_size):
     return x_crop,y_crop
 
 def bin_resolution(y,bin_size):
+    """
+    
+    :param y:
+    :param bin_size:
+    :return:
+    """
     y_dim = y.shape
     y_bin = tf.math.reduce_mean(tf.reshape(y,(y_dim[0],int(y_dim[1]/bin_size),bin_size,y_dim[2])),axis = 2)
     return y_bin

@@ -107,7 +107,7 @@ def binary_to_profile(binary_model_dir,profile_data_dir):
 
 def profile_to_binary_dist(run_dir,binary_data_dir):
     """
-    
+
     :param run_dir:
     :param binary_data_dir:
     :return:
