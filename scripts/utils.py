@@ -231,3 +231,45 @@ def onehot_to_str(onehot):
         assert one_onehot.shape == (4,)
         full_str.append(list('ACGT')[np.argwhere(one_onehot)[0][0]])
     return ''.join(full_str)
+
+
+def threshold_cell_line_np(np_C, np_X, np_Y, cell_line, more_than, less_than=None):
+    """
+    Threshold based on cell line specific coverage values.
+    :param np_C: np array of coordinates
+    :param np_X: np array of onehot sequences
+    :param np_Y: np array of target coverage values
+    :param cell_line: cell line number or index
+    :param more_than: lower limit
+    :param less_than: upper limit
+    :return: filtered coordinates, onehot sequences and targets
+    """
+    m1 = np_Y[:, :, cell_line].max(axis=1) > more_than
+    if less_than:
+        m2 = np_Y[:, :, cell_line].max(axis=1) < less_than
+        threshold_mask = (m1 & m2)
+    else:
+        threshold_mask = m1
+    thresholded_X = np_X[threshold_mask]
+    thresholded_C = np_C[threshold_mask]
+    thresholded_Y = np_Y[threshold_mask, :, cell_line]
+    return (thresholded_C, thresholded_X, thresholded_Y)
+
+def predict_np(X, model, batch_size=32, reshape_to_2D=False):
+    """
+    Function to get intermediate representations or predictions from a model
+    :param X: onehot sequences
+    :param model: trained model loaded into memory
+    :param batch_size: batch size
+    :param reshape_to_2D: bool, if true reshape to 2D for UMAP
+    :return:
+    """
+    model_output = []
+    for x_batch in util.batch_np(X, batch_size):
+        model_output.append(model(x_batch).numpy())
+    model_output = np.squeeze(np.concatenate(model_output))
+    if reshape_to_2D:
+        assert len(model_output.shape) == 3, 'Wrong dimension for reshape'
+        d1, d2, d3 = model_output.shape
+        model_output = model_output.reshape(d1, d2 * d3)
+    return model_output
