@@ -30,6 +30,13 @@ class GlobalImportance():
 
     # methods for removing motifs
     def set_seqs_for_removing(self, subset, num_sample, seed):
+        """
+        select sequences to remove a given motif from
+        :param subset: a set of onehot sequences in np array
+        :param num_sample: number to limit the sequences to
+        :param seed: random sample seed
+        :return:
+        """
         if num_sample:
             print('SUBSETTING SEQUENCES')
             if seed:
