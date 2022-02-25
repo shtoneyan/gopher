@@ -380,6 +380,14 @@ def dna_one_hot(seq):
     return seq_code
 
 
+def convert_bed_to_seq(bedfile, output_fa, genomefile='/home/shush/genomes/hg38.fa'):
+    cmd = 'bedtools getfasta -fi {} -bed {} -s -fo {}'.format(genomefile, bedfile, output_fa)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    output, error = process.communicate()
+    coords_list, seqs_list = fasta2list(output_fa)
+    return coords_list, seqs_list
+
+
 def enforce_const_range(site, window):
     half_window = np.round(window / 2).astype(int)
     start = site - half_window
