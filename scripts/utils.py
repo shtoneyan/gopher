@@ -6,6 +6,9 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from natsort import natsorted
+import yaml
+from modelzoo import GELU
+
 
 
 def bin_resolution(y, bin_size):
@@ -255,6 +258,7 @@ def threshold_cell_line_np(np_C, np_X, np_Y, cell_line, more_than, less_than=Non
     thresholded_Y = np_Y[threshold_mask, :, cell_line]
     return (thresholded_C, thresholded_X, thresholded_Y)
 
+
 def predict_np(X, model, batch_size=32, reshape_to_2D=False):
     """
     Function to get intermediate representations or predictions from a model
@@ -273,3 +277,120 @@ def predict_np(X, model, batch_size=32, reshape_to_2D=False):
         d1, d2, d3 = model_output.shape
         model_output = model_output.reshape(d1, d2 * d3)
     return model_output
+
+
+def open_bw(bw_filename, chrom_size_path):
+    '''
+    This function opens a new bw file
+    :param bw_filename: path to bw file to be created
+    :param chrom_size_path: chrom size file for corresponding genome assembly
+    :return: bw object
+    '''
+    assert not os.path.isfile(bw_filename), 'Bw at {} alread exists!'.format(bw_filename)
+    chrom_sizes = read_chrom_size(chrom_size_path)  # load chromosome sizes
+    bw = pyBigWig.open(bw_filename, "w")  # open bw
+    bw.addHeader([(k, v) for k, v in chrom_sizes.items()], maxZooms=0)
+    return bw  # bw file
+
+
+def get_vals_per_range(bw_path, bed_path):
+    '''
+    This function reads bw (specific ranges of bed file) into numpy array
+    :param bw_path: existing bw file path
+    :param bed_path: bed file path to read the coordinates from
+    :return: list of coverage values that can be of different lengths
+    '''
+    bw = pyBigWig.open(bw_path)
+    bw_list = []
+    for line in open(bed_path):
+        cols = line.strip().split()
+        vals = bw.values(cols[0], int(cols[1]), int(cols[2]))
+        bw_list.append(vals)
+    bw.close()
+    return bw_list
+
+
+def get_config(run_path):
+    '''
+    This function returns config of a wandb run as a dictionary
+    :param run_path: dir with run outputs
+    :return: dictionary of configs
+    '''
+    config_file = os.path.join(run_path, 'files', 'config.yaml')
+    with open(config_file, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
+
+def read_model(run_path, compile_model=True):
+    '''
+    This function loads a per-trained model
+    :param run_path: run output dir
+    :param compile_model: bool compile model using loss from config
+    :return: model and resolution
+    '''
+    config = get_config(run_path)  # load wandb config
+    if 'bin_size' in config.keys():
+        bin_size = config['bin_size']['value']  # get bin size
+    else:
+        bin_size = 'NA'
+    model_path = os.path.join(run_path, 'files', 'best_model.h5')  # pretrained model
+    # load model
+    trained_model = tf.keras.models.load_model(model_path, custom_objects={"GELU": GELU})
+    if compile_model:
+        loss_fn_str = config['loss_fn']['value']  # get loss
+        loss_fn = eval(loss_fn_str)()  # turn loss into function
+        trained_model.compile(optimizer="Adam", loss=loss_fn)
+    return trained_model, bin_size  # model and bin size
+
+
+def describe_run(run_path, columns_of_interest=['model_fn', 'bin_size', 'crop', 'rev_comp']):
+    """
+    Get the run descriptors from config
+    :param run_path: output from training
+    :param columns_of_interest: entries in the config file that need to be extracted
+    :return: str decription of run
+    """
+    metadata = get_run_metadata(run_path)
+    model_id = []
+    if 'data_dir' in metadata.columns:
+        p = re.compile('i_[0-9]*_w_1')
+        dataset_subdir = p.search(metadata['data_dir'].values[0])
+        if dataset_subdir:
+            model_id = [metadata['data_dir'].values[0].split('/' + dataset_subdir.group(0))[0].split('/')[-1]]
+    for c in columns_of_interest:
+        if c in metadata.columns:
+            model_id.append(str(metadata[c].values[0]))
+    return ' '.join(model_id)
+
+
+def get_true_pred(model, bin_size, testset):
+    """
+    Iterate through dataset and get predictions into np
+    :param model: model path to h5
+    :param bin_size: resolution
+    :param testset: tf dataset or other iterable
+    :return: np arrays of ground truth and predictions
+    """
+    all_truth = []
+    all_pred = []
+    for i, (x, y) in enumerate(testset):
+        p = model.predict(x)
+        binned_y = bin_resolution(y, bin_size)  # change resolution
+        y = binned_y.numpy()
+        all_truth.append(y)
+        all_pred.append(p)
+    return np.concatenate(all_truth), np.concatenate(all_pred)
+
+
+def get_run_metadata(run_dir):
+    """
+    Collects the metadata file of a run
+    :param run_dir: directory where run is saved
+    :return: dataframe of metadata run descriptors
+    """
+    config = get_config(run_dir)
+    relevant_config = {k: [config[k]['value']] for k in config.keys() if k not in ['wandb_version', '_wandb']}
+    metadata = pd.DataFrame(relevant_config)
+    metadata['run_dir'] = run_dir
+    return metadata
