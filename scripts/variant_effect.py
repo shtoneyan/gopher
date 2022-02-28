@@ -1,6 +1,8 @@
 import numpy as np
 import util
 import tensorflow as tf
+import subprocess
+
 
 def vcf_fast(ref, alt, model, window_size=2048, batch_size=64):
     vcf_diff_list = []
@@ -165,3 +167,54 @@ def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_siz
             vcf_diff_list.append(vcf_diff)
 
     return vcf_diff_list
+
+
+def dna_one_hot(seq):
+    seq_len = len(seq)
+    seq_start = 0
+    seq = seq.upper()
+
+    # map nt's to a matrix len(seq)x4 of 0's and 1's.
+    seq_code = np.zeros((seq_len, 4), dtype='float16')
+
+    for i in range(seq_len):
+        if i >= seq_start and i - seq_start < len(seq):
+            nt = seq[i - seq_start]
+            if nt == 'A':
+                seq_code[i, 0] = 1
+            elif nt == 'C':
+                seq_code[i, 1] = 1
+            elif nt == 'G':
+                seq_code[i, 2] = 1
+            elif nt == 'T':
+                seq_code[i, 3] = 1
+            else:
+                seq_code[i, :] = 0.25
+
+    return seq_code
+
+
+def convert_bed_to_seq(bedfile, output_fa, genomefile='/home/shush/genomes/hg38.fa'):
+    cmd = 'bedtools getfasta -fi {} -bed {} -s -fo {}'.format(genomefile, bedfile, output_fa)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    output, error = process.communicate()
+    coords_list, seqs_list = fasta2list(output_fa)
+    return coords_list, seqs_list
+
+
+
+def fasta2list(fasta_file):
+    fasta_coords = []
+    seqs = []
+    header = ''
+
+    for line in open(fasta_file):
+        if line[0] == '>':
+            # header = line.split()[0][1:]
+            fasta_coords.append(line[1:].rstrip())
+        else:
+            s = line.rstrip()
+            s = s.upper()
+            seqs.append(s)
+
+    return fasta_coords, seqs
