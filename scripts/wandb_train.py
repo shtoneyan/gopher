@@ -1,16 +1,16 @@
 #!/usr/bin/env python
-import json
-import os
-import h5py
-import sys
-import utils
-import numpy as np
-import tensorflow as tf
-import modelzoo
-import losses
-import time
-import wandb
 import custom_fit
+import h5py
+import json
+import losses
+import modelzoo
+import numpy as np
+import os
+import sys
+import tensorflow as tf
+import time
+import utils
+import wandb
 import yaml
 
 
@@ -28,7 +28,6 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
     :return: training metrics history
     """
 
-
     default_config = {'num_epochs': 30, 'batch_size': 64, 'shuffle': True,
                       'metrics': ['mse', 'pearsonr', 'poisson'], 'es_start_epoch': 1,
                       'l_rate': 0.001, 'es_patience': 6, 'es_metric': 'loss',
@@ -42,17 +41,14 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
         if key in config.keys():
             default_config[key] = config[key]
 
-    if '2048' in data_dir:
-        rev_comp = False
-        crop_window = True
-
     if default_config['log_wandb'] == False:
         wandb_style_config = {}
         for k, v in default_config.items():
             wandb_style_config[k] = {'value': v}
-        for k,v in {'model_fn': model_name_str, 'loss_fn': loss_type_str, 'input_size': window_size, 'bin_size': bin_size, 'data_dir': data_dir}.items():
+        for k, v in {'model_fn': model_name_str, 'loss_fn': loss_type_str, 'input_size': window_size,
+                     'bin_size': bin_size, 'data_dir': data_dir}.items():
             wandb_style_config[k] = {'value': v}
-        output_dir = utils.make_dir(os.path.join(output_dir, 'files')) # overwrite so that model is also saved there
+        output_dir = utils.make_dir(os.path.join(output_dir, 'files'))  # overwrite so that model is also saved there
         with open(os.path.join(output_dir, 'config.yaml'), 'w') as file:
 
             documents = yaml.dump(wandb_style_config, file)
@@ -66,7 +62,8 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
 
     loss = eval('losses.' + loss_type_str)(loss_params=default_config['loss_params'])
 
-    trainset = utils.make_dataset(data_dir, 'train', utils.load_stats(data_dir), batch_size=default_config['batch_size'])
+    trainset = utils.make_dataset(data_dir, 'train', utils.load_stats(data_dir),
+                                  batch_size=default_config['batch_size'])
     validset = utils.make_dataset(data_dir, 'valid', utils.load_stats(data_dir), batch_size=59)
 
     json_path = os.path.join(data_dir, 'statistics.json')
@@ -137,7 +134,6 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
 
 
 def train_config(config=None):
-
     with wandb.init(config=config) as run:
         config = wandb.config
         history = fit_robust(config.model_fn, config.loss_fn,
