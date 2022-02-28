@@ -50,8 +50,11 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
         wandb_style_config = {}
         for k, v in default_config.items():
             wandb_style_config[k] = {'value': v}
+        for k,v in {'model_fn': model_name_str, 'loss_fn': loss_type_str, 'input_size': window_size, 'bin_size': bin_size, 'data_dir': data_dir}.items():
+            wandb_style_config[k] = {'value': v}
         output_dir = utils.make_dir(os.path.join(output_dir, 'files')) # overwrite so that model is also saved there
         with open(os.path.join(output_dir, 'config.yaml'), 'w') as file:
+
             documents = yaml.dump(wandb_style_config, file)
 
     if not os.path.isdir(output_dir):

@@ -339,8 +339,7 @@ class MonitorMetrics():
 
     def update_print(self):
         self.update()
-        self.
-        print()
+        self.print()
 
     def print(self):
         if self.loss:

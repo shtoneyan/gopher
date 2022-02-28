@@ -183,6 +183,8 @@ def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, ev
         print(run_dir)
         # load model
         model, bin_size = utils.read_model(run_dir, compile_model=False)
+        if bin_size=='NA':
+            bin_size = 1
         # evaluate run
         performance, scaling_factors = evaluate_run(model, bin_size, testset, targets, eval_type=eval_type)
         # combine with run metadata
