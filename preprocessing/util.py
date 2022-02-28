@@ -10,20 +10,7 @@ import pandas as pd
 # Execute the commands in the list 'cmds' in parallel, but
 # only running 'max_proc' at a time.
 ############################################################
-def make_directory(path):
-    """Short summary.
 
-    Parameters
-    ----------
-    path : Full path to the directory
-
-    """
-
-    if not os.path.isdir(path):
-        os.mkdir(path)
-        print("Making directory: " + path)
-    else:
-        print("Directory already exists!")
 
 def exec_par(cmds, max_proc=None, verbose=False):
     total = len(cmds)

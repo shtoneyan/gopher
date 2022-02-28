@@ -77,7 +77,7 @@ def main():
       default=False, action='store_true',
       help='Interpolate NaNs [Default: %default]')
   parser.add_option('-l', dest='seq_length',
-      default=131072, type='int',
+      default=3072, type='int',
       help='Sequence length [Default: %default]')
   parser.add_option('--limit', dest='limit_bed',
       help='Limit to segments that overlap regions in a BED file')
