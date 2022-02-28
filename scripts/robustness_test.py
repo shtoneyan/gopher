@@ -1,4 +1,10 @@
-
+import h5py
+import robustness_test
+import utils
+import numpy as np
+import os
+import tensorflow as tf
+import evaluate
 
 
 def get_center_coordinates(coord, conserve_start, conserve_end):
@@ -30,8 +36,8 @@ def batch_pred_robustness_test(testset, sts, model,
     :param sts: statistics file of the dataset
     :param model: loaded trained model
     :param shift_num: number of times to shift
-    :param window_size:
-    :param get_preds:
+    :param window_size: input size
+    :param get_preds: bool, save robust and center preds or not
     :return:
     """
     predictions_and_variance = {}
@@ -50,7 +56,7 @@ def batch_pred_robustness_test(testset, sts, model,
 
     for t, (C, seq, Y) in enumerate(testset):
         batch_n = seq.shape[0]
-        shifted_seq, _, shift_idx = util.window_shift(seq, seq, window_size, shift_num)
+        shifted_seq, _, shift_idx = utils.window_shift(seq, seq, window_size, shift_num)
 
         # get prediction for shifted read
         shift_pred = model.predict(shifted_seq)
@@ -84,3 +90,46 @@ def batch_pred_robustness_test(testset, sts, model,
             center_ground_truth_1K.append(Y.numpy()[:, conserve_start:conserve_end + 1, :])
     return predictions_and_variance, center_1K_coordinates, center_ground_truth_1K
 
+
+def get_robustness_values(model_paths, testset_path, output_dir='robustness_test_output', batch_size=1, shift_num=20):
+    """
+    This function runs robustness test on a given set of models and test set. For each model and for every sequence in
+    the test set the following is computed and saved in h5:
+    (i) center_ground_truth_1K - ground truth of the center 1K region for which the robustness score is estimated
+    (ii) center_pred - one snapshot or single forward pass prediction centered at the center position of the input
+    (iii) robust_pred - robust predictions, i.e. averaged predictions of shifted sequences centered after stochastic shifts (by default 20 per sequence)
+    (iv) prediction_variance - sum of variation in predictions across the 1K center region (how different the predictions are as we shift the sequence)
+
+    :param model_paths: iterable of model paths
+    :param testset_path: path to tfr dataset to test set
+    :param output_dir: directory where to save the outputs
+    :param batch_size: batch size
+    :param shift_num: number of stochastic shifts in each sequence
+    :return: None
+    """
+    stats = utils.load_stats(testset_path)
+    utils.make_dir(output_dir)
+    testset, targets = evaluate.collect_whole_testset(testset_path, coords=True, batch_size=batch_size)
+
+    for model_path in model_paths:
+        new_dir = os.path.join(output_dir, os.path.basename(os.path.abspath(model_path)))
+        if not os.path.isdir(new_dir):
+            output_directory = utils.make_dir(new_dir)
+            variance_dataset_path = os.path.join(output_directory, 'variance_of_preds.h5')
+            model, _ = utils.read_model(model_path)
+
+            # compute variance of predictions and avg predictions
+            predictions_and_variance, center_1K_coordinates, center_ground_truth_1K = batch_pred_robustness_test(testset, stats,
+                                                                                                                        model,
+                                                                                                                        shift_num=shift_num,
+                                                                                                                        get_preds=True)
+            # save variance as h5
+            h5_dataset = h5py.File(variance_dataset_path, 'w')
+            h5_dataset.create_dataset('prediction_variance', data=np.concatenate(predictions_and_variance['var'], axis=0))
+            h5_dataset.create_dataset('center_pred', data=np.concatenate(predictions_and_variance['center_pred'], axis=0))
+            h5_dataset.create_dataset('robust_pred', data=np.concatenate(predictions_and_variance['robust_pred'], axis=0))
+            h5_dataset.create_dataset('center_ground_truth_1K', data=np.concatenate(center_ground_truth_1K, axis=0))
+            h5_dataset.close()
+        else:
+            print(new_dir)
+            print('Results exist, skipping model ' + model_path)
