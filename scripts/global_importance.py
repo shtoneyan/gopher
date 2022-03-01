@@ -445,11 +445,8 @@ def test_flanks(gi, all_flanks, targets, position=1024, output_path=''):
     all_scores = []
     for motif in tqdm(all_flanks):
         diff_scores = gi.embed_predict_quant_effect([(motif, position)])
-        # if diff_scores.ndim == 2:
-        #     diff_scores = np.expand_dims(diff_scores, axis=1)
-        all_scores_per_motif = (diff_scores).mean(axis=0).mean(axis=0)
+        all_scores_per_motif = (diff_scores).mean(axis=0).mean(axis=0) # compute mean to get global importance score
         all_scores.append(all_scores_per_motif)
-
     df = pd.DataFrame({'motif': np.repeat(all_flanks, len(targets)),
                        'mean difference': np.array(all_scores).flatten(),
                        'cell line': np.tile(targets, len(all_flanks))})
@@ -504,6 +501,15 @@ def record_flank_test(gi, motif, targets, cell_line_name, flanks_path):
 
 
 def optimize_distance(gi, optimized_motifs, targets, distance_path, first_motif_pos):
+    """
+    Function to get the optimal distance between two motifs for a given cell line of interest
+    :param gi: GlobalImportance class instance
+    :param optimized_motifs: motif with no '.' in the string
+    :param targets: target labels
+    :param distance_path: path where to save csv
+    :param first_motif_pos: position where to insert the first motif as the second's position is changed
+    :return: dataframe with distance information
+    """
     if os.path.isfile(distance_path):
         df = pd.read_csv(distance_path)
     else:
@@ -526,19 +532,30 @@ def optimize_distance(gi, optimized_motifs, targets, distance_path, first_motif_
 
 
 def test_interaction(gi, optimized_motifs, targets, output_dir, filename):
+    """
+    Function to test interaction between 2 motifs by computing global importance of each inserted individually or
+    in combination.
+    :param gi: GlobalImportance class instance
+    :param optimized_motifs: 2 motif strings and positions where to insert them
+    :param targets: target labels
+    :param output_dir: dir path to save results
+    :param filename: csv filename
+    :return: None
+    """
+    # make single or combined motif clusters to embed
     motifs_to_test = [ [(optimized_motifs[0][0], optimized_motifs[0][1])],
                             [(optimized_motifs[1][0], optimized_motifs[1][1])],
                             [(optimized_motifs[0][0], optimized_motifs[0][1]), (optimized_motifs[1][0], optimized_motifs[1][1])] ]
     interaction_test_dfs = []
-    for motif_to_test in motifs_to_test:
+    for motif_to_test in motifs_to_test: # for each in [motif1, motif2, motif1_and_motif2]
         pattern_label = ' & '.join(['{} at {}'.format(m, str(p)) for m,p in motif_to_test])
-        diff = gi.embed_predict_quant_effect(motif_to_test).mean(axis=1)
+        diff = gi.embed_predict_quant_effect(motif_to_test).mean(axis=1) # get mean global importance
         df = pd.DataFrame({
                             'mean difference':np.array(diff).flatten(),
                             'cell line': np.tile(targets, diff.shape[0])})
         df['motif'] = pattern_label
-        interaction_test_dfs.append(df)
-    pd.concat(interaction_test_dfs).to_csv(os.path.join(output_dir, filename))
+        interaction_test_dfs.append(df) # save in a dataframe
+    pd.concat(interaction_test_dfs).to_csv(os.path.join(output_dir, filename)) # combine all and write to csv
 
 
 def analyze_motif_pair(run_path, data_dir, motif_cluster, cell_lines, out_dir='GIA_results',
@@ -591,7 +608,6 @@ def analyze_motif_pair(run_path, data_dir, motif_cluster, cell_lines, out_dir='G
             base_dir = utils.make_dir(
                 os.path.join(gia_add_dir, '{}_{}_and_{}'.format(cell_line_name, motif_cluster[0], motif_cluster[1])))
             output_dir = utils.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, n_background)))
-            # test_interaction(gi, optimized_motifs, targets, output_dir, 'optimal_position_interaction.csv')
             for first_motif_pos in motif1_positions:
                 distance_path = os.path.join(output_dir, str(first_motif_pos) + '_distance.csv')
                 # fix motif 1, shift motif 2 to find position that yields biggest importance score
