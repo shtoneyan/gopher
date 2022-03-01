@@ -95,10 +95,16 @@ class GlobalImportance():
         df_all['motif pattern'] = motif_key
         return df_all
 
-    def set_null_model(self, null_model, base_sequence, num_sample=1000,
-                       binding_scores=None, seed=None):
-        """use model-based approach to set the null sequences"""
-        self.x_null = generate_null_sequence_set(null_model, base_sequence, num_sample, binding_scores, seed)
+    def set_null_model(self, null_model, base_sequence, num_sample=1000, seed=None):
+        """
+        use model-based approach to set the null sequences
+        :param null_model: dinuc or none - approach to select background
+        :param base_sequence: set of onehot sequences
+        :param num_sample: number of sequences
+        :param seed: optional seed for random selection
+        :return:
+        """
+        self.x_null = generate_null_sequence_set(null_model, base_sequence, num_sample, seed)
         self.x_null_index = np.argmax(self.x_null, axis=2)
         self.predict_null()
 
@@ -113,11 +119,15 @@ class GlobalImportance():
         self.null_profiles = self.model.predict(self.x_null)
 
     def embed_patterns(self, patterns):
-        """embed patterns in null sequences"""
+        """
+        embed patterns in null sequences
+        :param patterns: iterable of tuples of str pattern and position for where to insert it in the sequence
+        :return: onehot sequence with motif embedding
+        """
         if not isinstance(patterns, list):
             patterns = [patterns]
 
-        x_index = np.copy(self.x_null_index)
+        x_index = np.copy(self.x_null_index) # argmax version of onehot background sequences
         for pattern, position in patterns:
             # convert pattern to categorical representation
             pattern_index = np.array([self.alphabet.index(i) for i in pattern])
@@ -134,15 +144,20 @@ class GlobalImportance():
         return one_hot
 
     def embed_predict_quant_effect(self, patterns):
-        """embed pattern in null sequences and get their predictions"""
-        one_hot = self.embed_patterns(patterns)
+        """
+        embed pattern in null sequences and get their predictions
+        :param patterns: patterns/motifs to embed
+        :return: difference between predictions in case of embedded sequence and original background
+        """
+        one_hot = self.embed_patterns(patterns) # create sequences with embedded motifs
+        # id for the motif indicating submotifs and insertion sites
         pattern_label = ' & '.join(['{} at {}'.format(m, str(p)) for m, p in patterns])
-        self.embedded_predictions[pattern_label] = self.model.predict(one_hot)
+        self.embedded_predictions[pattern_label] = self.model.predict(one_hot) # save predictions in a dict
         assert self.embedded_predictions[pattern_label].shape == self.null_profiles.shape
-        if self.embedded_predictions[pattern_label].ndim == 2:
+        if self.embedded_predictions[pattern_label].ndim == 2: # if from binary model expand to match quantitative
             return np.expand_dims(self.embedded_predictions[pattern_label] - self.null_profiles, axis=1)
         else:
-            return self.embedded_predictions[pattern_label] - self.null_profiles
+            return self.embedded_predictions[pattern_label] - self.null_profiles # return delta predictions
 
     def positional_bias(self, motif, positions, targets):
         """GIA to find positional bias"""
@@ -174,26 +189,34 @@ class GlobalImportance():
 # -------------------------------------------------------------------------------------
 # Null sequence models
 # -------------------------------------------------------------------------------------
-def generate_null_sequence_set(null_model, base_sequence, num_sample=1000, binding_scores=None, seed=None):
-    if null_model == 'random':    return generate_shuffled_set(base_sequence, num_sample)
-    if null_model == 'profile':   return generate_profile_set(base_sequence, num_sample)
-    if null_model == 'dinuc':     return generate_dinucleotide_shuffled_set(base_sequence, num_sample)
-    if null_model == 'quartile1': return generate_quartile_set(base_sequence, num_sample, binding_scores, quartile=1)
-    if null_model == 'quartile2': return generate_quartile_set(base_sequence, num_sample, binding_scores, quartile=2)
-    if null_model == 'quartile3': return generate_quartile_set(base_sequence, num_sample, binding_scores, quartile=3)
-    if null_model == 'quartile4': return generate_quartile_set(base_sequence, num_sample, binding_scores, quartile=4)
-    if null_model == 'none':
+def generate_null_sequence_set(null_model, base_sequence, num_sample=1000, seed=None):
+    """
+    make a subset for background based on null model type
+    :param null_model: startegy for generating the background sequences
+    :param base_sequence: sequences to use for generating backgrounds
+    :param num_sample: sample size
+    :param seed: seed for random choice for null model none
+    :return: None
+    """
+    if null_model == 'random':    return generate_shuffled_set(base_sequence, num_sample) # shuffle
+    if null_model == 'profile':   return generate_profile_set(base_sequence, num_sample) # match nucl profile
+    if null_model == 'dinuc':     return generate_dinucleotide_shuffled_set(base_sequence, num_sample) # dinuc shuffle
+    if null_model == 'none': # no shuffle, just subset
         if seed:
             np.random.seed(seed)
-            print('seed set!')
         idx = np.random.choice(base_sequence.shape[0], num_sample)
-
         return base_sequence[idx]
     else:
         print ('null_model name not recognized.')
 
 
 def generate_profile_set(base_sequence, num_sample):
+    """
+    create a subset of sequences as background by matching nucleotide profiles
+    :param base_sequence: sequences to use for matching
+    :param num_sample: sample size
+    :return: background set of onehot sequences
+    """
     # set null sequence model
     seq_model = np.mean(np.squeeze(base_sequence), axis=0)
     seq_model /= np.sum(seq_model, axis=1, keepdims=True)
@@ -218,6 +241,12 @@ def generate_profile_set(base_sequence, num_sample):
 
 
 def generate_shuffled_set(base_sequence, num_sample):
+    """
+    Funciton for creating a shuffled set of sequences based on an input set
+    :param base_sequence: sequences to shuffle
+    :param num_sample: sample size
+    :return: background set of onehot sequences
+    """
     # take a random subset of base_sequence
     shuffle = np.random.permutation(len(base_sequence))
     x_null = base_sequence[shuffle[:num_sample]]
@@ -228,6 +257,12 @@ def generate_shuffled_set(base_sequence, num_sample):
 
 
 def generate_dinucleotide_shuffled_set(base_sequence, num_sample):
+    """
+    Function for dinuc shuffling provided sequences
+    :param base_sequence: set of sequences
+    :param num_sample: sample size
+    :return: background set of onehot sequences
+    """
     # take a random subset of base_sequence
     shuffle = np.random.permutation(len(base_sequence))
     x_null = base_sequence[shuffle[:num_sample]]
@@ -237,27 +272,6 @@ def generate_dinucleotide_shuffled_set(base_sequence, num_sample):
         x_null[j] = dinuc_shuffle(seq)
     return x_null
 
-
-def generate_quartile_set(base_sequence, num_sample, binding_scores, quartile):
-    # sort sequences by the binding score (descending order)
-    sort_index = np.argsort(binding_scores[:, 0])[::-1]
-    base_sequence = base_sequence[sort_index]
-
-    # set quartile indices
-    L = len(base_sequence)
-    L0, L1, L2, L3, L4 = [0, int(L / 4), int(L * 2 / 4), int(L * 3 / 4), L]
-
-    # pick the quartile:
-    if (quartile == 1): base_sequence = base_sequence[L0:L1]
-    if (quartile == 2): base_sequence = base_sequence[L1:L2]
-    if (quartile == 3): base_sequence = base_sequence[L2:L3]
-    if (quartile == 4): base_sequence = base_sequence[L3:L4]
-
-    # now shuffle the sequences
-    shuffle = np.random.permutation(len(base_sequence))
-
-    # take a smaller sample of size num_sample
-    return base_sequence[shuffle[:num_sample]]
 
 
 # -------------------------------------------------------------------------------------
@@ -419,6 +433,15 @@ def get_avg_preds(seqs_removed, model):
 
 
 def test_flanks(gi, all_flanks, targets, position=1024, output_path=''):
+    """
+    Function to measure the global importance of each flank
+    :param gi: GlobalImportance class instance
+    :param all_flanks: iterable of all motif verisons
+    :param targets: all targets
+    :param position: sequence position to put the motif in
+    :param output_path: path for csv to save results
+    :return: dataframe with flanks and global importance scores per target
+    """
     all_scores = []
     for motif in tqdm(all_flanks):
         diff_scores = gi.embed_predict_quant_effect([(motif, position)])
@@ -435,6 +458,11 @@ def test_flanks(gi, all_flanks, targets, position=1024, output_path=''):
 
 
 def generate_flanks(motif_pattern):
+    """
+    Function to create a set of all possible kmers in the given motif flanks or gaps
+    :param motif_pattern: string of motif to create flanks for
+    :return: all possible complete motifs with flanks or gaps
+    """
     dot_positions = np.argwhere(np.array(list(motif_pattern)) == '.').flatten()
     kmer_size = len(dot_positions)
     kmers = ["".join(p) for p in itertools.product(list('ACGT'), repeat=kmer_size)]
@@ -448,7 +476,16 @@ def generate_flanks(motif_pattern):
     return all_motifs
 
 
-def record_flank_test(gi, motif, targets, cell_line_name, flanks_path, motif1_positions=[1024]):
+def record_flank_test(gi, motif, targets, cell_line_name, flanks_path):
+    """
+    Function for generating and testing each flank or motif variant global importance
+    :param gi: GlobalImportance class instance
+    :param motif: motif string (gaps indicated with dots '.')
+    :param targets: all targets iterable
+    :param cell_line_name: cell line or target to use for selecting motif with biggest global importance
+    :param flanks_path: path to the csv file where the results are saved for each flank
+    :return: flank with biggest global importance for the given cell line
+    """
     # select the best flanks based on where the dots are in the pattern
     if '.' in motif:
         if os.path.isfile(flanks_path):
@@ -531,12 +568,13 @@ def analyze_motif_pair(run_path, data_dir, motif_cluster, cell_lines, out_dir='G
 
 
     gi = GlobalImportance(model, targets)
-    gi.set_null_model(background_model, base_sequence=X_set, num_sample=n_background) # subsample background to given size
+    # subsample background to given size
+    gi.set_null_model(background_model, base_sequence=X_set, num_sample=n_background)
     for cell_line_name in cell_lines: # for each cell line of interest
         if isinstance(cell_line_name, int):
             cell_line_name = targets[cell_line_name]
         optimized_motifs = []
-        for motif in motif_cluster: #
+        for motif in motif_cluster:
             print('Optimizing motif ' + motif)
             # make subdir for cell line and motif
             base_dir = utils.make_dir(os.path.join(gia_add_dir, '{}_{}'.format(cell_line_name, motif)))
