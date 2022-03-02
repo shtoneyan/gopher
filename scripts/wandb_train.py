@@ -12,7 +12,7 @@ import time
 import utils
 import wandb
 import yaml
-
+import sys
 
 def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
                output_dir, config={}):
@@ -132,13 +132,52 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
     model.save(os.path.join(output_dir, "best_model.h5"))
     return history
 
+def train_binary(model_name_str,data_dir,window_size,output_dir,config = {}):
+    default_config = {'num_epochs': 30, 'batch_size': 64,
+                      'es_patience': 10, 'verbose' : True,
+                      'lr_patience': 3, 'lr_decay': 0.2}
+
+    for key in default_config.keys():
+        if key in config.keys():
+            default_config[key] = config[key]
+
+    output_dir = utils.make_dir(os.path.join(output_dir, 'files'))
+
+    f = h5py.File(data_dir,'r')
+    train_x = f['x_train'][()]
+    train_y = f['y_train'][()]
+
+    valid_x = f['x_valid'][()]
+    valid_y = f['y_valid'][()]
+    f.close()
+
+    model = eval('modelzoo.' + model_name_str)((window_size,4),len(valid_y[0]),wandb_config=config)
+
+    history = model.fit(train_x,train_y,
+                    epochs=default_config['num_epochs'],
+                    batch_size = default_config['batch_size'],
+                    callbacks = [modelzoo.early_stopping(patience = default_config['es_patience'],
+                                                    verbose = int(default_config['verbose'])),
+                                 modelzoo.model_checkpoint(outpur_dir+'best_model.h5'),
+                                 reduce_lr(patience = default_config['lr_patience'],
+                                            factor = default_config['lr_decay']),
+                                 WandbCallback()
+                                 ],
+                    validation_data = (valid_x,valid_y),
+                    )
+    return history
+
 
 def train_config(config=None):
     with wandb.init(config=config) as run:
         config = wandb.config
-        history = fit_robust(config.model_fn, config.loss_fn,
-                             config.window_size, config.bin_size, config.data_dir,
-                             output_dir=wandb.run.dir, config=config)
+        if config.task_type == 'binary':
+            history = train_binary(config.model_fn,config.data_dir,
+                                    config.window_size,wandb.run.dir,config=config)
+        else:
+            history = fit_robust(config.model_fn, config.loss_fn,
+                                config.window_size, config.bin_size, config.data_dir,
+                                output_dir=wandb.run.dir, config=config)
 
 
 def main():

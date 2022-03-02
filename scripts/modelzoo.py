@@ -1134,10 +1134,10 @@ def model_checkpoint(save_path,save_best_only = True):
                                                 mode='min')
     return checkpoint
 
-def reduce_lr(patience = 3):
+def reduce_lr(patience = 3,factor = 0.2):
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss',
-                                                 factor=0.2,
-                                                 patience=3,
+                                                 factor=factor,
+                                                 patience=patience,
                                                  min_lr=1e-7,
                                                  mode='min',
                                                  verbose=1)
