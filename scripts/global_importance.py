@@ -66,7 +66,7 @@ class GlobalImportance():
         print(motif_key)
         self.seqs_with[motif_key], self.seqs_removed[motif_key], self.n_instances, self.seq_idx[
             motif_key] = randomize_multiple_seqs(self.seqs_to_remove_motif,
-                                                 tandem_motifs_to_remove, self.model, window_size=None)
+                                                 tandem_motifs_to_remove, window_size=None)
         if len(self.seqs_with[motif_key]) > 0:
             self.seqs_with[motif_key], self.seqs_removed[motif_key] = [np.array(n) for n in [self.seqs_with[motif_key],
                                                                                              self.seqs_removed[
@@ -677,5 +677,5 @@ def gia_occlude_motifs(run_path, data_dir, motif_cluster, X_subset_type='all_thr
         print(each_element)
         gi.occlude_all_motif_instances(X_set, each_element, num_sample=n_background)
     df = pd.concat(gi.summary_remove_motifs) # collect all dataframes with results
-    file_prefix = '{}_in_{}'.format(args[1], cell_line_name, X_subset_type)
+    file_prefix = '&'.join(motif_cluster)
     df.to_csv(os.path.join(output_dir, file_prefix+'.csv'), index=None)
