@@ -1116,3 +1116,29 @@ def residual_profile_task_conv_32(input_shape, output_shape,
     outputs = tf.concat(nn_cat, axis=2)
 
     return tf.keras.Model(inputs=inputs, outputs=outputs)
+
+def early_stopping(patience = 10, verbose = 1):
+    earlystop = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
+                                             min_delta=0,
+                                             patience=patience,
+                                             verbose=verbose,
+                                             mode='min',
+                                             baseline=None, restore_best_weights=True)
+    return earlystop
+
+def model_checkpoint(save_path,save_best_only = True):
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(save_path,
+                                                monitor='val_loss',
+                                                verbose=1,
+                                                save_best_only=save_best_only,
+                                                mode='min')
+    return checkpoint
+
+def reduce_lr(patience = 3):
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss',
+                                                 factor=0.2,
+                                                 patience=3,
+                                                 min_lr=1e-7,
+                                                 mode='min',
+                                                 verbose=1)
+    return reduce_lr
