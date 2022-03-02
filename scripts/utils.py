@@ -329,7 +329,7 @@ def get_config(run_path):
     return config
 
 
-def read_model(run_path, compile_model=True):
+def read_model(run_path, compile_model=False):
     '''
     This function loads a per-trained model
     :param run_path: run output dir
