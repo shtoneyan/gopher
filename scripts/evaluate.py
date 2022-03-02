@@ -133,7 +133,7 @@ def evaluate_run(model, bin_size, testset, targets, eval_type='whole'):
     return complete_performance, scaling_factors
 
 
-def collect_whole_testset(data_dir='/home/shush/profile/QuantPred/datasets/chr8/complete/random_chop/i_2048_w_1/',
+def collect_whole_testset(data_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/chr8/complete/random_chop/i_2048_w_1/',
                           coords=False, batch_size=32):
     """
     Collects a test fold of a given testset without shuffling it
