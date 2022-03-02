@@ -157,6 +157,124 @@ def basenji_w1_b64(input_shape, output_shape, wandb_config={}):
     else:
         return model
 
+def residual_binary(inputs,exp_num,padding='same', activation='relu',wandb_config={}):
+
+    config = {'filtN': [196,256,512],'rb_filter':[3,3], 'kern': [19,9,7],'conv_dropout':[0.2,0.2,0.4],
+                'dense':1024,'drop_out':0.5,'max_pool':[20,5],'l2':1e-6,'output_activation':'sigmoid'}
+
+    for k in config.keys():
+        if k in wandb_config.keys():
+            config[k] = wandb_config[k]
+
+    l2 = keras.regularizers.l2(config['l2'])
+
+    inputs = tf.keras.layers.Input(shape=inputs)
+
+    nn = keras.layers.Conv1D(filters=config['filtN'][0], kernel_size=config['kern'][0], use_bias=False, padding='same')(inputs)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('exponential', name='conv_activation')(nn)
+    nn = residual_block(nn, config['rb_filter'][0], activation='relu', dilated=True)
+    nn = keras.layers.MaxPool1D(pool_size=config['max_pool'][0])(nn)
+    nn = keras.layers.Dropout(config['conv_dropout'][0])(nn)
+    nn = keras.layers.Conv1D(filters=config['filtN'][1], kernel_size=config['kern'][1], use_bias=False, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = residual_block(nn, config['rb_filter'][1], activation='relu', dilated=True)
+    nn = keras.layers.MaxPool1D(pool_size=config['max_pool'][1])(nn)
+    nn = keras.layers.Dropout(config['conv_dropout'][1])(nn)
+    nn = keras.layers.Conv1D(filters=config['filtN'][2], kernel_size=config['kern'][2], use_bias=False, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.GlobalAveragePooling1D()(nn)
+    nn = keras.layers.Dropout(config['conv_dropout'][2])(nn)
+    nn = keras.layers.Flatten()(nn)
+    nn = keras.layers.Dense(config['dense'], use_bias=False)(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Dropout(config['drop_out'])(nn)
+    outputs = keras.layers.Dense(exp_num, activation=config['output_activation'])(nn)
+    model = keras.Model(inputs=inputs, outputs=outputs)
+
+    auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
+    aupr = tf.keras.metrics.AUC(curve='PR', name='aupr')
+
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    if config['output_activation'] == 'sigmoid':
+        loss = tf.keras.losses.BinaryCrossentropy(from_logits=False, label_smoothing=0)
+    else :
+        loss = tf.keras.losses.Poisson()
+    model.compile(optimizer=optimizer,
+                  loss=loss,
+                  #metrics = ['mse'])
+                  metrics=['accuracy', auroc, aupr])
+    model.summary()
+    return model
+
+
+def Basset(inputs,exp_num,padding='same', activation='relu',wandb_config={}):
+
+    config = {'filtN': [300,200,200], 'kern': [10,11,7],
+                'dense':1000,'drop_out':[0.3,0.3],'max_pool':[3,4,4],'output_activation':'sigmoid'}
+
+
+    for k in config.keys():
+        if k in wandb_config.keys():
+            config[k] = wandb_config[k]
+
+    output_activation = tf.keras.layers.Activation(config['output_activation'])
+
+    model = tf.keras.models.Sequential([
+    #1st conv layer
+    tf.keras.layers.Conv1D(config['filtN'][0],config['kern'][0],input_shape = (inputs),
+                          kernel_initializer = 'glorot_normal',
+                          padding=padding),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('exponential'),
+    tf.keras.layers.MaxPool1D(pool_size=config['max_pool'][0]),
+    #2nd conv layer
+    tf.keras.layers.Conv1D(config['filtN'][1],config['kern'][1],
+                          kernel_initializer = 'glorot_normal',
+                          padding=padding),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.MaxPool1D(pool_size=config['max_pool'][1]),
+    #3rd conv layer
+    tf.keras.layers.Conv1D(config['filtN'][2],config['kern'][2],
+                          kernel_initializer = 'glorot_normal',
+                          padding=padding),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation('relu'),
+    tf.keras.layers.MaxPool1D(pool_size=config['max_pool'][2]),
+
+    tf.keras.layers.Flatten(),
+
+    #Fully connected NN
+    tf.keras.layers.Dense(config['dense'],activation = 'relu',
+                          kernel_initializer='glorot_normal'),
+    tf.keras.layers.Dropout(config['drop_out'][0]),
+    #2nd layer
+    tf.keras.layers.Dense(config['dense'],activation = 'relu',
+                          kernel_initializer='glorot_normal'),
+    tf.keras.layers.Dropout(config['drop_out'][1]),
+    #Sigmoid
+    tf.keras.layers.Dense(exp_num,activation='linear',kernel_initializer='glorot_normal'),
+    output_activation
+    ])
+
+    #complie with optimizer
+    auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
+    aupr = tf.keras.metrics.AUC(curve='PR', name='aupr')
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    if config['output_activation'] == 'sigmoid':
+        loss = tf.keras.losses.BinaryCrossentropy(from_logits=False, label_smoothing=0)
+    else :
+        loss = tf.keras.losses.Poisson()
+    model.compile(optimizer=optimizer,
+                  loss=loss,
+                  #metrics = ['mse'])
+                  metrics=['accuracy', auroc, aupr])
+    model.summary()
+    return model
 
 ############################################################
 # layers and helper functions
