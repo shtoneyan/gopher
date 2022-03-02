@@ -74,17 +74,24 @@ def generate_parser(seq_length, target_length, num_targets, coords):
         TFR_OUTPUT = 'target'
 
         # define features
-        features = {
-            TFR_COORD: tf.io.FixedLenFeature([], tf.string),
-            TFR_INPUT: tf.io.FixedLenFeature([], tf.string),
-            TFR_OUTPUT: tf.io.FixedLenFeature([], tf.string)
-        }
+        if coords:
+            features = {
+                TFR_COORD: tf.io.FixedLenFeature([], tf.string),
+                TFR_INPUT: tf.io.FixedLenFeature([], tf.string),
+                TFR_OUTPUT: tf.io.FixedLenFeature([], tf.string)
+            }
+        else:
+            features = {
+                TFR_INPUT: tf.io.FixedLenFeature([], tf.string),
+                TFR_OUTPUT: tf.io.FixedLenFeature([], tf.string)
+            }
 
         # parse example into features
         parsed_features = tf.io.parse_single_example(example_protos, features=features)
 
-        # decode coords
-        coordinate = parsed_features[TFR_COORD]
+        if coords:
+            # decode coords
+            coordinate = parsed_features[TFR_COORD]
 
         # decode sequence
         # sequence = tf.io.decode_raw(parsed_features[TFR_INPUT], tf.uint8)
@@ -205,7 +212,7 @@ def convert_tfr_to_np(tfr_dataset):
     :param tfr_dataset: tfr dataset format
     :return:
     """
-    all_data = [[] for i in range(len(next(iter(validset))))]
+    all_data = [[] for i in range(len(next(iter(tfr_dataset))))]
     for i, (data) in enumerate(tfr_dataset):
         for j, data_type in enumerate(data):
             all_data[j].append(data_type)
