@@ -25,6 +25,31 @@ from optparse import OptionParser
 from modelzoo import GELU
 
 
+def gia_occlude_motifs(run_path, data_dir, motif_cluster, background_model, cell_line_name, out_dir='GIA_occlude_results'):
+    utils.make_dir(out_dir)  # make output dir
+    testset, targets = evaluate.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
+    C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
+    model, _ = utils.read_model(run_path)  # load model
+    run_name = os.path.basename(os.path.abspath(run_path))  # get identifier for the outputs
+    gia_occ_dir = util.make_dir(os.path.join(options.out_dir, run_name))
+    base_dir = util.make_dir(os.path.join(gia_occ_dir, '{}_{}'.format(cell_line_name, args[1])))
+    output_dir = util.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
+    X_set = select_set('all_threshold', C, X, Y)
+    gi = GlobalImportance(model, targets)
+    if len(motif_cluster) > 1:
+        combo_list = [motif_cluster] + [[m] for m in motif_cluster]
+    else:
+        combo_list = motif_cluster
+    for each_element in combo_list:
+        print(each_element)
+        gi.occlude_all_motif_instances(X_set, each_element, func='mean',
+                                      num_sample=n_background)
+    df = pd.concat(gi.summary_remove_motifs)
+    file_prefix = '{}_in_{}_{}'.format(args[1], cell_line_name, background_model)
+    df.to_csv(os.path.join(output_dir, file_prefix+'.csv'), index=None)
+
+
+
 def main():
     usage = 'usage: %prog [options] <motifs> <cell_line>'
     parser = OptionParser(usage)

@@ -1,9 +1,9 @@
+import evaluate
 import h5py
 import itertools
 import numpy as np
 import os
 import pandas as pd
-import evaluate
 import re
 import seaborn as sns
 import tensorflow as tf
@@ -34,14 +34,13 @@ class GlobalImportance():
     # methods for removing motifs
     def set_seqs_for_removing(self, subset, num_sample, seed):
         """
-        select sequences to remove a given motif from
+        select sequences to remove/occlude a given motif from by randomizing nucleotides
         :param subset: a set of onehot sequences in np array
         :param num_sample: number to limit the sequences to
         :param seed: random sample seed
         :return:
         """
         if num_sample:
-            print('SUBSETTING SEQUENCES')
             if seed:
                 np.random.seed(seed)
             rand_idx = np.random.choice(subset.shape[0], num_sample, replace=False).flatten()
@@ -51,7 +50,16 @@ class GlobalImportance():
 
     def occlude_all_motif_instances(self, subset, tandem_motifs_to_remove,
                                     num_sample=None,
-                                    seed=42, func='max', batch_size=32):
+                                    seed=42, batch_size=32):
+        """
+
+        :param subset: subset of sequences to occlude the motif in
+        :param tandem_motifs_to_remove: list of motifs to remove in tandem/together
+        :param num_sample: sample size
+        :param seed: random seed for sampling
+        :param batch_size: batch size for making predictions
+        :return: None
+        """
         self.set_seqs_for_removing(subset, num_sample, seed)
         print('tandem_motifs_to_remove', tandem_motifs_to_remove)
         motif_key = ', '.join(tandem_motifs_to_remove)
@@ -63,27 +71,27 @@ class GlobalImportance():
             self.seqs_with[motif_key], self.seqs_removed[motif_key] = [np.array(n) for n in [self.seqs_with[motif_key],
                                                                                              self.seqs_removed[
                                                                                                  motif_key]]]
-            df = self.get_predictions(motif_key, batch_size, func)
+            df = self.get_predictions(motif_key, batch_size)
         else:
-            print('No seqs detected')
+            print('WARNING: no seqs with motifs found')
             df = pd.DataFrame(
-                {func + ' coverage': [None], 'sequence': [None], 'N instances': [None], 'motif pattern': [motif_key]})
+                {'mean coverage': [None], 'sequence': [None], 'N instances': [None], 'motif pattern': [motif_key]})
         self.summary_remove_motifs.append(df)
 
-    def get_predictions(self, motif_key, batch_size, func):
+    def get_predictions(self, motif_key, batch_size):
+        # predicted coverage for original sequences
         ori_preds = utils.predict_np((self.seqs_with[motif_key]),
                                      self.model, batch_size=batch_size,
                                      reshape_to_2D=False)
-
+        # predicted coverage for sequences with occluded motifs
         del_preds = get_avg_preds(self.seqs_removed[motif_key],
                                   self.model)
+        # if binary model
         if ori_preds.ndim == 2 and del_preds.ndim == 2:
-            print('Reshaping to 3D!')
             ori_preds = np.expand_dims(ori_preds, axis=1)
             del_preds = np.expand_dims(del_preds, axis=1)
-        print(ori_preds.shape)
-        max_ori_pc3 = np.mean(make_3D(ori_preds), axis=1)  # eval('np.'+func)(make_3D(ori_preds), axis=1)
-        max_pred_pc3 = np.mean(make_3D(del_preds), axis=1)  # eval('np.'+func)(make_3D(del_preds), axis=1)
+        max_ori_pc3 = np.mean(make_3D(ori_preds), axis=1) # get mean prediction per original sequence
+        max_pred_pc3 = np.mean(make_3D(del_preds), axis=1) # get mean prediction per occluded sequence
         df_all = pd.DataFrame({
             'mean coverage': np.concatenate([max_ori_pc3.flatten(), max_pred_pc3.flatten()]),
             'sequence': ['original' for i in range(len(max_ori_pc3.flatten()))] + ['removed' for i in
@@ -127,7 +135,7 @@ class GlobalImportance():
         if not isinstance(patterns, list):
             patterns = [patterns]
 
-        x_index = np.copy(self.x_null_index) # argmax version of onehot background sequences
+        x_index = np.copy(self.x_null_index)  # argmax version of onehot background sequences
         for pattern, position in patterns:
             # convert pattern to categorical representation
             pattern_index = np.array([self.alphabet.index(i) for i in pattern])
@@ -149,15 +157,15 @@ class GlobalImportance():
         :param patterns: patterns/motifs to embed
         :return: difference between predictions in case of embedded sequence and original background
         """
-        one_hot = self.embed_patterns(patterns) # create sequences with embedded motifs
+        one_hot = self.embed_patterns(patterns)  # create sequences with embedded motifs
         # id for the motif indicating submotifs and insertion sites
         pattern_label = ' & '.join(['{} at {}'.format(m, str(p)) for m, p in patterns])
-        self.embedded_predictions[pattern_label] = self.model.predict(one_hot) # save predictions in a dict
+        self.embedded_predictions[pattern_label] = self.model.predict(one_hot)  # save predictions in a dict
         assert self.embedded_predictions[pattern_label].shape == self.null_profiles.shape
-        if self.embedded_predictions[pattern_label].ndim == 2: # if from binary model expand to match quantitative
+        if self.embedded_predictions[pattern_label].ndim == 2:  # if from binary model expand to match quantitative
             return np.expand_dims(self.embedded_predictions[pattern_label] - self.null_profiles, axis=1)
         else:
-            return self.embedded_predictions[pattern_label] - self.null_profiles # return delta predictions
+            return self.embedded_predictions[pattern_label] - self.null_profiles  # return delta predictions
 
     def positional_bias(self, motif, positions, targets):
         """GIA to find positional bias"""
@@ -198,10 +206,10 @@ def generate_null_sequence_set(null_model, base_sequence, num_sample=1000, seed=
     :param seed: seed for random choice for null model none
     :return: None
     """
-    if null_model == 'random':    return generate_shuffled_set(base_sequence, num_sample) # shuffle
-    if null_model == 'profile':   return generate_profile_set(base_sequence, num_sample) # match nucl profile
-    if null_model == 'dinuc':     return generate_dinucleotide_shuffled_set(base_sequence, num_sample) # dinuc shuffle
-    if null_model == 'none': # no shuffle, just subset
+    if null_model == 'random':    return generate_shuffled_set(base_sequence, num_sample)  # shuffle
+    if null_model == 'profile':   return generate_profile_set(base_sequence, num_sample)  # match nucl profile
+    if null_model == 'dinuc':     return generate_dinucleotide_shuffled_set(base_sequence, num_sample)  # dinuc shuffle
+    if null_model == 'none':  # no shuffle, just subset
         if seed:
             np.random.seed(seed)
         idx = np.random.choice(base_sequence.shape[0], num_sample)
@@ -273,7 +281,6 @@ def generate_dinucleotide_shuffled_set(base_sequence, num_sample):
     return x_null
 
 
-
 # -------------------------------------------------------------------------------------
 # util functions
 # -------------------------------------------------------------------------------------
@@ -281,9 +288,9 @@ def select_set(testset_type, C, X, Y, cell_line=None):
     """
     This function selects sequences for constructing background sequences
     :param testset_type:
-    :param C:
-    :param X:
-    :param Y:
+    :param C: coordinates
+    :param X: sequences
+    :param Y: target coverages
     :param cell_line: cell line according to which to filter if
     :return: numpy array of selected sequences
     """
@@ -366,7 +373,15 @@ def select_indices(motif_pattern, str_seq, saliency_values=None,
 
 def find_multiple_motifs(motif_pattern_list, str_seq, saliency_values=None,
                          max_only=False, filter_window=False):
-    '''find indices of multiple motifs in a single sequence'''
+    '''
+    find indices of multiple motifs in a single sequence
+    :param motif_pattern_list:
+    :param str_seq:
+    :param saliency_values:
+    :param max_only:
+    :param filter_window:
+    :return:
+    '''
     motifs_and_indices = {}
     for motif_pattern in motif_pattern_list:
         chosen_ind = select_indices(motif_pattern, str_seq,
@@ -381,6 +396,13 @@ def find_multiple_motifs(motif_pattern_list, str_seq, saliency_values=None,
 # -------------------------------------------------------------------------------------
 
 def randomize_motif_dict_in_seq(motifs_and_indices, selected_seq, n_occlusions=25):
+    """
+
+    :param motifs_and_indices:
+    :param selected_seq:
+    :param n_occlusions:
+    :return:
+    """
     modified_seqs = []
     for i in range(n_occlusions):
         modified_seq = selected_seq.copy()
@@ -394,8 +416,16 @@ def randomize_motif_dict_in_seq(motifs_and_indices, selected_seq, n_occlusions=2
     return np.array(modified_seqs)
 
 
-def randomize_multiple_seqs(onehot_seqs, tandem_motifs_to_remove, model,
-                            cell_line=None, window_size=None):
+def randomize_multiple_seqs(onehot_seqs, tandem_motifs_to_remove, window_size=None):
+    """
+
+    :param onehot_seqs:
+    :param tandem_motifs_to_remove:
+    :param model:
+    :param cell_line:
+    :param window_size:
+    :return:
+    """
     seqs_with_motif = []
     seqs_removed_motifs = []
     n_instances_per_seq = []
@@ -403,7 +433,6 @@ def randomize_multiple_seqs(onehot_seqs, tandem_motifs_to_remove, model,
     for o, onehot_seq in tqdm(enumerate(onehot_seqs)):
         str_seq = ''.join(utils.onehot_to_str(onehot_seq))
         motifs_and_indices = find_multiple_motifs(tandem_motifs_to_remove, str_seq,
-                                                  # saliency_values=saliency_all_seqs[o],
                                                   filter_window=window_size)
         all_motifs_present = np.array([len(v) > 0 for k, v in motifs_and_indices.items()]).all()
         if all_motifs_present:
@@ -413,14 +442,20 @@ def randomize_multiple_seqs(onehot_seqs, tandem_motifs_to_remove, model,
             n_instances_per_seq.append([str(len(v)) for k, v in motifs_and_indices.items()])
             incl_idx.append(o)
     n_instances_per_seq = [', '.join(n) for n in n_instances_per_seq]
-    return (seqs_with_motif, seqs_removed_motifs, n_instances_per_seq, incl_idx)
+    return seqs_with_motif, seqs_removed_motifs, n_instances_per_seq, incl_idx
 
 
 def get_avg_preds(seqs_removed, model):
-    N, B, L, C = seqs_removed.shape
+    """
+
+    :param seqs_removed: sequences with randomized motifs
+    :param model: model object
+    :return: predictions per sequence averaged across all randomizations
+    """
+    N, B, L, C = seqs_removed.shape # extra channel for per sequence random occlusions
     removed_preds = utils.predict_np((seqs_removed.reshape(N * B, L, C)), model,
-                                     batch_size=32, reshape_to_2D=False)  # [:,:,cell_line]
-    print(removed_preds.shape)
+                                     batch_size=32, reshape_to_2D=False) # all predictions from occluded sequences
+    # add axis if binary model, reshape back into per sequence and get mean prediction per sequence
     if removed_preds.ndim == 2:
         _, C = removed_preds.shape
         avg_removed_preds = removed_preds.reshape(N, B, C).mean(axis=1)
@@ -445,7 +480,7 @@ def test_flanks(gi, all_flanks, targets, position=1024, output_path=''):
     all_scores = []
     for motif in tqdm(all_flanks):
         diff_scores = gi.embed_predict_quant_effect([(motif, position)])
-        all_scores_per_motif = (diff_scores).mean(axis=0).mean(axis=0) # compute mean to get global importance score
+        all_scores_per_motif = (diff_scores).mean(axis=0).mean(axis=0)  # compute mean to get global importance score
         all_scores.append(all_scores_per_motif)
     df = pd.DataFrame({'motif': np.repeat(all_flanks, len(targets)),
                        'mean difference': np.array(all_scores).flatten(),
@@ -492,12 +527,12 @@ def record_flank_test(gi, motif, targets, cell_line_name, flanks_path):
             print('Testing flanks')
             flank_scores = test_flanks(gi, all_motifs, targets,
                                        output_path=flanks_path)
-        best_flank = flank_scores[flank_scores['cell line'] == cell_line_name].sort_values('mean difference').iloc[-1, 0]
+        best_flank = flank_scores[flank_scores['cell line'] == cell_line_name].sort_values('mean difference').iloc[
+            -1, 0]
         print(best_flank)
     else:
         best_flank = motif
     return best_flank
-
 
 
 def optimize_distance(gi, optimized_motifs, targets, distance_path, first_motif_pos):
@@ -514,18 +549,18 @@ def optimize_distance(gi, optimized_motifs, targets, distance_path, first_motif_
         df = pd.read_csv(distance_path)
     else:
         two_motifs_pos_scores = []
-        positions = list(range(0,2048-len(optimized_motifs[1]),2))
+        positions = list(range(0, 2048 - len(optimized_motifs[1]), 2))
         for position in tqdm(positions):
             diff_scores = gi.embed_predict_quant_effect([(optimized_motifs[0], first_motif_pos),
-                                                        (optimized_motifs[1],
-                                                            position)])
+                                                         (optimized_motifs[1],
+                                                          position)])
             two_motifs_pos_scores.append(diff_scores.mean(axis=0).mean(axis=0))
         two_motifs_pos_scores = np.array(two_motifs_pos_scores)
         motif_2_label = np.array(['{}_{}'.format(optimized_motifs[1], pos) for pos in positions])
         df = pd.DataFrame({
-                            'motif 2':np.repeat(motif_2_label, len(targets)),
-                            'mean difference':np.array(two_motifs_pos_scores).flatten(),
-                            'cell line': np.tile(targets, two_motifs_pos_scores.shape[0])})
+            'motif 2': np.repeat(motif_2_label, len(targets)),
+            'mean difference': np.array(two_motifs_pos_scores).flatten(),
+            'cell line': np.tile(targets, two_motifs_pos_scores.shape[0])})
         df['motif 1'] = '{}_{}'.format(optimized_motifs[0], first_motif_pos)
         df.to_csv(distance_path, index=None)
     return df
@@ -543,23 +578,24 @@ def test_interaction(gi, optimized_motifs, targets, output_dir, filename):
     :return: None
     """
     # make single or combined motif clusters to embed
-    motifs_to_test = [ [(optimized_motifs[0][0], optimized_motifs[0][1])],
-                            [(optimized_motifs[1][0], optimized_motifs[1][1])],
-                            [(optimized_motifs[0][0], optimized_motifs[0][1]), (optimized_motifs[1][0], optimized_motifs[1][1])] ]
+    motifs_to_test = [[(optimized_motifs[0][0], optimized_motifs[0][1])],
+                      [(optimized_motifs[1][0], optimized_motifs[1][1])],
+                      [(optimized_motifs[0][0], optimized_motifs[0][1]),
+                       (optimized_motifs[1][0], optimized_motifs[1][1])]]
     interaction_test_dfs = []
-    for motif_to_test in motifs_to_test: # for each in [motif1, motif2, motif1_and_motif2]
-        pattern_label = ' & '.join(['{} at {}'.format(m, str(p)) for m,p in motif_to_test])
-        diff = gi.embed_predict_quant_effect(motif_to_test).mean(axis=1) # get mean global importance
+    for motif_to_test in motifs_to_test:  # for each in [motif1, motif2, motif1_and_motif2]
+        pattern_label = ' & '.join(['{} at {}'.format(m, str(p)) for m, p in motif_to_test])
+        diff = gi.embed_predict_quant_effect(motif_to_test).mean(axis=1)  # get mean global importance
         df = pd.DataFrame({
-                            'mean difference':np.array(diff).flatten(),
-                            'cell line': np.tile(targets, diff.shape[0])})
+            'mean difference': np.array(diff).flatten(),
+            'cell line': np.tile(targets, diff.shape[0])})
         df['motif'] = pattern_label
-        interaction_test_dfs.append(df) # save in a dataframe
-    pd.concat(interaction_test_dfs).to_csv(os.path.join(output_dir, filename)) # combine all and write to csv
+        interaction_test_dfs.append(df)  # save in a dataframe
+    pd.concat(interaction_test_dfs).to_csv(os.path.join(output_dir, filename))  # combine all and write to csv
 
 
-def analyze_motif_pair(run_path, data_dir, motif_cluster, cell_lines, out_dir='GIA_results',
-                       n_background=1000, motif1_positions=[1024]):
+def gia_add_motifs(run_path, data_dir, motif_cluster, cell_lines, out_dir='GIA_results',
+                       n_background=1000, motif1_positions=[1024], background_model='dinuc'):
     """
     GIA addition experiment with one or pair of motifs. This optimizes any positions marked by '.' in the motifs, finds
     the optimal distance in case of pair of motifs and then tests for interaction by inserting them separately or together
@@ -570,11 +606,12 @@ def analyze_motif_pair(run_path, data_dir, motif_cluster, cell_lines, out_dir='G
     :param out_dir: output dir
     :param n_background: N sample background
     :param motif1_positions: positions where to put first motif in the interaction test
+    :param background_model: method for generating background sequences
     :return: None
     """
     utils.make_dir(out_dir)  # make output dir
     testset, targets = evaluate.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
-    C, X, Y = utils.convert_tfr_to_np(testset) # convert to np arrays for easy filtering
+    C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
     model, _ = utils.read_model(run_path)  # load model
 
     run_name = os.path.basename(os.path.abspath(run_path))  # get identifier for the outputs
@@ -583,11 +620,10 @@ def analyze_motif_pair(run_path, data_dir, motif_cluster, cell_lines, out_dir='G
     # select background sequences to add the motif(s) to
     X_set = select_set('all_threshold', C, X, Y)
 
-
     gi = GlobalImportance(model, targets)
     # subsample background to given size
     gi.set_null_model(background_model, base_sequence=X_set, num_sample=n_background)
-    for cell_line_name in cell_lines: # for each cell line of interest
+    for cell_line_name in cell_lines:  # for each cell line of interest
         if isinstance(cell_line_name, int):
             cell_line_name = targets[cell_line_name]
         optimized_motifs = []
@@ -601,7 +637,7 @@ def analyze_motif_pair(run_path, data_dir, motif_cluster, cell_lines, out_dir='G
             # get best motif by optimizing positions that are '.'
             optimized_motifs.append(record_flank_test(gi, motif, targets,
                                                       cell_line_name, flanks_path))
-        if len(motif_cluster) == 2: # if two motifs are given
+        if len(motif_cluster) == 2:  # if two motifs are given
             print('Testing distance effect on motif interaction')
             # check for positional interaction by fixing one in the middle and sliding the other
             # subdirs for interaction results
@@ -620,3 +656,26 @@ def analyze_motif_pair(run_path, data_dir, motif_cluster, cell_lines, out_dir='G
                 # test for interaction using optimized flanks and distance
                 test_interaction(gi, motif_pos_pairs, targets, output_dir,
                                  str(first_motif_pos) + '_best_distance_interaction.csv')
+
+
+def gia_occlude_motifs(run_path, data_dir, motif_cluster, X_subset_type='all_threshold', out_dir='GIA_occlude_results',
+                       n_background=1000):
+    utils.make_dir(out_dir)  # make output dir
+    testset, targets = evaluate.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
+    C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
+    model, _ = utils.read_model(run_path)  # load model
+    run_name = os.path.basename(os.path.abspath(run_path))  # get identifier for the outputs
+    gia_occ_dir = utils.make_dir(os.path.join(out_dir, run_name))
+    output_dir = utils.make_dir(os.path.join(gia_occ_dir, '{}_N{}'.format(X_subset_type, n_background)))
+    X_set = select_set(X_subset_type, C, X, Y)
+    gi = GlobalImportance(model, targets)
+    if len(motif_cluster) > 1:
+        combo_list = [motif_cluster] + [[m] for m in motif_cluster]
+    else:
+        combo_list = motif_cluster
+    for each_element in combo_list:
+        print(each_element)
+        gi.occlude_all_motif_instances(X_set, each_element, num_sample=n_background)
+    df = pd.concat(gi.summary_remove_motifs) # collect all dataframes with results
+    file_prefix = '{}_in_{}'.format(args[1], cell_line_name, X_subset_type)
+    df.to_csv(os.path.join(output_dir, file_prefix+'.csv'), index=None)
