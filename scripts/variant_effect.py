@@ -2,7 +2,42 @@ import numpy as np
 import util
 import tensorflow as tf
 import subprocess
+import h5py
+import modelzoo
 
+def vcf_quantitative(model_path,ref_seq,alt_seq,input_size,output_pre,robust = True, batch_size = 64,shift_num = 10):
+    model = modelzoo.load_model(model_path,compile = True)
+    if robust == True:
+        vcf_diff = vcf_robust(ref_seq,alt_seq,model,shift_num = shift_num
+                            window_size = input_size, batch_siz = batch_size)
+
+    elif robust == False:
+        vcf_diff = vcf_fast(ref_seq,alt_seq,model,
+                            window_size = input_size, batch_size = batch_size)
+    else:
+        raise ValueError('robust parameter only takes boolean values')
+
+    vcf_diff = np.concatenat(vcf_diff)
+    h5_output = h5py.File(output_pre+'.h5','w')
+    h5_output.create_dataset('vcf_diff',data = vcf_diff)
+    h5_output.close()
+
+def vcf_binary(model_path,ref_seq,alt_seq,layer,input_size,output_pre,robust = True,batch_size = 64,shift_num = 10):
+    model =tf.keras.models.load_model(model_path,compile = True)
+    if robust = True:
+        vcf_diff = vcf_binary_robust(ref_seq,alt_seq,model,shift_num = shift_num
+                                    window_size = input_size,batch_size = batch_size,
+                                    layer = layer)
+    elif robust == False:
+        vcf_diff = vcf_binary_fast(ref_seq,alt_seq,model,layer = layer, batch_size = batch_size)
+
+    else:
+        raise ValueError('robust parameter only takes boolean values')
+
+    vcf_diff = np.concatenat(vcf_diff)
+    h5_output = h5py.File(output_pre+'.h5','w')
+    h5_output.create_dataset('vcf_diff',data = vcf_diff)
+    h5_output.close()
 
 def vcf_fast(ref, alt, model, window_size=2048, batch_size=64):
     vcf_diff_list = []
@@ -90,8 +125,7 @@ def vcf_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64):
 
     return vcf_diff_list
 
-
-def vcf_binary_fast(ref, alt, model, batch_size=64, layer=-1, diff_func='effect_size'):
+def vcf_binary_fast(ref, alt, model, batch_size=64, layer=-1):
     vcf_diff_list = []
     i = 0
     while i < len(ref):
@@ -106,15 +140,21 @@ def vcf_binary_fast(ref, alt, model, batch_size=64, layer=-1, diff_func='effect_
             batch_n = len(ref) - i
             i = len(ref)
 
-        ref_pred = model.predict(ref_seq)
-        alt_pred = model.predict(alt_seq)
+        if int(layer) == -1:
+            ref_pred = model.predict(shifted_ref)
+            alt_pred = model.predict(shifted_alt)
+        elif int(layer) == -2:
+            intermediate_layer_model = tf.keras.Model(inputs=model.input,
+                                                      outputs=model.output.op.inputs[0].op.inputs[0])
+            ref_pred = intermediate_layer_model.predict(shifted_ref)
+            alt_pred = intermediate_layer_model.predict(shifted_alt)
 
         vcf_diff = alt_pred / ref_pred
         vcf_diff_list.append(np.log2(vcf_diff))
 
     return vcf_diff_list
 
-def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64, layer=-1, diff_func='effect_size'):
+def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64, layer=-1):
     # calculate the coordinates for sequences to conserve in the center
     vcf_diff_list = []
     chop_size = ref.shape[1]
@@ -159,15 +199,10 @@ def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_siz
         ##shape(batch_size,15)
 
         # get difference between average coverage value
-        if diff_func == 'effect_size':
-            vcf_diff = average_alt / average_ref
-            vcf_diff_list.append(np.log2(vcf_diff))
-        elif diff_func == 'log_ratio':
-            vcf_diff = np.log2(average_alt) / np.log2(average_ref)
-            vcf_diff_list.append(vcf_diff)
+        vcf_diff = average_alt / average_ref
+        vcf_diff_list.append(np.log2(vcf_diff))
 
     return vcf_diff_list
-
 
 def dna_one_hot(seq):
     seq_len = len(seq)
@@ -193,15 +228,12 @@ def dna_one_hot(seq):
 
     return seq_code
 
-
-def convert_bed_to_seq(bedfile, output_fa, genomefile='/home/shush/genomes/hg38.fa'):
+def convert_bed_to_seq(bedfile, output_fa, genomefile):
     cmd = 'bedtools getfasta -fi {} -bed {} -s -fo {}'.format(genomefile, bedfile, output_fa)
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     output, error = process.communicate()
     coords_list, seqs_list = fasta2list(output_fa)
     return coords_list, seqs_list
-
-
 
 def fasta2list(fasta_file):
     fasta_coords = []
