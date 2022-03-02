@@ -79,6 +79,12 @@ class GlobalImportance():
         self.summary_remove_motifs.append(df)
 
     def get_predictions(self, motif_key, batch_size):
+        """
+        This function gets the predictions for original sequences and same sequences with occluded motifs
+        :param motif_key: label of the motif
+        :param batch_size: batch size for predictions
+        :return: dataframe summary of the predictions and metadata 
+        """
         # predicted coverage for original sequences
         ori_preds = utils.predict_np((self.seqs_with[motif_key]),
                                      self.model, batch_size=batch_size,
@@ -309,6 +315,11 @@ def select_set(testset_type, C, X, Y, cell_line=None):
 
 
 def make_3D(array):
+    """
+    Function to reshape array if not 3D
+    :param array: np array
+    :return: either same array or reshaped into 3D
+    """
     if len(array.shape) == 2:
         return np.expand_dims(array, axis=0)
     elif len(array.shape) == 3:
@@ -318,75 +329,35 @@ def make_3D(array):
         exit()
 
 
-def boxplot_with_test(data, x, y, pairs):
-    plotting_parameters = {
-        'data': data,
-        'x': x,
-        'y': y}
-    pvalues = [mannwhitneyu(data[data[x] == pair[0]][y],
-                            data[data[x] == pair[1]][y]).pvalue for pair in pairs]
-    ax = sns.boxplot(**plotting_parameters)
-    # Add annotations
-    annotator = Annotator(ax, pairs, **plotting_parameters)
-    annotator.set_pvalues(pvalues)
-    annotator.annotate();
-
 
 # -------------------------------------------------------------------------------------
 # functions to find a motif in a sequence
 # -------------------------------------------------------------------------------------
-def find_motif_indices(motif_pattern, str_seq):
-    '''Find all str motif start positions in a sequence str'''
+
+
+
+def select_indices(motif_pattern, str_seq):
+    '''
+    select indices according to filtering criteria
+    :param motif_pattern: string to search for
+    :param str_seq: sequence string
+    :return: indices where the substring is found
+    '''
     iter = re.finditer(motif_pattern, str_seq)
-    return [m.start(0) for m in iter]
+    indices = [m.start(0) for m in iter]
+    return indices
 
 
-def find_max_saliency_ind(indices, saliency_values):
-    '''find motif instance closest to the max saliency value'''
-    max_point = np.argmax(saliency_values)
-    if len(indices) > 0:
-        return [indices[np.abs(indices - max_point).argmin()]]
-    else:
-        return []
-
-
-def filter_indices_in_saliency_peak(indices, saliency_values, window=300):
-    '''filter motifs within a window around the max saliency'''
-    max_point = np.argmax(saliency_values)
-    if len(indices) > 0:
-        return list(np.array(indices)[(np.abs(indices - max_point) < window / 2)])
-    else:
-        return []
-
-
-def select_indices(motif_pattern, str_seq, saliency_values=None,
-                   max_only=False, filter_window=False):
-    '''select indices according to filtering criteria'''
-    indices = find_motif_indices(motif_pattern, str_seq)
-    if max_only:
-        return find_max_saliency_ind(indices, saliency_values)
-    elif filter_window:
-        return filter_indices_in_saliency_peak(indices, saliency_values, filter_window)
-    else:  # find all
-        return indices
-
-
-def find_multiple_motifs(motif_pattern_list, str_seq, saliency_values=None,
-                         max_only=False, filter_window=False):
+def find_multiple_motifs(motif_pattern_list, str_seq):
     '''
     find indices of multiple motifs in a single sequence
-    :param motif_pattern_list:
-    :param str_seq:
-    :param saliency_values:
-    :param max_only:
-    :param filter_window:
+    :param motif_pattern_list: list of string motif patterns
+    :param str_seq: string form of the sequence
     :return:
     '''
     motifs_and_indices = {}
     for motif_pattern in motif_pattern_list:
-        chosen_ind = select_indices(motif_pattern, str_seq,
-                                    saliency_values,
-                                    max_only, filter_window)
+        chosen_ind = select_indices(motif_pattern, str_seq)
         motifs_and_indices[motif_pattern] = chosen_ind
     return motifs_and_indices
 
@@ -398,10 +369,10 @@ def find_multiple_motifs(motif_pattern_list, str_seq, saliency_values=None,
 def randomize_motif_dict_in_seq(motifs_and_indices, selected_seq, n_occlusions=25):
     """
 
-    :param motifs_and_indices:
-    :param selected_seq:
-    :param n_occlusions:
-    :return:
+    :param motifs_and_indices: motifs and positions where they occur in a sequence
+    :param selected_seq: a single sequence where the motif will be randomized
+    :param n_occlusions: number of times to randomize the motif nucleotides
+    :return: an array of sequences with randomly occluded motifs
     """
     modified_seqs = []
     for i in range(n_occlusions):
@@ -416,15 +387,13 @@ def randomize_motif_dict_in_seq(motifs_and_indices, selected_seq, n_occlusions=2
     return np.array(modified_seqs)
 
 
-def randomize_multiple_seqs(onehot_seqs, tandem_motifs_to_remove, window_size=None):
+def randomize_multiple_seqs(onehot_seqs, tandem_motifs_to_remove):
     """
 
-    :param onehot_seqs:
-    :param tandem_motifs_to_remove:
-    :param model:
-    :param cell_line:
-    :param window_size:
-    :return:
+    :param onehot_seqs: iterable of onehot sequences
+    :param tandem_motifs_to_remove: list of motifs
+    :return: original sequences, sequences with the motif randomized, the number of times the motif(s) occur per sequence
+    and indices where the motif is randomized
     """
     seqs_with_motif = []
     seqs_removed_motifs = []
@@ -432,8 +401,7 @@ def randomize_multiple_seqs(onehot_seqs, tandem_motifs_to_remove, window_size=No
     incl_idx = []
     for o, onehot_seq in tqdm(enumerate(onehot_seqs)):
         str_seq = ''.join(utils.onehot_to_str(onehot_seq))
-        motifs_and_indices = find_multiple_motifs(tandem_motifs_to_remove, str_seq,
-                                                  filter_window=window_size)
+        motifs_and_indices = find_multiple_motifs(tandem_motifs_to_remove, str_seq)
         all_motifs_present = np.array([len(v) > 0 for k, v in motifs_and_indices.items()]).all()
         if all_motifs_present:
             seqs_with_motif.append(onehot_seq.copy())
@@ -660,6 +628,16 @@ def gia_add_motifs(run_path, data_dir, motif_cluster, cell_lines, out_dir='GIA_r
 
 def gia_occlude_motifs(run_path, data_dir, motif_cluster, X_subset_type='all_threshold', out_dir='GIA_occlude_results',
                        n_background=1000):
+    """
+    Function for testing effect of randomizing or occluding a set of motifs in a sequence individually or together
+    :param run_path: model run path
+    :param data_dir: directory with the test data
+    :param motif_cluster: list of motifs to test
+    :param X_subset_type: method for subsetting test set, all_threshold means it filters the dataset using all target coverage values
+    :param out_dir: output directory
+    :param n_background: number of sequences to sample and search the motifs in
+    :return: None
+    """
     utils.make_dir(out_dir)  # make output dir
     testset, targets = evaluate.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
     C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
