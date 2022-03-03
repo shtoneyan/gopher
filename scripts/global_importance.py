@@ -83,7 +83,7 @@ class GlobalImportance():
         This function gets the predictions for original sequences and same sequences with occluded motifs
         :param motif_key: label of the motif
         :param batch_size: batch size for predictions
-        :return: dataframe summary of the predictions and metadata 
+        :return: dataframe summary of the predictions and metadata
         """
         # predicted coverage for original sequences
         ori_preds = utils.predict_np((self.seqs_with[motif_key]),

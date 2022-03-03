@@ -7,9 +7,19 @@ import numpy as np
 import tensorflow as tf
 from natsort import natsorted
 import yaml
+import pyBigWig
+import csv
 from modelzoo import GELU
 
 
+def read_chrom_size(chrom_size_path):
+    '''Load chromosome size file'''
+    chrom_size = {}
+    with open(chrom_size_path) as fd:
+        rd = csv.reader(fd, delimiter="\t", quotechar='"')
+        for line in rd:
+            chrom_size[line[0]]=int(line[1])
+    return chrom_size
 
 def bin_resolution(y, bin_size):
     """
@@ -276,7 +286,7 @@ def predict_np(X, model, batch_size=32, reshape_to_2D=False):
     :return:
     """
     model_output = []
-    for x_batch in util.batch_np(X, batch_size):
+    for x_batch in batch_np(X, batch_size):
         model_output.append(model(x_batch).numpy())
     model_output = np.squeeze(np.concatenate(model_output))
     if reshape_to_2D:
