@@ -1,45 +1,111 @@
-import numpy as np
-import util
-import tensorflow as tf
-import subprocess
 import h5py
 import modelzoo
+import numpy as np
+import subprocess
+import tensorflow as tf
+import pandas as pd
+import utils
 
-def vcf_quantitative(model_path,ref_seq,alt_seq,input_size,output_pre,robust = True, batch_size = 64,shift_num = 10):
-    model = modelzoo.load_model(model_path,compile = True)
+def enforce_const_range(site, window):
+    """
+    Function to get constant size bed ranges
+    :param site: center positions
+    :param window: window size around center position
+    :return: new starts and ends
+    """
+    half_window = np.round(window/2).astype(int)
+    start = site - half_window
+    end = site + half_window
+    return start, end
+
+def expand_range(bedfile, output_filename, window=3072):
+    """
+    Function to write a new bed file with expanded ranges
+    :param bedfile: existing bed file, the ranges of which will be expanded
+    :param output_filename: new bed file path
+    :param window: window size
+    :return: None
+    """
+    df = pd.read_csv(bedfile, sep='\t', header=None, index_col=None)
+    start, end = enforce_const_range(df.iloc[:,1].astype(int), window)
+    df_expanded = df.copy()
+    df_expanded.iloc[:,1] = start.values
+    df_expanded.iloc[:,2] = end.values
+    df_nonneg = df_expanded[df_expanded.iloc[:,1]>0]
+    df_nonneg = df_nonneg.reset_index(drop=True)
+    df_nonneg.to_csv(output_filename, header=None, sep='\t', index=None)
+
+def vcf_quantitative(model_path, ref_seq, alt_seq, input_size, output_pre, robust=True, batch_size=64, shift_num=10):
+    """
+
+    :param model_path:
+    :param ref_seq:
+    :param alt_seq:
+    :param input_size:
+    :param output_pre:
+    :param robust:
+    :param batch_size:
+    :param shift_num:
+    :return:
+    """
+    model = modelzoo.load_model(model_path, compile=True)
     if robust == True:
-        vcf_diff = vcf_robust(ref_seq,alt_seq,model,shift_num = shift_num
-                            window_size = input_size, batch_siz = batch_size)
+        vcf_diff = vcf_robust(ref_seq, alt_seq, model, shift_num=shift_num,
+                              window_size=input_size, batch_size=batch_size)
 
     elif robust == False:
-        vcf_diff = vcf_fast(ref_seq,alt_seq,model,
-                            window_size = input_size, batch_size = batch_size)
+        vcf_diff = vcf_fast(ref_seq, alt_seq, model,
+                            window_size=input_size, batch_size=batch_size)
     else:
         raise ValueError('robust parameter only takes boolean values')
 
     vcf_diff = np.concatenat(vcf_diff)
-    h5_output = h5py.File(output_pre+'.h5','w')
-    h5_output.create_dataset('vcf_diff',data = vcf_diff)
+    h5_output = h5py.File(output_pre + '.h5', 'w')
+    h5_output.create_dataset('vcf_diff', data=vcf_diff)
     h5_output.close()
 
-def vcf_binary(model_path,ref_seq,alt_seq,layer,input_size,output_pre,robust = True,batch_size = 64,shift_num = 10):
-    model =tf.keras.models.load_model(model_path,compile = True)
-    if robust = True:
-        vcf_diff = vcf_binary_robust(ref_seq,alt_seq,model,shift_num = shift_num
-                                    window_size = input_size,batch_size = batch_size,
-                                    layer = layer)
+
+def vcf_binary(model_path, ref_seq, alt_seq, layer, input_size, output_pre, robust=True, batch_size=64, shift_num=10):
+    """
+
+    :param model_path:
+    :param ref_seq:
+    :param alt_seq:
+    :param layer:
+    :param input_size:
+    :param output_pre:
+    :param robust:
+    :param batch_size:
+    :param shift_num:
+    :return:
+    """
+    model = tf.keras.models.load_model(model_path, compile=True)
+    if robust == True:
+        vcf_diff = vcf_binary_robust(ref_seq, alt_seq, model, shift_num=shift_num,
+                                     window_size=input_size, batch_size=batch_size,
+                                     layer=layer)
     elif robust == False:
-        vcf_diff = vcf_binary_fast(ref_seq,alt_seq,model,layer = layer, batch_size = batch_size)
+        vcf_diff = vcf_binary_fast(ref_seq, alt_seq, model, layer=layer, batch_size=batch_size)
 
     else:
         raise ValueError('robust parameter only takes boolean values')
 
     vcf_diff = np.concatenat(vcf_diff)
-    h5_output = h5py.File(output_pre+'.h5','w')
-    h5_output.create_dataset('vcf_diff',data = vcf_diff)
+    h5_output = h5py.File(output_pre + '.h5', 'w')
+    h5_output.create_dataset('vcf_diff', data=vcf_diff)
     h5_output.close()
+
 
 def vcf_fast(ref, alt, model, window_size=2048, batch_size=64):
+    """
+
+    :param ref:
+    :param alt:
+    :param model:
+    :param window_size:
+    :param batch_size:
+    :return:
+    """
     vcf_diff_list = []
     i = 0
     while i < len(ref):
@@ -69,7 +135,18 @@ def vcf_fast(ref, alt, model, window_size=2048, batch_size=64):
 
     return vcf_diff_list
 
+
 def vcf_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64):
+    """
+
+    :param ref:
+    :param alt:
+    :param model:
+    :param shift_num:
+    :param window_size:
+    :param batch_size:
+    :return:
+    """
     # calculate the coordinates for sequences to conserve in the center
     vcf_diff_list = []
     chop_size = ref.shape[1]
@@ -93,7 +170,7 @@ def vcf_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64):
             i = len(ref)
 
         # creat shifted sequence list and make predictions
-        shifted_ref, shifted_alt, shift_idx = util.window_shift(ref_seq, alt_seq,
+        shifted_ref, shifted_alt, shift_idx = utils.window_shift(ref_seq, alt_seq,
                                                                 window_size, shift_num, both_seq=True)
         ref_pred = model.predict(shifted_ref)
         alt_pred = model.predict(shifted_alt)
@@ -125,7 +202,17 @@ def vcf_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64):
 
     return vcf_diff_list
 
+
 def vcf_binary_fast(ref, alt, model, batch_size=64, layer=-1):
+    """
+
+    :param ref:
+    :param alt:
+    :param model:
+    :param batch_size:
+    :param layer:
+    :return:
+    """
     vcf_diff_list = []
     i = 0
     while i < len(ref):
@@ -154,7 +241,19 @@ def vcf_binary_fast(ref, alt, model, batch_size=64, layer=-1):
 
     return vcf_diff_list
 
+
 def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64, layer=-1):
+    """
+
+    :param ref:
+    :param alt:
+    :param model:
+    :param shift_num:
+    :param window_size:
+    :param batch_size:
+    :param layer:
+    :return:
+    """
     # calculate the coordinates for sequences to conserve in the center
     vcf_diff_list = []
     chop_size = ref.shape[1]
@@ -178,7 +277,7 @@ def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_siz
             i = len(ref)
 
         # creat shifted sequence list and make predictions
-        shifted_ref, shifted_alt, shift_idx = util.window_shift(ref_seq, alt_seq,
+        shifted_ref, shifted_alt, shift_idx = utils.window_shift(ref_seq, alt_seq,
                                                                 window_size, shift_num, both_seq=True)
         if int(layer) == -1:
             ref_pred = model.predict(shifted_ref)
@@ -204,7 +303,13 @@ def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_siz
 
     return vcf_diff_list
 
+
 def dna_one_hot(seq):
+    """
+    Function to convert string DNA sequences into onehot
+    :param seq: string DNA sequence
+    :return: onehot sequence
+    """
     seq_len = len(seq)
     seq_start = 0
     seq = seq.upper()
@@ -228,14 +333,28 @@ def dna_one_hot(seq):
 
     return seq_code
 
+
 def convert_bed_to_seq(bedfile, output_fa, genomefile):
+    """
+    This function collects DNA sequences corresponding to a bedfile into a fasta file
+    :param bedfile: existing bed file
+    :param output_fa: new fasta path
+    :param genomefile: genome fasta to use to get the sequences
+    :return: list of coordinates and string sequences
+    """
     cmd = 'bedtools getfasta -fi {} -bed {} -s -fo {}'.format(genomefile, bedfile, output_fa)
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-    output, error = process.communicate()
+    _ = process.communicate()
     coords_list, seqs_list = fasta2list(output_fa)
     return coords_list, seqs_list
 
+
 def fasta2list(fasta_file):
+    """
+    Function to convert fasta file to a list of DNA strings
+    :param fasta_file: existing fasta file
+    :return: list of coordinates and string sequences
+    """
     fasta_coords = []
     seqs = []
     header = ''
