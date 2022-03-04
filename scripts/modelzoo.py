@@ -803,6 +803,58 @@ def conv_profile_task_base(input_shape, output_shape, bottleneck=8, wandb_config
     return keras.Model(inputs=inputs, outputs=outputs)
 
 
+def conv_profile_all_base(input_shape, output_shape, bottleneck=8, wandb_config={}):
+    """
+    Task-specific convolutional model that can adapt to various bin sizes
+    :param input_shape: tuple of input shape
+    :param output_shape: tuple of output shape
+    :param bottleneck: bottleneck size
+    :param wandb_config: dictionary of parameters including activation function
+    :return: model
+    """
+    assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
+    output_len, num_tasks = output_shape
+    inputs = keras.Input(shape=input_shape, name='sequence')
+
+    nn = keras.layers.Conv1D(filters=192, kernel_size=19, padding='same')(inputs)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation(wandb_config['activation'], name='filter_activation')(nn)
+    nn = keras.layers.MaxPool1D(pool_size=8)(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=256, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.MaxPool1D(pool_size=4)(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=512, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.MaxPool1D(pool_size=4)(nn)
+    nn = keras.layers.Dropout(0.2)(nn)
+
+    nn = keras.layers.Flatten()(nn)
+    nn = keras.layers.Dense(256)(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Dropout(0.3)(nn)
+
+    nn = keras.layers.Dense(output_len * bottleneck)(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Reshape([output_len, bottleneck])(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=256, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Dropout(0.2)(nn)
+
+    outputs = keras.layers.Dense(num_tasks, activation='softplus')(nn)
+    return keras.Model(inputs=inputs, outputs=outputs)
+
+
 def residual_profile_task_base(input_shape, output_shape, bottleneck=8, wandb_config={}):
     """
     residual model with task specific heads at base resolution
