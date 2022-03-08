@@ -4,4 +4,4 @@
 **SEquence model EvaluatIOn pipeliNe for training quantitative sequence to function models.
 **
 
-**A**udio **V**ideo **T**rans**C**oder
+**SE**quence model ev**AL**uat**IO**n pipeli**N**e
