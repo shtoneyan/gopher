@@ -722,8 +722,10 @@ def load_model(run_dir, compile, num_targets=15):
 def residual_block(input_layer, kernel_size=3, activation='relu', num_layers=5, dropout=0.1,dilated = False):
     if dilated:
         factor = [1,2,4,8]
+        base_rate = 1
     else:
         factor = range(1,num_layers)
+        base_rate = 2
     """dilated residual convolutional block"""
     filters = input_layer.shape.as_list()[-1]
     nn = keras.layers.Conv1D(filters=filters,
@@ -732,8 +734,6 @@ def residual_block(input_layer, kernel_size=3, activation='relu', num_layers=5, 
                              padding='same',
                              dilation_rate=1)(input_layer)
     nn = keras.layers.BatchNormalization()(nn)
-
-    base_rate = 2
     for i in factor:
         nn = keras.layers.Activation('relu')(nn)
         nn = keras.layers.Dropout(dropout)(nn)
