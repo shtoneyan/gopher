@@ -13,6 +13,7 @@ import utils
 import wandb
 import yaml
 import sys
+from wandb.keras import WandbCallback
 
 def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
                output_dir, config={}):
@@ -135,13 +136,11 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
 def train_binary(model_name_str,data_dir,window_size,output_dir,config = {}):
     default_config = {'num_epochs': 30, 'batch_size': 64,
                       'es_patience': 10, 'verbose' : True,
-                      'lr_patience': 3, 'lr_decay': 0.2}
+                      'lr_patience': 3, 'lr_decay': 0.2,'log_wandb':True}
 
     for key in default_config.keys():
         if key in config.keys():
             default_config[key] = config[key]
-
-    output_dir = utils.make_dir(os.path.join(output_dir, 'files'))
 
     f = h5py.File(data_dir,'r')
     train_x = f['x_train'][()]
@@ -153,18 +152,40 @@ def train_binary(model_name_str,data_dir,window_size,output_dir,config = {}):
 
     model = eval('modelzoo.' + model_name_str)((window_size,4),len(valid_y[0]),wandb_config=config)
 
-    history = model.fit(train_x,train_y,
-                    epochs=default_config['num_epochs'],
-                    batch_size = default_config['batch_size'],
-                    callbacks = [modelzoo.early_stopping(patience = default_config['es_patience'],
-                                                    verbose = int(default_config['verbose'])),
-                                 modelzoo.model_checkpoint(outpur_dir+'best_model.h5'),
-                                 reduce_lr(patience = default_config['lr_patience'],
-                                            factor = default_config['lr_decay']),
-                                 WandbCallback()
-                                 ],
-                    validation_data = (valid_x,valid_y),
-                    )
+    if default_config['log_wandb'] == False:
+        wandb_style_config = {}
+        for k, v in default_config.items():
+            wandb_style_config[k] = {'value': v}
+        for k, v in {'model_fn': model_name_str, 'input_size': window_size,
+                     'data_dir': data_dir}.items():
+            wandb_style_config[k] = {'value': v}
+        output_dir = utils.make_dir(os.path.join(output_dir, 'files'))  # overwrite so that model is also saved there
+        with open(os.path.join(output_dir, 'config.yaml'), 'w') as file:
+            documents = yaml.dump(wandb_style_config, file)
+        history = model.fit(train_x,train_y,
+                        epochs=default_config['num_epochs'],
+                        batch_size = default_config['batch_size'],
+                        callbacks = [modelzoo.early_stopping(patience = default_config['es_patience'],
+                                                        verbose = int(default_config['verbose'])),
+                                     modelzoo.model_checkpoint(output_dir+'best_model.h5'),
+                                     modelzoo.reduce_lr(patience = default_config['lr_patience'],
+                                                factor = default_config['lr_decay'])
+                                     ],
+                        validation_data = (valid_x,valid_y),
+                        )
+    else:
+        history = model.fit(train_x,train_y,
+                        epochs=default_config['num_epochs'],
+                        batch_size = default_config['batch_size'],
+                        callbacks = [modelzoo.early_stopping(patience = default_config['es_patience'],
+                                                        verbose = int(default_config['verbose'])),
+                                     modelzoo.model_checkpoint(output_dir+'best_model.h5'),
+                                     modelzoo.reduce_lr(patience = default_config['lr_patience'],
+                                                factor = default_config['lr_decay']),
+                                     WandbCallback()
+                                     ],
+                        validation_data = (valid_x,valid_y),
+                        )
     return history
 
 
