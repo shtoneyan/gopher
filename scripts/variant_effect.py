@@ -5,6 +5,7 @@ import subprocess
 import tensorflow as tf
 import pandas as pd
 import utils
+from custom_fit import center_crop
 
 def enforce_const_range(site, window):
     """
@@ -48,7 +49,7 @@ def vcf_quantitative(model_path, ref_seq, alt_seq, input_size, output_pre, robus
     :param shift_num:
     :return:
     """
-    model = modelzoo.load_model(model_path, compile=True)
+    model = modelzoo.load_model(model_path, compile=False)
     if robust == True:
         vcf_diff = vcf_robust(ref_seq, alt_seq, model, shift_num=shift_num,
                               window_size=input_size, batch_size=batch_size)
@@ -59,7 +60,7 @@ def vcf_quantitative(model_path, ref_seq, alt_seq, input_size, output_pre, robus
     else:
         raise ValueError('robust parameter only takes boolean values')
 
-    vcf_diff = np.concatenat(vcf_diff)
+    vcf_diff = np.concatenate(vcf_diff)
     h5_output = h5py.File(output_pre + '.h5', 'w')
     h5_output.create_dataset('vcf_diff', data=vcf_diff)
     h5_output.close()
@@ -79,7 +80,7 @@ def vcf_binary(model_path, ref_seq, alt_seq, layer, input_size, output_pre, robu
     :param shift_num:
     :return:
     """
-    model = tf.keras.models.load_model(model_path, compile=True)
+    model = tf.keras.models.load_model(model_path, compile=False)
     if robust == True:
         vcf_diff = vcf_binary_robust(ref_seq, alt_seq, model, shift_num=shift_num,
                                      window_size=input_size, batch_size=batch_size,
@@ -90,7 +91,7 @@ def vcf_binary(model_path, ref_seq, alt_seq, layer, input_size, output_pre, robu
     else:
         raise ValueError('robust parameter only takes boolean values')
 
-    vcf_diff = np.concatenat(vcf_diff)
+    vcf_diff = np.concatenate(vcf_diff)
     h5_output = h5py.File(output_pre + '.h5', 'w')
     h5_output.create_dataset('vcf_diff', data=vcf_diff)
     h5_output.close()
@@ -106,6 +107,9 @@ def vcf_fast(ref, alt, model, window_size=2048, batch_size=64):
     :param batch_size:
     :return:
     """
+    if ref.shape[1] != window_size:
+        ref,alt= center_crop(ref,alt,window_size)
+
     vcf_diff_list = []
     i = 0
     while i < len(ref):
