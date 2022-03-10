@@ -167,7 +167,7 @@ def train_binary(model_name_str,data_dir,window_size,output_dir,config = {}):
                         batch_size = default_config['batch_size'],
                         callbacks = [modelzoo.early_stopping(patience = default_config['es_patience'],
                                                         verbose = int(default_config['verbose'])),
-                                     modelzoo.model_checkpoint(output_dir+'best_model.h5'),
+                                     modelzoo.model_checkpoint(output_dir+'/best_model.h5'),
                                      modelzoo.reduce_lr(patience = default_config['lr_patience'],
                                                 factor = default_config['lr_decay'])
                                      ],
@@ -179,7 +179,7 @@ def train_binary(model_name_str,data_dir,window_size,output_dir,config = {}):
                         batch_size = default_config['batch_size'],
                         callbacks = [modelzoo.early_stopping(patience = default_config['es_patience'],
                                                         verbose = int(default_config['verbose'])),
-                                     modelzoo.model_checkpoint(output_dir+'best_model.h5'),
+                                     modelzoo.model_checkpoint(output_dir+'/best_model.h5'),
                                      modelzoo.reduce_lr(patience = default_config['lr_patience'],
                                                 factor = default_config['lr_decay']),
                                      WandbCallback()
