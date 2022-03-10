@@ -86,7 +86,7 @@ def vcf_binary(model_path, ref_seq, alt_seq, layer, input_size, output_pre, robu
                                      window_size=input_size, batch_size=batch_size,
                                      layer=layer)
     elif robust == False:
-        vcf_diff = vcf_binary_fast(ref_seq, alt_seq, model, layer=layer, batch_size=batch_size)
+        vcf_diff = vcf_binary_fast(ref_seq, alt_seq, model,window_size = input_size, layer=layer, batch_size=batch_size)
 
     else:
         raise ValueError('robust parameter only takes boolean values')
@@ -207,7 +207,7 @@ def vcf_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64):
     return vcf_diff_list
 
 
-def vcf_binary_fast(ref, alt, model, batch_size=64, layer=-1):
+def vcf_binary_fast(ref, alt, model, window_size,batch_size=64, layer=-1):
     """
 
     :param ref:
@@ -217,6 +217,9 @@ def vcf_binary_fast(ref, alt, model, batch_size=64, layer=-1):
     :param layer:
     :return:
     """
+    if ref.shape[1] != window_size:
+        ref,alt= center_crop(ref,alt,window_size)
+
     vcf_diff_list = []
     i = 0
     while i < len(ref):
@@ -232,13 +235,13 @@ def vcf_binary_fast(ref, alt, model, batch_size=64, layer=-1):
             i = len(ref)
 
         if int(layer) == -1:
-            ref_pred = model.predict(shifted_ref)
-            alt_pred = model.predict(shifted_alt)
+            ref_pred = model.predict(ref_seq)
+            alt_pred = model.predict(alt_seq)
         elif int(layer) == -2:
             intermediate_layer_model = tf.keras.Model(inputs=model.input,
                                                       outputs=model.output.op.inputs[0].op.inputs[0])
-            ref_pred = intermediate_layer_model.predict(shifted_ref)
-            alt_pred = intermediate_layer_model.predict(shifted_alt)
+            ref_pred = intermediate_layer_model.predict(ref_seq)
+            alt_pred = intermediate_layer_model.predict(alt_seq)
 
         vcf_diff = alt_pred / ref_pred
         vcf_diff_list.append(np.log2(vcf_diff))
