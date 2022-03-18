@@ -137,7 +137,7 @@ def get_robustness_values(model_paths, testset_path, output_dir='robustness_test
             h5_dataset.create_dataset('center_ground_truth_1K', data=np.concatenate(center_ground_truth_1K, axis=0))
             h5_dataset.close()
 
-        mean_var = np.concatenate(predictions_and_variance['var'], axis=0).mean()
+        mean_var = np.concatenate(predictions_and_variance['var'], axis=0).sum()
         robust_dict[model_path] = mean_var
             
     variance_dict_path = os.path.join(output_dir, 'average_variance.csv')    
