@@ -192,7 +192,8 @@ def residual_binary(inputs,exp_num,padding='same', activation='relu',wandb_confi
     nn = keras.layers.BatchNormalization()(nn)
     nn = keras.layers.Activation('relu')(nn)
     nn = keras.layers.Dropout(config['drop_out'])(nn)
-    outputs = keras.layers.Dense(exp_num, activation=config['output_activation'])(nn)
+    nn = keras.layers.Dense(exp_num)(nn)
+    outputs=keras.layers.Activation(config['output_activation'])(nn)
     model = keras.Model(inputs=inputs, outputs=outputs)
 
     auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
