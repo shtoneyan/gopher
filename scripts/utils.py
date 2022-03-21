@@ -10,6 +10,7 @@ import yaml
 import pyBigWig
 import csv
 from modelzoo import GELU
+import loss
 
 
 def read_chrom_size(chrom_size_path):
@@ -356,7 +357,7 @@ def read_model(run_path, compile_model=False):
     trained_model = tf.keras.models.load_model(model_path, custom_objects={"GELU": GELU})
     if compile_model:
         loss_fn_str = config['loss_fn']['value']  # get loss
-        loss_fn = eval(loss_fn_str)()  # turn loss into function
+        loss_fn = eval('loss.'+loss_fn_str)()  # turn loss into function
         trained_model.compile(optimizer="Adam", loss=loss_fn)
     return trained_model, bin_size  # model and bin size
 
