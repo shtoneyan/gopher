@@ -156,12 +156,12 @@ def basenji_w1_b64(input_shape, output_shape, wandb_config={}):
     else:
         return model
 
-def basenji_binary(input_shape,output_shape,wandb_confit={}):
+def basenji_binary(input_shape,exp_num,wandb_config={}):
     config = {'filtN_1': 128, 'filtN_2': 256, 'filtN_4': 256, 'filtN_5': 512,
-              'filt_mlt': 1.125, 'add_dropout': False}
+              'filt_mlt': 1.125, 'add_dropout': False,'activation' :'gelu'}
     print('Using set of filter sizes for hyperparameter search')
     filt_drp_dict = {64: 0.1, 128: 0.2, 256: 0.3, 512: 0.4, 1024: 0.5}
-
+    assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
     for k in config.keys():
         if k in wandb_config.keys():
             config[k] = wandb_config[k]
@@ -182,14 +182,14 @@ def basenji_binary(input_shape,output_shape,wandb_confit={}):
                   1024: [3, True],
                   2048: [4, False]}
     L, _ = input_shape
-    n_bins, n_exp = output_shape
+    n_bins, n_exp = (1,exp_num)
     l_bin = L // n_bins
     n_conv_tower, add_2max = layer_dict[l_bin]
     #     n_conv_tower = np.log2(32)
     # print(l_bin, n_conv_tower, add_2max)
     sequence = tf.keras.Input(shape=input_shape, name='sequence')
 
-    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation='gelu', activation_end=None,
+    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation=config['activation'], activation_end=None,
                          strides=1, dilation_rate=1, l2_scale=0, dropout=drp1, conv_type='standard', residual=False,
                          pool_size=8, batch_norm=True, bn_momentum=0.9, bn_gamma=None, bn_type='standard',
                          kernel_initializer='he_normal', padding='same')
@@ -217,10 +217,21 @@ def basenji_binary(input_shape,output_shape,wandb_confit={}):
     current = conv_block(current, filters=config['filtN_5'], kernel_size=1, activation='gelu',
                          dropout=drp5, batch_norm=True, bn_momentum=0.9)
 
-    outputs = dense_layer(current, n_exp, activation='sigmoid',
+    current = dense_layer(current, n_exp, activation='sigmoid',
                           batch_norm=True, bn_momentum=0.9)
-
+    outputs = tf.keras.layers.Reshape((exp_num,))(current)
     model = tf.keras.Model(inputs=sequence, outputs=outputs)
+
+    #complie with optimizer
+    auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
+    aupr = tf.keras.metrics.AUC(curve='PR', name='aupr')
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    loss = tf.keras.losses.BinaryCrossentropy(from_logits=False, label_smoothing=0)
+    model.compile(optimizer=optimizer,
+                  loss=loss,
+                  #metrics = ['mse'])
+                  metrics=['accuracy', auroc, aupr])
+    model.summary()
 
     if not all(i <= j for i, j in zip(filtN_list, filtN_list[1:])):
         return False
