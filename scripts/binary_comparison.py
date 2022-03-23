@@ -7,7 +7,7 @@ import modelzoo
 import os
 import json
 import sklearn
-import modelzoo
+import utils
 
 def cov_pearson(run_dir,profile_data_dir):
     """
@@ -16,7 +16,7 @@ def cov_pearson(run_dir,profile_data_dir):
     :param profile_data_dir:
     :return:
     """
-    model = modelzoo.load_model(run_dir,compile=False)
+    model = utils.read_model(run_dir,False)[0]
     testset = utils.make_dataset(profile_data_dir, 'test', utils.load_stats(profile_data_dir), batch_size=128)
     json_path = os.path.join(profile_data_dir, 'statistics.json')
     with open(json_path) as json_file:
@@ -47,13 +47,14 @@ def binary_metrics(run_dir,binary_data_dir):
     :param binary_data_dir:
     :return:
     """
-    model = modelzoo.load_model(run_dir,False)
+    model = utils.read_model(run_dir,False)[0]
     f = h5py.File(binary_data_dir,'r')
     x_test = f['x_test'][()]
     y_test = f['y_test'][()]
     f.close()
 
-    y_pred = model.predict(x_test)
+    #y_pred = model.predict(x_test)
+    y_pred = utils.predict_np(x_test,model)
     if len(y_pred.shape) == 3:
         cov_pred = np.sum(y_pred,axis = 1)
     else:
@@ -77,7 +78,7 @@ def binary_to_profile(binary_model_dir,profile_data_dir):
     :param profile_data_dir:
     :return:
     """
-    model =modelzoo.load_model(binary_model_dir,compile=False)
+    model =utils.read_model(binary_model_dir,False)[0]
     intermediate_layer_model = tf.keras.Model(inputs=model.input,
                                   outputs=model.layers[-2].output)
 
@@ -109,7 +110,7 @@ def profile_to_binary_dist(run_dir,binary_data_dir):
     :param binary_data_dir:
     :return:
     """
-    model = modelzoo.load_model(run_dir,False)
+    model = utils.read_model(run_dir,False)[0]
     f = h5py.File(binary_data_dir,'r')
     test_x = f['x_test'][()]
     test_y = f['y_test'][()]

@@ -49,7 +49,7 @@ def vcf_quantitative(model_path, ref_seq, alt_seq, input_size, output_pre, robus
     :param shift_num:
     :return:
     """
-    model = modelzoo.load_model(model_path, compile=False)
+    model = utils.read_model(model_path, False)[0]
     if robust == True:
         vcf_diff = vcf_robust(ref_seq, alt_seq, model, shift_num=shift_num,
                               window_size=input_size, batch_size=batch_size)
@@ -80,7 +80,7 @@ def vcf_binary(model_path, ref_seq, alt_seq, layer, input_size, output_pre, robu
     :param shift_num:
     :return:
     """
-    model = tf.keras.models.load_model(model_path, compile=False)
+    model = utils.read_model(model_path, False)[0]
     if robust == True:
         vcf_diff = vcf_binary_robust(ref_seq, alt_seq, model, shift_num=shift_num,
                                      window_size=input_size, batch_size=batch_size,

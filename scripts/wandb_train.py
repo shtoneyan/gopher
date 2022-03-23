@@ -136,7 +136,8 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
 def train_binary(model_name_str,data_dir,window_size,output_dir,config = {}):
     default_config = {'num_epochs': 30, 'batch_size': 64,
                       'es_patience': 10, 'verbose' : True,
-                      'lr_patience': 3, 'lr_decay': 0.2,'log_wandb':True}
+                      'lr_patience': 3, 'lr_decay': 0.2,
+                      'loss_fn': 'BinaryCrossentrophy','log_wandb':True}
 
     for key in default_config.keys():
         if key in config.keys():

@@ -230,7 +230,7 @@ def basenji_binary(input_shape,exp_num,wandb_config={}):
     model.compile(optimizer=optimizer,
                   loss=loss,
                   #metrics = ['mse'])
-                  metrics=['accuracy', auroc, aupr])
+                  metrics=['binary_accuracy', auroc, aupr])
     model.summary()
 
     if not all(i <= j for i, j in zip(filtN_list, filtN_list[1:])):
@@ -241,7 +241,7 @@ def basenji_binary(input_shape,exp_num,wandb_config={}):
 def Basset(inputs,exp_num,padding='same',wandb_config={}):
 
     config = {'filtN': [300,200,200], 'kern': [10,11,7],
-                'dense':1000,'drop_out':[0.3,0.3],'max_pool':[3,4,4],'filter_activation':'relu'}
+                'dense':1000,'drop_out':[0.3,0.3],'max_pool':[3,4,4],'activation':'relu'}
 
 
     for k in config.keys():
@@ -254,7 +254,7 @@ def Basset(inputs,exp_num,padding='same',wandb_config={}):
                           kernel_initializer = 'glorot_normal',
                           padding=padding),
     tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Activation(config['filter_activation']),
+    tf.keras.layers.Activation(config['activation']),
     tf.keras.layers.MaxPool1D(pool_size=config['max_pool'][0]),
     #2nd conv layer
     tf.keras.layers.Conv1D(config['filtN'][1],config['kern'][1],
@@ -294,7 +294,7 @@ def Basset(inputs,exp_num,padding='same',wandb_config={}):
     model.compile(optimizer=optimizer,
                   loss=loss,
                   #metrics = ['mse'])
-                  metrics=['accuracy', auroc, aupr])
+                  metrics=['binary_accuracy', auroc, aupr])
     model.summary()
     return model
 
@@ -399,6 +399,121 @@ def ori_bpnet(input_shape, output_shape, wandb_config={}):
 
     count_outputs = tf.keras.layers.concatenate(count_outputs)
     model = keras.models.Model([input], [profile_outputs, count_outputs])
+    return model
+
+def conv_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
+    assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
+    output_len, num_tasks = (1,exp_num)
+    inputs = keras.Input(shape=input_shape, name='sequence')
+
+    nn = keras.layers.Conv1D(filters=192, kernel_size=19, padding='same')(inputs)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation(wandb_config['activation'], name='filter_activation')(nn)
+    nn = keras.layers.MaxPool1D(pool_size=8)(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=256, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.MaxPool1D(pool_size=4)(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=512, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.MaxPool1D(pool_size=4)(nn)
+    nn = keras.layers.Dropout(0.2)(nn)
+
+    nn = keras.layers.Flatten()(nn)
+    nn = keras.layers.Dense(256)(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Dropout(0.3)(nn)
+
+    nn = keras.layers.Dense(output_len * bottleneck)(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Reshape([output_len, bottleneck])(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=256, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Dropout(0.2)(nn)
+    nn = keras.layers.Dense(num_tasks, activation='sigmoid')(nn)
+    outputs = keras.layers.Reshape((num_tasks,))(nn)
+    model =  keras.Model(inputs=inputs, outputs=outputs)
+    #complie with optimizer
+    auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
+    aupr = tf.keras.metrics.AUC(curve='PR', name='aupr')
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    loss = tf.keras.losses.BinaryCrossentropy(from_logits=False, label_smoothing=0)
+    model.compile(optimizer=optimizer,
+                  loss=loss,
+                  #metrics = ['mse'])
+                  metrics=['binary_accuracy', auroc, aupr])
+    model.summary()
+    return model
+
+
+def residual_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
+    assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
+    output_len, num_tasks = (1,exp_num)
+
+    inputs = keras.Input(shape=input_shape, name='sequence')
+
+    nn = keras.layers.Conv1D(filters=192, kernel_size=19, padding='same')(inputs)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation(wandb_config['activation'], name='filter_activation')(nn)
+    nn = residual_block(nn, 3, activation='relu', num_layers=5)
+    nn = keras.layers.MaxPool1D(pool_size=4)(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=256, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = residual_block(nn, 3, activation='relu', num_layers=5)
+    nn = keras.layers.MaxPool1D(pool_size=4)(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=512, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = residual_block(nn, 3, activation='relu', num_layers=4)
+    nn = keras.layers.MaxPool1D(pool_size=4)(nn)
+    nn = keras.layers.Dropout(0.2)(nn)
+
+    nn = keras.layers.Flatten()(nn)
+    nn = keras.layers.Dense(512)(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Dropout(0.3)(nn)
+
+    nn = keras.layers.Dense(output_len * bottleneck)(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Reshape([output_len, bottleneck])(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+
+    nn = keras.layers.Conv1D(filters=256, kernel_size=7, padding='same')(nn)
+    nn = keras.layers.BatchNormalization()(nn)
+    nn = keras.layers.Activation('relu')(nn)
+    nn = keras.layers.Dropout(0.1)(nn)
+    nn = residual_block(nn, 3, activation='relu', num_layers=5)
+
+    nn = keras.layers.Dense(num_tasks, activation='sigmoid')(nn)
+    outputs = keras.layers.Reshape((num_tasks,))(nn)
+    model = tf.keras.Model(inputs=inputs, outputs=outputs)
+    #complie with optimizer
+    auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
+    aupr = tf.keras.metrics.AUC(curve='PR', name='aupr')
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    loss = tf.keras.losses.BinaryCrossentropy(from_logits=False, label_smoothing=0)
+    model.compile(optimizer=optimizer,
+                  loss=loss,
+                  #metrics = ['mse'])
+                  metrics=['binary_accuracy', auroc, aupr])
+    model.summary()
     return model
 
 def conv_profile_task_base(input_shape, output_shape, bottleneck=8, wandb_config={}):
@@ -922,8 +1037,8 @@ def activate(current, activation, verbose=False):
         current = tf.keras.layers.Activation('sigmoid')(current)
     elif activation == 'tanh':
         current = tf.keras.layers.Activation('tanh')(current)
-    elif activation == 'exp':
-        current = Exp()(current)
+    elif activation == 'exponential':
+        current = tf.keras.layers.Activation('exponential')(current)
     elif activation == 'softplus':
         current = Softplus()(current)
     else:

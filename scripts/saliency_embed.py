@@ -89,7 +89,7 @@ def get_embeddings(input_features):
 
 
 def tomtom_upstream(model_path, filter_layer, seq, output_path, threshold=0.5, pad=3):
-    model = modelzoo.load_model(model_path, compile=True)
+    model = utils.read_model(model_path, True)[0]
     max_filter, counter = filter_max_align_batch(seq, model, layer=filter_layer)
     clip_filter = clip_filters(max_filter, threshold=threshold, pad=pad)
     meme_generate(clip_filter, output_file=ooutput_path + '.txt')
