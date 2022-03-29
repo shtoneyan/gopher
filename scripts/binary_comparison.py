@@ -7,7 +7,7 @@ import modelzoo
 import os
 import json
 import sklearn
-import modelzoo
+import utils
 
 def cov_pearson(run_dir,profile_data_dir):
     """
@@ -16,7 +16,7 @@ def cov_pearson(run_dir,profile_data_dir):
     :param profile_data_dir:
     :return:
     """
-    model = modelzoo.load_model(run_dir,compile=False)
+    model = utils.read_model(run_dir,False)[0]
     testset = utils.make_dataset(profile_data_dir, 'test', utils.load_stats(profile_data_dir), batch_size=128)
     json_path = os.path.join(profile_data_dir, 'statistics.json')
     with open(json_path) as json_file:
@@ -47,18 +47,18 @@ def binary_metrics(run_dir,binary_data_dir):
     :param binary_data_dir:
     :return:
     """
-    model = modelzoo.load_model(run_dir,False)
+    model = utils.read_model(run_dir,False)[0]
     f = h5py.File(binary_data_dir,'r')
-    x_test = f['x_test'][()]
-    y_test = f['y_test'][()]
-    f.close()
+    x_test = f['x_test']
+    y_test = f['y_test']
 
-    y_pred = model.predict(x_test)
+
+    #y_pred = model.predict(x_test)
+    y_pred = utils.predict_np(x_test,model)
     if len(y_pred.shape) == 3:
         cov_pred = np.sum(y_pred,axis = 1)
     else:
         cov_pred = y_pred
-
     aupr = []
     auroc = []
     for a in range(0,y_test.shape[1]):
@@ -66,7 +66,7 @@ def binary_metrics(run_dir,binary_data_dir):
         fpr,tpr,threshold = sklearn.metrics.roc_curve(y_test[:,a],cov_pred[:,a])
         aupr.append(sklearn.metrics.auc(recall,precision))
         auroc.append(sklearn.metrics.auc(fpr,tpr))
-
+    f.close()
     return np.mean(aupr),np.mean(auroc)
 
 
@@ -77,7 +77,7 @@ def binary_to_profile(binary_model_dir,profile_data_dir):
     :param profile_data_dir:
     :return:
     """
-    model =modelzoo.load_model(binary_model_dir,compile=False)
+    model =utils.read_model(binary_model_dir,False)[0]
     intermediate_layer_model = tf.keras.Model(inputs=model.input,
                                   outputs=model.layers[-2].output)
 
@@ -101,38 +101,3 @@ def binary_to_profile(binary_model_dir,profile_data_dir):
         r_list.append(scipy.stats.pearsonr(target[:,i],pred[:,i])[0])
 
     return r_list
-
-def profile_to_binary_dist(run_dir,binary_data_dir):
-    """
-
-    :param run_dir:
-    :param binary_data_dir:
-    :return:
-    """
-    model = modelzoo.load_model(run_dir,False)
-    f = h5py.File(binary_data_dir,'r')
-    test_x = f['x_test'][()]
-    test_y = f['y_test'][()]
-    f.close()
-
-    pred_profile = model.predict(test_x)
-    pred_cov = np.sum(pred_profile,axis=1)
-
-    exp_num = pred_cov.shape[-1]
-
-    p_profile = []
-    f_profile = []
-    for exp in range(0,exp_num):
-        exp_pred_cov = pred_cov[:,exp]
-        exp_target_label = test_y[:,exp]
-
-        peak_idx = np.nonzero(exp_target_label)
-        flat_idx = np.where(exp_target_label == 0)
-
-        peak_cov = exp_pred_cov[peak_idx]
-        flat_cov = exp_pred_cov[flat_idx]
-
-        p_profile.append(np.array(peak_cov))
-        f_profile.append(np.array(flat_cov))
-
-    return p_profile,f_profile
