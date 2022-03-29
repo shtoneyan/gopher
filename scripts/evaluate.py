@@ -11,6 +11,7 @@ import utils
 import wandb
 import yaml
 from scipy import stats
+from tqdm import tqdm
 
 
 def change_resolution(cov, bin_size_orig, eval_bin):
@@ -144,7 +145,7 @@ def collect_whole_testset(data_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/ch
     """
     sts = utils.load_stats(data_dir)
     testset = utils.make_dataset(data_dir, 'test', sts, batch_size=batch_size, shuffle=False, coords=coords)
-    targets = pd.read_csv(data_dir + 'targets.txt', sep='\t')['identifier'].values
+    targets = pd.read_csv(os.path.join(data_dir, 'targets.txt'), sep='\t')['identifier'].values
     return testset, targets
 
 
@@ -179,7 +180,7 @@ def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, ev
                                              coords=False, batch_size=batch_size)
     # process runs
     all_run_summaries = []
-    for run_dir in run_dirs:
+    for run_dir in tqdm(run_dirs):
         print(run_dir)
         # load model
         model, bin_size = utils.read_model(run_dir, compile_model=False)
