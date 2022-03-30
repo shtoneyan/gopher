@@ -481,12 +481,7 @@ def conv_binary(input_shape, exp_num, wandb_config={}):
     model.summary()
     return model
 
-<<<<<<< HEAD
 def residual_binary(input_shape, exp_num, wandb_config={}):
-=======
-
-def residual_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
->>>>>>> 2c3a3656ceb0ce7384d143109d82f0a29beee392
     assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
     output_len, num_tasks = (1,exp_num)
 
