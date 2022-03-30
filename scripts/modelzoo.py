@@ -7,6 +7,37 @@ import metrics
 from tensorflow import keras
 
 
+def basenji_v2(input_shape, output_shape, wandb_config={}):
+    config = {'filtN_1': 128, 'filtN_2': 1024}
+    for k in config.keys():
+        if k in wandb_config.keys():
+            config[k] = wandb_config[k]
+    window_size = int(input_shape[0] / output_shape[0])
+    n_exp = output_shape[-1]
+    print(window_size)
+    sequence = tf.keras.Input(shape=input_shape, name='sequence')
+
+    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation='gelu', activation_end=None,
+                         strides=1, dilation_rate=1, l2_scale=0, dropout=0, conv_type='standard', residual=False,
+                         pool_size=2, batch_norm=True, bn_momentum=0.9, bn_gamma=None, bn_type='standard',
+                         kernel_initializer='he_normal', padding='same')
+
+    current = dilated_residual(current, filters=int(config['filtN_1']//2), kernel_size=3, rate_mult=1.5,
+                               conv_type='standard', dropout=0.3, repeat=11, round=False,
+                               activation='gelu', batch_norm=True, bn_momentum=0.9)
+
+    current = conv_block(current, filters=config['filtN_2'], kernel_size=1, activation='gelu',
+                         dropout=0.05, batch_norm=True, bn_momentum=0.9)
+
+    current = tf.keras.layers.AveragePooling1D(pool_size=window_size)(current)
+
+    outputs = dense_layer(current, n_exp, activation='softplus',
+                          batch_norm=False, bn_momentum=0.9)
+
+    model = tf.keras.Model(inputs=sequence, outputs=outputs)
+    return model
+
+
 def basenjimod(input_shape, output_shape, wandb_config={}):
     """
     Basenji-based model that can change the output shape based on bin resolution. Defaults correspond to finetuned values.
