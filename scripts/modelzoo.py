@@ -12,14 +12,18 @@ def basenji_v2(input_shape, output_shape, wandb_config={}):
     for k in config.keys():
         if k in wandb_config.keys():
             config[k] = wandb_config[k]
-    window_size = int(input_shape[0] / output_shape[0])
-    n_exp = output_shape[-1]
+    window_size = int(input_shape[0]//output_shape[0]//2)
     print(window_size)
+    if window_size == 0:
+        pool_1 = 1
+        window_size = 1
+    else:
+        pool_1 = 2
     sequence = tf.keras.Input(shape=input_shape, name='sequence')
 
     current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation='gelu', activation_end=None,
                          strides=1, dilation_rate=1, l2_scale=0, dropout=0, conv_type='standard', residual=False,
-                         pool_size=2, batch_norm=True, bn_momentum=0.9, bn_gamma=None, bn_type='standard',
+                         pool_size=pool_1, batch_norm=True, bn_momentum=0.9, bn_gamma=None, bn_type='standard',
                          kernel_initializer='he_normal', padding='same')
 
     current = dilated_residual(current, filters=int(config['filtN_1']//2), kernel_size=3, rate_mult=1.5,
@@ -31,7 +35,7 @@ def basenji_v2(input_shape, output_shape, wandb_config={}):
 
     current = tf.keras.layers.AveragePooling1D(pool_size=window_size)(current)
 
-    outputs = dense_layer(current, n_exp, activation='softplus',
+    outputs = dense_layer(current, output_shape[-1], activation='softplus',
                           batch_norm=False, bn_momentum=0.9)
 
     model = tf.keras.Model(inputs=sequence, outputs=outputs)
@@ -220,7 +224,7 @@ def basenji_binary(input_shape,exp_num,wandb_config={}):
     # print(l_bin, n_conv_tower, add_2max)
     sequence = tf.keras.Input(shape=input_shape, name='sequence')
 
-    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation='gelu', activation_end=config['activation'],
+    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation=config['activation'], activation_end=None,
                          strides=1, dilation_rate=1, l2_scale=0, dropout=drp1, conv_type='standard', residual=False,
                          pool_size=8, batch_norm=True, bn_momentum=0.9, bn_gamma=None, bn_type='standard',
                          kernel_initializer='he_normal', padding='same')
@@ -485,6 +489,7 @@ def conv_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
                   metrics=['binary_accuracy', auroc, aupr])
     model.summary()
     return model
+
 
 def residual_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
     assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
