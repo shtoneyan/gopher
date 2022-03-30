@@ -220,7 +220,7 @@ def basenji_binary(input_shape,exp_num,wandb_config={}):
     # print(l_bin, n_conv_tower, add_2max)
     sequence = tf.keras.Input(shape=input_shape, name='sequence')
 
-    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation=config['activation'], activation_end=None,
+    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation='gelu', activation_end=config['activation'],
                          strides=1, dilation_rate=1, l2_scale=0, dropout=drp1, conv_type='standard', residual=False,
                          pool_size=8, batch_norm=True, bn_momentum=0.9, bn_gamma=None, bn_type='standard',
                          kernel_initializer='he_normal', padding='same')
@@ -485,7 +485,6 @@ def conv_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
                   metrics=['binary_accuracy', auroc, aupr])
     model.summary()
     return model
-
 
 def residual_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
     assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'

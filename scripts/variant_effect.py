@@ -66,7 +66,7 @@ def vcf_quantitative(model_path, ref_seq, alt_seq, input_size, output_pre, robus
     h5_output.close()
 
 
-def vcf_binary(model_path, ref_seq, alt_seq, layer, input_size, output_pre, robust=True, batch_size=64, shift_num=10):
+def vcf_binary(model_path, ref_seq, alt_seq, input_size, output_pre, robust=True, batch_size=64, shift_num=10):
     """
 
     :param model_path:
@@ -83,10 +83,9 @@ def vcf_binary(model_path, ref_seq, alt_seq, layer, input_size, output_pre, robu
     model = utils.read_model(model_path, False)[0]
     if robust == True:
         vcf_diff = vcf_binary_robust(ref_seq, alt_seq, model, shift_num=shift_num,
-                                     window_size=input_size, batch_size=batch_size,
-                                     layer=layer)
+                                     window_size=input_size, batch_size=batch_size)
     elif robust == False:
-        vcf_diff = vcf_binary_fast(ref_seq, alt_seq, model,window_size = input_size, layer=layer, batch_size=batch_size)
+        vcf_diff = vcf_binary_fast(ref_seq, alt_seq, model,window_size = input_size,batch_size=batch_size)
 
     else:
         raise ValueError('robust parameter only takes boolean values')
@@ -207,7 +206,7 @@ def vcf_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64):
     return vcf_diff_list
 
 
-def vcf_binary_fast(ref, alt, model, window_size,batch_size=64, layer=-1):
+def vcf_binary_fast(ref, alt, model, window_size,batch_size=64):
     """
 
     :param ref:
@@ -234,14 +233,10 @@ def vcf_binary_fast(ref, alt, model, window_size,batch_size=64, layer=-1):
             batch_n = len(ref) - i
             i = len(ref)
 
-        if int(layer) == -1:
-            ref_pred = model.predict(ref_seq)
-            alt_pred = model.predict(alt_seq)
-        elif int(layer) == -2:
-            intermediate_layer_model = tf.keras.Model(inputs=model.input,
-                                                      outputs=model.output.op.inputs[0].op.inputs[0])
-            ref_pred = intermediate_layer_model.predict(ref_seq)
-            alt_pred = intermediate_layer_model.predict(alt_seq)
+
+        ref_pred = model.predict(ref_seq)
+        alt_pred = model.predict(alt_seq)
+
 
         vcf_diff = alt_pred / ref_pred
         vcf_diff_list.append(np.log2(vcf_diff))
@@ -249,7 +244,7 @@ def vcf_binary_fast(ref, alt, model, window_size,batch_size=64, layer=-1):
     return vcf_diff_list
 
 
-def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64, layer=-1):
+def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_size=64):
     """
 
     :param ref:
@@ -286,14 +281,10 @@ def vcf_binary_robust(ref, alt, model, shift_num=10, window_size=2048, batch_siz
         # creat shifted sequence list and make predictions
         shifted_ref, shifted_alt, shift_idx = utils.window_shift(ref_seq, alt_seq,
                                                                 window_size, shift_num, both_seq=True)
-        if int(layer) == -1:
-            ref_pred = model.predict(shifted_ref)
-            alt_pred = model.predict(shifted_alt)
-        elif int(layer) == -2:
-            intermediate_layer_model = tf.keras.Model(inputs=model.input,
-                                                      outputs=model.output.op.inputs[0].op.inputs[0])
-            ref_pred = intermediate_layer_model.predict(shifted_ref)
-            alt_pred = intermediate_layer_model.predict(shifted_alt)
+
+        ref_pred = model.predict(shifted_ref)
+        alt_pred = model.predict(shifted_alt)
+
 
         # seperate label per seq
         sep_ref = np.array(np.array_split(ref_pred, batch_n))
