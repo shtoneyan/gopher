@@ -96,6 +96,10 @@ def binary_to_profile(binary_model_dir,profile_data_dir):
 
     target = np.concatenate(target_list)
     pred = np.concatenate(pred_list)
+    
+    target = np.squeeze(target)
+    pred = np.squeeze(pred)
+    
     r_list = []
     for i in range(0,target.shape[1]):
         r_list.append(scipy.stats.pearsonr(target[:,i],pred[:,i])[0])
