@@ -401,7 +401,7 @@ def ori_bpnet(input_shape, output_shape, wandb_config={}):
     model = keras.models.Model([input], [profile_outputs, count_outputs])
     return model
 
-def conv_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
+def conv_binary(input_shape, exp_num, wandb_config={}):
     assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
     output_len, num_tasks = (1,exp_num)
     inputs = keras.Input(shape=input_shape, name='sequence')
@@ -430,18 +430,9 @@ def conv_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
     nn = keras.layers.Activation('relu')(nn)
     nn = keras.layers.Dropout(0.3)(nn)
 
-    nn = keras.layers.Dense(output_len * bottleneck)(nn)
-    nn = keras.layers.BatchNormalization()(nn)
-    nn = keras.layers.Activation('relu')(nn)
-    nn = keras.layers.Reshape([output_len, bottleneck])(nn)
-    nn = keras.layers.Dropout(0.1)(nn)
+    nn = keras.layers.Dense(output_len * exp_num)(nn)
+    outputs = keras.layers.Activation('sigmoid')(nn)
 
-    nn = keras.layers.Conv1D(filters=256, kernel_size=7, padding='same')(nn)
-    nn = keras.layers.BatchNormalization()(nn)
-    nn = keras.layers.Activation('relu')(nn)
-    nn = keras.layers.Dropout(0.2)(nn)
-    nn = keras.layers.Dense(num_tasks, activation='sigmoid')(nn)
-    outputs = keras.layers.Reshape((num_tasks,))(nn)
     model =  keras.Model(inputs=inputs, outputs=outputs)
     #complie with optimizer
     auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
@@ -455,7 +446,7 @@ def conv_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
     model.summary()
     return model
 
-def residual_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
+def residual_binary(input_shape, exp_num, wandb_config={}):
     assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
     output_len, num_tasks = (1,exp_num)
 
@@ -488,20 +479,9 @@ def residual_binary(input_shape, exp_num, bottleneck=8, wandb_config={}):
     nn = keras.layers.Activation('relu')(nn)
     nn = keras.layers.Dropout(0.3)(nn)
 
-    nn = keras.layers.Dense(output_len * bottleneck)(nn)
-    nn = keras.layers.BatchNormalization()(nn)
-    nn = keras.layers.Activation('relu')(nn)
-    nn = keras.layers.Reshape([output_len, bottleneck])(nn)
-    nn = keras.layers.Dropout(0.1)(nn)
+    nn = keras.layers.Dense(exp_num)(nn)
+    outputs = keras.layers.Activation('sigmoid')(nn)
 
-    nn = keras.layers.Conv1D(filters=256, kernel_size=7, padding='same')(nn)
-    nn = keras.layers.BatchNormalization()(nn)
-    nn = keras.layers.Activation('relu')(nn)
-    nn = keras.layers.Dropout(0.1)(nn)
-    nn = residual_block(nn, 3, activation='relu', num_layers=5)
-
-    nn = keras.layers.Dense(num_tasks, activation='sigmoid')(nn)
-    outputs = keras.layers.Reshape((num_tasks,))(nn)
     model = tf.keras.Model(inputs=inputs, outputs=outputs)
     #complie with optimizer
     auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
