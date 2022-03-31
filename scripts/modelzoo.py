@@ -236,7 +236,8 @@ def basenji_binary(input_shape,exp_num,wandb_config={}):
 def Basset(inputs,exp_num,padding='same',wandb_config={}):
     assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
     config = {'filtN': [300,200,200], 'kern': [10,11,7],
-                'dense':1000,'drop_out':[0.3,0.3],'max_pool':[3,4,4],'activation':'relu'}
+                'dense':1000,'drop_out':[0.3,0.3],'max_pool':[3,4,4],'activation':'relu',
+                'l_rate':0.001}
 
     for k in config.keys():
         if k in wandb_config.keys():
