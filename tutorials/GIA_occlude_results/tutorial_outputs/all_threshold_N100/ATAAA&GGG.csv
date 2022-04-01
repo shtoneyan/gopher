@@ -1,0 +1,1121 @@
+mean coverage,sequence,cell line,N instances,seq_idx,motif pattern
+0.3001726,original,PC-3_replicate_1,"3, 19",0,"ATAAA, GGG"
+0.35123813,original,Panc1_replicate_1,"3, 19",0,"ATAAA, GGG"
+0.27426276,original,PC-3_replicate_1,"3, 25",1,"ATAAA, GGG"
+0.3712461,original,Panc1_replicate_1,"3, 25",1,"ATAAA, GGG"
+0.17752895,original,PC-3_replicate_1,"3, 20",2,"ATAAA, GGG"
+0.30923218,original,Panc1_replicate_1,"3, 20",2,"ATAAA, GGG"
+0.7831569,original,PC-3_replicate_1,"2, 33",3,"ATAAA, GGG"
+0.8375682,original,Panc1_replicate_1,"2, 33",3,"ATAAA, GGG"
+0.33563998,original,PC-3_replicate_1,"4, 28",4,"ATAAA, GGG"
+0.48698336,original,Panc1_replicate_1,"4, 28",4,"ATAAA, GGG"
+0.23431587,original,PC-3_replicate_1,"1, 70",5,"ATAAA, GGG"
+0.44536725,original,Panc1_replicate_1,"1, 70",5,"ATAAA, GGG"
+2.523926,original,PC-3_replicate_1,"2, 66",6,"ATAAA, GGG"
+2.843946,original,Panc1_replicate_1,"2, 66",6,"ATAAA, GGG"
+0.22384995,original,PC-3_replicate_1,"17, 16",7,"ATAAA, GGG"
+0.27475503,original,Panc1_replicate_1,"17, 16",7,"ATAAA, GGG"
+0.21164565,original,PC-3_replicate_1,"3, 23",8,"ATAAA, GGG"
+0.36761594,original,Panc1_replicate_1,"3, 23",8,"ATAAA, GGG"
+0.22690456,original,PC-3_replicate_1,"9, 23",9,"ATAAA, GGG"
+0.32768667,original,Panc1_replicate_1,"9, 23",9,"ATAAA, GGG"
+0.3264833,original,PC-3_replicate_1,"13, 12",11,"ATAAA, GGG"
+0.33567625,original,Panc1_replicate_1,"13, 12",11,"ATAAA, GGG"
+0.29831314,original,PC-3_replicate_1,"5, 9",12,"ATAAA, GGG"
+0.37113717,original,Panc1_replicate_1,"5, 9",12,"ATAAA, GGG"
+0.4891304,original,PC-3_replicate_1,"1, 30",13,"ATAAA, GGG"
+0.55544037,original,Panc1_replicate_1,"1, 30",13,"ATAAA, GGG"
+0.3644594,original,PC-3_replicate_1,"2, 34",14,"ATAAA, GGG"
+0.511833,original,Panc1_replicate_1,"2, 34",14,"ATAAA, GGG"
+0.32304436,original,PC-3_replicate_1,"3, 48",15,"ATAAA, GGG"
+0.50365084,original,Panc1_replicate_1,"3, 48",15,"ATAAA, GGG"
+0.37303078,original,PC-3_replicate_1,"1, 29",16,"ATAAA, GGG"
+0.5422183,original,Panc1_replicate_1,"1, 29",16,"ATAAA, GGG"
+0.30061442,original,PC-3_replicate_1,"12, 11",17,"ATAAA, GGG"
+0.22180879,original,Panc1_replicate_1,"12, 11",17,"ATAAA, GGG"
+0.3681314,original,PC-3_replicate_1,"2, 31",18,"ATAAA, GGG"
+0.59103507,original,Panc1_replicate_1,"2, 31",18,"ATAAA, GGG"
+0.5387829,original,PC-3_replicate_1,"1, 29",19,"ATAAA, GGG"
+0.6496422,original,Panc1_replicate_1,"1, 29",19,"ATAAA, GGG"
+0.39991945,original,PC-3_replicate_1,"5, 27",20,"ATAAA, GGG"
+0.5527187,original,Panc1_replicate_1,"5, 27",20,"ATAAA, GGG"
+0.23936094,original,PC-3_replicate_1,"4, 32",21,"ATAAA, GGG"
+0.36738598,original,Panc1_replicate_1,"4, 32",21,"ATAAA, GGG"
+0.29302773,original,PC-3_replicate_1,"5, 24",22,"ATAAA, GGG"
+0.44204113,original,Panc1_replicate_1,"5, 24",22,"ATAAA, GGG"
+0.15011309,original,PC-3_replicate_1,"7, 9",24,"ATAAA, GGG"
+0.27054358,original,Panc1_replicate_1,"7, 9",24,"ATAAA, GGG"
+0.285542,original,PC-3_replicate_1,"4, 24",25,"ATAAA, GGG"
+0.3712516,original,Panc1_replicate_1,"4, 24",25,"ATAAA, GGG"
+0.5491471,original,PC-3_replicate_1,"3, 13",26,"ATAAA, GGG"
+0.31678227,original,Panc1_replicate_1,"3, 13",26,"ATAAA, GGG"
+0.46682945,original,PC-3_replicate_1,"5, 29",27,"ATAAA, GGG"
+0.6078134,original,Panc1_replicate_1,"5, 29",27,"ATAAA, GGG"
+0.23894335,original,PC-3_replicate_1,"2, 24",28,"ATAAA, GGG"
+0.33771858,original,Panc1_replicate_1,"2, 24",28,"ATAAA, GGG"
+0.50987357,original,PC-3_replicate_1,"5, 42",29,"ATAAA, GGG"
+0.562678,original,Panc1_replicate_1,"5, 42",29,"ATAAA, GGG"
+0.22044776,original,PC-3_replicate_1,"1, 17",30,"ATAAA, GGG"
+0.37413874,original,Panc1_replicate_1,"1, 17",30,"ATAAA, GGG"
+0.36807108,original,PC-3_replicate_1,"4, 25",31,"ATAAA, GGG"
+0.50034034,original,Panc1_replicate_1,"4, 25",31,"ATAAA, GGG"
+0.41946292,original,PC-3_replicate_1,"2, 28",32,"ATAAA, GGG"
+0.53291357,original,Panc1_replicate_1,"2, 28",32,"ATAAA, GGG"
+0.22762172,original,PC-3_replicate_1,"8, 19",34,"ATAAA, GGG"
+0.30649775,original,Panc1_replicate_1,"8, 19",34,"ATAAA, GGG"
+0.3305376,original,PC-3_replicate_1,"1, 38",35,"ATAAA, GGG"
+0.5823281,original,Panc1_replicate_1,"1, 38",35,"ATAAA, GGG"
+0.66672426,original,PC-3_replicate_1,"1, 26",36,"ATAAA, GGG"
+0.79220194,original,Panc1_replicate_1,"1, 26",36,"ATAAA, GGG"
+0.24018113,original,PC-3_replicate_1,"8, 17",37,"ATAAA, GGG"
+0.28977802,original,Panc1_replicate_1,"8, 17",37,"ATAAA, GGG"
+0.6133787,original,PC-3_replicate_1,"3, 31",39,"ATAAA, GGG"
+0.499077,original,Panc1_replicate_1,"3, 31",39,"ATAAA, GGG"
+0.2702145,original,PC-3_replicate_1,"7, 17",40,"ATAAA, GGG"
+0.3386581,original,Panc1_replicate_1,"7, 17",40,"ATAAA, GGG"
+0.46152952,original,PC-3_replicate_1,"3, 27",41,"ATAAA, GGG"
+0.3993137,original,Panc1_replicate_1,"3, 27",41,"ATAAA, GGG"
+0.6962158,original,PC-3_replicate_1,"3, 34",42,"ATAAA, GGG"
+0.5907312,original,Panc1_replicate_1,"3, 34",42,"ATAAA, GGG"
+0.32437655,original,PC-3_replicate_1,"5, 25",43,"ATAAA, GGG"
+0.33393198,original,Panc1_replicate_1,"5, 25",43,"ATAAA, GGG"
+0.47298583,original,PC-3_replicate_1,"2, 31",44,"ATAAA, GGG"
+0.65673244,original,Panc1_replicate_1,"2, 31",44,"ATAAA, GGG"
+0.30699158,original,PC-3_replicate_1,"2, 19",45,"ATAAA, GGG"
+0.4810325,original,Panc1_replicate_1,"2, 19",45,"ATAAA, GGG"
+0.38238856,original,PC-3_replicate_1,"3, 47",46,"ATAAA, GGG"
+0.58914787,original,Panc1_replicate_1,"3, 47",46,"ATAAA, GGG"
+0.47741458,original,PC-3_replicate_1,"3, 25",47,"ATAAA, GGG"
+0.4726192,original,Panc1_replicate_1,"3, 25",47,"ATAAA, GGG"
+0.4268225,original,PC-3_replicate_1,"1, 34",48,"ATAAA, GGG"
+0.6703132,original,Panc1_replicate_1,"1, 34",48,"ATAAA, GGG"
+0.7569603,original,PC-3_replicate_1,"4, 28",49,"ATAAA, GGG"
+0.5163384,original,Panc1_replicate_1,"4, 28",49,"ATAAA, GGG"
+0.3049651,original,PC-3_replicate_1,"9, 29",50,"ATAAA, GGG"
+0.3198722,original,Panc1_replicate_1,"9, 29",50,"ATAAA, GGG"
+0.44381222,original,PC-3_replicate_1,"3, 21",51,"ATAAA, GGG"
+0.32167172,original,Panc1_replicate_1,"3, 21",51,"ATAAA, GGG"
+0.45088473,original,PC-3_replicate_1,"5, 21",52,"ATAAA, GGG"
+0.44410834,original,Panc1_replicate_1,"5, 21",52,"ATAAA, GGG"
+0.37500885,original,PC-3_replicate_1,"4, 25",53,"ATAAA, GGG"
+0.36267543,original,Panc1_replicate_1,"4, 25",53,"ATAAA, GGG"
+0.30051172,original,PC-3_replicate_1,"4, 31",54,"ATAAA, GGG"
+0.4744126,original,Panc1_replicate_1,"4, 31",54,"ATAAA, GGG"
+0.40660647,original,PC-3_replicate_1,"3, 41",56,"ATAAA, GGG"
+0.6442553,original,Panc1_replicate_1,"3, 41",56,"ATAAA, GGG"
+0.32227227,original,PC-3_replicate_1,"6, 19",57,"ATAAA, GGG"
+0.42952433,original,Panc1_replicate_1,"6, 19",57,"ATAAA, GGG"
+0.597891,original,PC-3_replicate_1,"6, 28",59,"ATAAA, GGG"
+0.48421827,original,Panc1_replicate_1,"6, 28",59,"ATAAA, GGG"
+0.39295945,original,PC-3_replicate_1,"2, 26",60,"ATAAA, GGG"
+0.6178587,original,Panc1_replicate_1,"2, 26",60,"ATAAA, GGG"
+0.32352367,original,PC-3_replicate_1,"3, 23",61,"ATAAA, GGG"
+0.49673325,original,Panc1_replicate_1,"3, 23",61,"ATAAA, GGG"
+0.5564065,original,PC-3_replicate_1,"6, 22",62,"ATAAA, GGG"
+0.5308633,original,Panc1_replicate_1,"6, 22",62,"ATAAA, GGG"
+0.41524994,original,PC-3_replicate_1,"9, 25",63,"ATAAA, GGG"
+0.36645523,original,Panc1_replicate_1,"9, 25",63,"ATAAA, GGG"
+0.14594184,original,PC-3_replicate_1,"5, 11",64,"ATAAA, GGG"
+0.25217313,original,Panc1_replicate_1,"5, 11",64,"ATAAA, GGG"
+0.2802832,original,PC-3_replicate_1,"5, 23",65,"ATAAA, GGG"
+0.3691653,original,Panc1_replicate_1,"5, 23",65,"ATAAA, GGG"
+1.4756345,original,PC-3_replicate_1,"2, 53",66,"ATAAA, GGG"
+1.8361177,original,Panc1_replicate_1,"2, 53",66,"ATAAA, GGG"
+0.3467464,original,PC-3_replicate_1,"2, 50",67,"ATAAA, GGG"
+0.6551811,original,Panc1_replicate_1,"2, 50",67,"ATAAA, GGG"
+0.38203815,original,PC-3_replicate_1,"5, 32",68,"ATAAA, GGG"
+0.47627953,original,Panc1_replicate_1,"5, 32",68,"ATAAA, GGG"
+0.65034574,original,PC-3_replicate_1,"3, 35",69,"ATAAA, GGG"
+0.8486309,original,Panc1_replicate_1,"3, 35",69,"ATAAA, GGG"
+0.37593874,original,PC-3_replicate_1,"12, 18",70,"ATAAA, GGG"
+0.38236344,original,Panc1_replicate_1,"12, 18",70,"ATAAA, GGG"
+0.45647433,original,PC-3_replicate_1,"1, 32",71,"ATAAA, GGG"
+0.63936746,original,Panc1_replicate_1,"1, 32",71,"ATAAA, GGG"
+0.21815863,original,PC-3_replicate_1,"5, 35",72,"ATAAA, GGG"
+0.33820936,original,Panc1_replicate_1,"5, 35",72,"ATAAA, GGG"
+0.31471226,original,PC-3_replicate_1,"1, 26",73,"ATAAA, GGG"
+0.4315142,original,Panc1_replicate_1,"1, 26",73,"ATAAA, GGG"
+0.21916588,original,PC-3_replicate_1,"13, 19",74,"ATAAA, GGG"
+0.30513498,original,Panc1_replicate_1,"13, 19",74,"ATAAA, GGG"
+0.24563876,original,PC-3_replicate_1,"3, 16",75,"ATAAA, GGG"
+0.42056036,original,Panc1_replicate_1,"3, 16",75,"ATAAA, GGG"
+0.26638365,original,PC-3_replicate_1,"1, 33",76,"ATAAA, GGG"
+0.5254851,original,Panc1_replicate_1,"1, 33",76,"ATAAA, GGG"
+0.3511124,original,PC-3_replicate_1,"4, 55",77,"ATAAA, GGG"
+0.57675165,original,Panc1_replicate_1,"4, 55",77,"ATAAA, GGG"
+0.2130599,original,PC-3_replicate_1,"9, 16",78,"ATAAA, GGG"
+0.35135135,original,Panc1_replicate_1,"9, 16",78,"ATAAA, GGG"
+0.5372763,original,PC-3_replicate_1,"3, 25",79,"ATAAA, GGG"
+0.60620886,original,Panc1_replicate_1,"3, 25",79,"ATAAA, GGG"
+0.26631948,original,PC-3_replicate_1,"3, 34",80,"ATAAA, GGG"
+0.43925667,original,Panc1_replicate_1,"3, 34",80,"ATAAA, GGG"
+0.42810425,original,PC-3_replicate_1,"11, 16",81,"ATAAA, GGG"
+0.36799347,original,Panc1_replicate_1,"11, 16",81,"ATAAA, GGG"
+1.0963149,original,PC-3_replicate_1,"3, 97",83,"ATAAA, GGG"
+1.4691099,original,Panc1_replicate_1,"3, 97",83,"ATAAA, GGG"
+0.93874276,original,PC-3_replicate_1,"9, 10",84,"ATAAA, GGG"
+0.36305037,original,Panc1_replicate_1,"9, 10",84,"ATAAA, GGG"
+0.8135345,original,PC-3_replicate_1,"3, 52",85,"ATAAA, GGG"
+1.0861948,original,Panc1_replicate_1,"3, 52",85,"ATAAA, GGG"
+0.36398783,original,PC-3_replicate_1,"3, 15",87,"ATAAA, GGG"
+0.42696807,original,Panc1_replicate_1,"3, 15",87,"ATAAA, GGG"
+0.38933054,original,PC-3_replicate_1,"5, 31",90,"ATAAA, GGG"
+0.542555,original,Panc1_replicate_1,"5, 31",90,"ATAAA, GGG"
+0.4500887,original,PC-3_replicate_1,"3, 24",91,"ATAAA, GGG"
+0.6313886,original,Panc1_replicate_1,"3, 24",91,"ATAAA, GGG"
+0.23436952,original,PC-3_replicate_1,"5, 12",92,"ATAAA, GGG"
+0.24437082,original,Panc1_replicate_1,"5, 12",92,"ATAAA, GGG"
+0.14538546,original,PC-3_replicate_1,"5, 27",93,"ATAAA, GGG"
+0.3193083,original,Panc1_replicate_1,"5, 27",93,"ATAAA, GGG"
+0.31129918,original,PC-3_replicate_1,"7, 30",94,"ATAAA, GGG"
+0.4577029,original,Panc1_replicate_1,"7, 30",94,"ATAAA, GGG"
+0.44700095,original,PC-3_replicate_1,"3, 21",95,"ATAAA, GGG"
+0.41549924,original,Panc1_replicate_1,"3, 21",95,"ATAAA, GGG"
+0.39628205,original,PC-3_replicate_1,"3, 22",96,"ATAAA, GGG"
+0.4311561,original,Panc1_replicate_1,"3, 22",96,"ATAAA, GGG"
+0.5089602,original,PC-3_replicate_1,"13, 20",97,"ATAAA, GGG"
+0.3825984,original,Panc1_replicate_1,"13, 20",97,"ATAAA, GGG"
+0.31062153,original,PC-3_replicate_1,"6, 26",98,"ATAAA, GGG"
+0.38983107,original,Panc1_replicate_1,"6, 26",98,"ATAAA, GGG"
+0.4072492,original,PC-3_replicate_1,"6, 17",99,"ATAAA, GGG"
+0.4274182,original,Panc1_replicate_1,"6, 17",99,"ATAAA, GGG"
+0.38562083,removed,PC-3_replicate_1,"3, 19",0,"ATAAA, GGG"
+0.38564256,removed,Panc1_replicate_1,"3, 19",0,"ATAAA, GGG"
+0.33288705,removed,PC-3_replicate_1,"3, 25",1,"ATAAA, GGG"
+0.40982684,removed,Panc1_replicate_1,"3, 25",1,"ATAAA, GGG"
+0.19639595,removed,PC-3_replicate_1,"3, 20",2,"ATAAA, GGG"
+0.33465144,removed,Panc1_replicate_1,"3, 20",2,"ATAAA, GGG"
+0.97693497,removed,PC-3_replicate_1,"2, 33",3,"ATAAA, GGG"
+0.94384027,removed,Panc1_replicate_1,"2, 33",3,"ATAAA, GGG"
+0.37227413,removed,PC-3_replicate_1,"4, 28",4,"ATAAA, GGG"
+0.50258106,removed,Panc1_replicate_1,"4, 28",4,"ATAAA, GGG"
+0.3349622,removed,PC-3_replicate_1,"1, 70",5,"ATAAA, GGG"
+0.5159277,removed,Panc1_replicate_1,"1, 70",5,"ATAAA, GGG"
+2.8906417,removed,PC-3_replicate_1,"2, 66",6,"ATAAA, GGG"
+3.1248026,removed,Panc1_replicate_1,"2, 66",6,"ATAAA, GGG"
+0.29257235,removed,PC-3_replicate_1,"17, 16",7,"ATAAA, GGG"
+0.31933627,removed,Panc1_replicate_1,"17, 16",7,"ATAAA, GGG"
+0.22236718,removed,PC-3_replicate_1,"3, 23",8,"ATAAA, GGG"
+0.38641143,removed,Panc1_replicate_1,"3, 23",8,"ATAAA, GGG"
+0.28392947,removed,PC-3_replicate_1,"9, 23",9,"ATAAA, GGG"
+0.35727575,removed,Panc1_replicate_1,"9, 23",9,"ATAAA, GGG"
+0.383224,removed,PC-3_replicate_1,"13, 12",11,"ATAAA, GGG"
+0.3545239,removed,Panc1_replicate_1,"13, 12",11,"ATAAA, GGG"
+0.3127079,removed,PC-3_replicate_1,"5, 9",12,"ATAAA, GGG"
+0.37900287,removed,Panc1_replicate_1,"5, 9",12,"ATAAA, GGG"
+0.5658235,removed,PC-3_replicate_1,"1, 30",13,"ATAAA, GGG"
+0.5973946,removed,Panc1_replicate_1,"1, 30",13,"ATAAA, GGG"
+0.49256915,removed,PC-3_replicate_1,"2, 34",14,"ATAAA, GGG"
+0.5735744,removed,Panc1_replicate_1,"2, 34",14,"ATAAA, GGG"
+0.38071033,removed,PC-3_replicate_1,"3, 48",15,"ATAAA, GGG"
+0.52954894,removed,Panc1_replicate_1,"3, 48",15,"ATAAA, GGG"
+0.42634588,removed,PC-3_replicate_1,"1, 29",16,"ATAAA, GGG"
+0.55158114,removed,Panc1_replicate_1,"1, 29",16,"ATAAA, GGG"
+0.34656596,removed,PC-3_replicate_1,"12, 11",17,"ATAAA, GGG"
+0.25135273,removed,Panc1_replicate_1,"12, 11",17,"ATAAA, GGG"
+0.3991054,removed,PC-3_replicate_1,"2, 31",18,"ATAAA, GGG"
+0.5874298,removed,Panc1_replicate_1,"2, 31",18,"ATAAA, GGG"
+0.5737359,removed,PC-3_replicate_1,"1, 29",19,"ATAAA, GGG"
+0.65346026,removed,Panc1_replicate_1,"1, 29",19,"ATAAA, GGG"
+0.4963198,removed,PC-3_replicate_1,"5, 27",20,"ATAAA, GGG"
+0.5968617,removed,Panc1_replicate_1,"5, 27",20,"ATAAA, GGG"
+0.28037164,removed,PC-3_replicate_1,"4, 32",21,"ATAAA, GGG"
+0.3709158,removed,Panc1_replicate_1,"4, 32",21,"ATAAA, GGG"
+0.3809377,removed,PC-3_replicate_1,"5, 24",22,"ATAAA, GGG"
+0.46442148,removed,Panc1_replicate_1,"5, 24",22,"ATAAA, GGG"
+0.15431546,removed,PC-3_replicate_1,"7, 9",24,"ATAAA, GGG"
+0.28099325,removed,Panc1_replicate_1,"7, 9",24,"ATAAA, GGG"
+0.30550882,removed,PC-3_replicate_1,"4, 24",25,"ATAAA, GGG"
+0.38585937,removed,Panc1_replicate_1,"4, 24",25,"ATAAA, GGG"
+0.57842827,removed,PC-3_replicate_1,"3, 13",26,"ATAAA, GGG"
+0.33073595,removed,Panc1_replicate_1,"3, 13",26,"ATAAA, GGG"
+0.54778934,removed,PC-3_replicate_1,"5, 29",27,"ATAAA, GGG"
+0.64969736,removed,Panc1_replicate_1,"5, 29",27,"ATAAA, GGG"
+0.27969912,removed,PC-3_replicate_1,"2, 24",28,"ATAAA, GGG"
+0.35935563,removed,Panc1_replicate_1,"2, 24",28,"ATAAA, GGG"
+0.5902952,removed,PC-3_replicate_1,"5, 42",29,"ATAAA, GGG"
+0.5797289,removed,Panc1_replicate_1,"5, 42",29,"ATAAA, GGG"
+0.23223794,removed,PC-3_replicate_1,"1, 17",30,"ATAAA, GGG"
+0.36961758,removed,Panc1_replicate_1,"1, 17",30,"ATAAA, GGG"
+0.513477,removed,PC-3_replicate_1,"4, 25",31,"ATAAA, GGG"
+0.54566914,removed,Panc1_replicate_1,"4, 25",31,"ATAAA, GGG"
+0.5347799,removed,PC-3_replicate_1,"2, 28",32,"ATAAA, GGG"
+0.59764695,removed,Panc1_replicate_1,"2, 28",32,"ATAAA, GGG"
+0.25273654,removed,PC-3_replicate_1,"8, 19",34,"ATAAA, GGG"
+0.31539786,removed,Panc1_replicate_1,"8, 19",34,"ATAAA, GGG"
+0.39485568,removed,PC-3_replicate_1,"1, 38",35,"ATAAA, GGG"
+0.61755395,removed,Panc1_replicate_1,"1, 38",35,"ATAAA, GGG"
+0.72683656,removed,PC-3_replicate_1,"1, 26",36,"ATAAA, GGG"
+0.8242675,removed,Panc1_replicate_1,"1, 26",36,"ATAAA, GGG"
+0.29111955,removed,PC-3_replicate_1,"8, 17",37,"ATAAA, GGG"
+0.30973104,removed,Panc1_replicate_1,"8, 17",37,"ATAAA, GGG"
+0.7565206,removed,PC-3_replicate_1,"3, 31",39,"ATAAA, GGG"
+0.5439733,removed,Panc1_replicate_1,"3, 31",39,"ATAAA, GGG"
+0.26061586,removed,PC-3_replicate_1,"7, 17",40,"ATAAA, GGG"
+0.33336598,removed,Panc1_replicate_1,"7, 17",40,"ATAAA, GGG"
+0.5257099,removed,PC-3_replicate_1,"3, 27",41,"ATAAA, GGG"
+0.41528183,removed,Panc1_replicate_1,"3, 27",41,"ATAAA, GGG"
+0.9270163,removed,PC-3_replicate_1,"3, 34",42,"ATAAA, GGG"
+0.65819,removed,Panc1_replicate_1,"3, 34",42,"ATAAA, GGG"
+0.41215673,removed,PC-3_replicate_1,"5, 25",43,"ATAAA, GGG"
+0.36105117,removed,Panc1_replicate_1,"5, 25",43,"ATAAA, GGG"
+0.5649208,removed,PC-3_replicate_1,"2, 31",44,"ATAAA, GGG"
+0.699188,removed,Panc1_replicate_1,"2, 31",44,"ATAAA, GGG"
+0.33549142,removed,PC-3_replicate_1,"2, 19",45,"ATAAA, GGG"
+0.4906175,removed,Panc1_replicate_1,"2, 19",45,"ATAAA, GGG"
+0.60141826,removed,PC-3_replicate_1,"3, 47",46,"ATAAA, GGG"
+0.6718649,removed,Panc1_replicate_1,"3, 47",46,"ATAAA, GGG"
+0.571524,removed,PC-3_replicate_1,"3, 25",47,"ATAAA, GGG"
+0.5132617,removed,Panc1_replicate_1,"3, 25",47,"ATAAA, GGG"
+0.5485451,removed,PC-3_replicate_1,"1, 34",48,"ATAAA, GGG"
+0.7270071,removed,Panc1_replicate_1,"1, 34",48,"ATAAA, GGG"
+0.8639854,removed,PC-3_replicate_1,"4, 28",49,"ATAAA, GGG"
+0.53724784,removed,Panc1_replicate_1,"4, 28",49,"ATAAA, GGG"
+0.39197877,removed,PC-3_replicate_1,"9, 29",50,"ATAAA, GGG"
+0.35781372,removed,Panc1_replicate_1,"9, 29",50,"ATAAA, GGG"
+0.55405027,removed,PC-3_replicate_1,"3, 21",51,"ATAAA, GGG"
+0.36199093,removed,Panc1_replicate_1,"3, 21",51,"ATAAA, GGG"
+0.53350973,removed,PC-3_replicate_1,"5, 21",52,"ATAAA, GGG"
+0.46204987,removed,Panc1_replicate_1,"5, 21",52,"ATAAA, GGG"
+0.40482196,removed,PC-3_replicate_1,"4, 25",53,"ATAAA, GGG"
+0.36438066,removed,Panc1_replicate_1,"4, 25",53,"ATAAA, GGG"
+0.34843904,removed,PC-3_replicate_1,"4, 31",54,"ATAAA, GGG"
+0.502743,removed,Panc1_replicate_1,"4, 31",54,"ATAAA, GGG"
+0.50225484,removed,PC-3_replicate_1,"3, 41",56,"ATAAA, GGG"
+0.7114826,removed,Panc1_replicate_1,"3, 41",56,"ATAAA, GGG"
+0.37208533,removed,PC-3_replicate_1,"6, 19",57,"ATAAA, GGG"
+0.4636786,removed,Panc1_replicate_1,"6, 19",57,"ATAAA, GGG"
+0.6868542,removed,PC-3_replicate_1,"6, 28",59,"ATAAA, GGG"
+0.5232052,removed,Panc1_replicate_1,"6, 28",59,"ATAAA, GGG"
+0.43758538,removed,PC-3_replicate_1,"2, 26",60,"ATAAA, GGG"
+0.6373373,removed,Panc1_replicate_1,"2, 26",60,"ATAAA, GGG"
+0.39612177,removed,PC-3_replicate_1,"3, 23",61,"ATAAA, GGG"
+0.53796595,removed,Panc1_replicate_1,"3, 23",61,"ATAAA, GGG"
+0.55509156,removed,PC-3_replicate_1,"6, 22",62,"ATAAA, GGG"
+0.5366638,removed,Panc1_replicate_1,"6, 22",62,"ATAAA, GGG"
+0.53018147,removed,PC-3_replicate_1,"9, 25",63,"ATAAA, GGG"
+0.3920108,removed,Panc1_replicate_1,"9, 25",63,"ATAAA, GGG"
+0.15705135,removed,PC-3_replicate_1,"5, 11",64,"ATAAA, GGG"
+0.26732928,removed,Panc1_replicate_1,"5, 11",64,"ATAAA, GGG"
+0.32173097,removed,PC-3_replicate_1,"5, 23",65,"ATAAA, GGG"
+0.39738873,removed,Panc1_replicate_1,"5, 23",65,"ATAAA, GGG"
+1.8657486,removed,PC-3_replicate_1,"2, 53",66,"ATAAA, GGG"
+2.1394818,removed,Panc1_replicate_1,"2, 53",66,"ATAAA, GGG"
+0.4720644,removed,PC-3_replicate_1,"2, 50",67,"ATAAA, GGG"
+0.7346501,removed,Panc1_replicate_1,"2, 50",67,"ATAAA, GGG"
+0.5084019,removed,PC-3_replicate_1,"5, 32",68,"ATAAA, GGG"
+0.5176714,removed,Panc1_replicate_1,"5, 32",68,"ATAAA, GGG"
+0.7572913,removed,PC-3_replicate_1,"3, 35",69,"ATAAA, GGG"
+0.91338396,removed,Panc1_replicate_1,"3, 35",69,"ATAAA, GGG"
+0.42907158,removed,PC-3_replicate_1,"12, 18",70,"ATAAA, GGG"
+0.42182252,removed,Panc1_replicate_1,"12, 18",70,"ATAAA, GGG"
+0.5339463,removed,PC-3_replicate_1,"1, 32",71,"ATAAA, GGG"
+0.6452752,removed,Panc1_replicate_1,"1, 32",71,"ATAAA, GGG"
+0.2569681,removed,PC-3_replicate_1,"5, 35",72,"ATAAA, GGG"
+0.36023107,removed,Panc1_replicate_1,"5, 35",72,"ATAAA, GGG"
+0.34492043,removed,PC-3_replicate_1,"1, 26",73,"ATAAA, GGG"
+0.4454648,removed,Panc1_replicate_1,"1, 26",73,"ATAAA, GGG"
+0.2873842,removed,PC-3_replicate_1,"13, 19",74,"ATAAA, GGG"
+0.35622427,removed,Panc1_replicate_1,"13, 19",74,"ATAAA, GGG"
+0.24966682,removed,PC-3_replicate_1,"3, 16",75,"ATAAA, GGG"
+0.41434827,removed,Panc1_replicate_1,"3, 16",75,"ATAAA, GGG"
+0.29798523,removed,PC-3_replicate_1,"1, 33",76,"ATAAA, GGG"
+0.55331546,removed,Panc1_replicate_1,"1, 33",76,"ATAAA, GGG"
+0.60649896,removed,PC-3_replicate_1,"4, 55",77,"ATAAA, GGG"
+0.6686255,removed,Panc1_replicate_1,"4, 55",77,"ATAAA, GGG"
+0.24171628,removed,PC-3_replicate_1,"9, 16",78,"ATAAA, GGG"
+0.38303262,removed,Panc1_replicate_1,"9, 16",78,"ATAAA, GGG"
+0.5938001,removed,PC-3_replicate_1,"3, 25",79,"ATAAA, GGG"
+0.6255014,removed,Panc1_replicate_1,"3, 25",79,"ATAAA, GGG"
+0.32153675,removed,PC-3_replicate_1,"3, 34",80,"ATAAA, GGG"
+0.45594558,removed,Panc1_replicate_1,"3, 34",80,"ATAAA, GGG"
+0.4608545,removed,PC-3_replicate_1,"11, 16",81,"ATAAA, GGG"
+0.4026971,removed,Panc1_replicate_1,"11, 16",81,"ATAAA, GGG"
+1.3261737,removed,PC-3_replicate_1,"3, 97",83,"ATAAA, GGG"
+1.5812156,removed,Panc1_replicate_1,"3, 97",83,"ATAAA, GGG"
+0.97675717,removed,PC-3_replicate_1,"9, 10",84,"ATAAA, GGG"
+0.378184,removed,Panc1_replicate_1,"9, 10",84,"ATAAA, GGG"
+1.0051317,removed,PC-3_replicate_1,"3, 52",85,"ATAAA, GGG"
+1.2315197,removed,Panc1_replicate_1,"3, 52",85,"ATAAA, GGG"
+0.3784526,removed,PC-3_replicate_1,"3, 15",87,"ATAAA, GGG"
+0.4292539,removed,Panc1_replicate_1,"3, 15",87,"ATAAA, GGG"
+0.44822857,removed,PC-3_replicate_1,"5, 31",90,"ATAAA, GGG"
+0.5699201,removed,Panc1_replicate_1,"5, 31",90,"ATAAA, GGG"
+0.44943607,removed,PC-3_replicate_1,"3, 24",91,"ATAAA, GGG"
+0.61036855,removed,Panc1_replicate_1,"3, 24",91,"ATAAA, GGG"
+0.24670629,removed,PC-3_replicate_1,"5, 12",92,"ATAAA, GGG"
+0.24436668,removed,Panc1_replicate_1,"5, 12",92,"ATAAA, GGG"
+0.16437438,removed,PC-3_replicate_1,"5, 27",93,"ATAAA, GGG"
+0.34466258,removed,Panc1_replicate_1,"5, 27",93,"ATAAA, GGG"
+0.41644382,removed,PC-3_replicate_1,"7, 30",94,"ATAAA, GGG"
+0.48499066,removed,Panc1_replicate_1,"7, 30",94,"ATAAA, GGG"
+0.4867357,removed,PC-3_replicate_1,"3, 21",95,"ATAAA, GGG"
+0.43358967,removed,Panc1_replicate_1,"3, 21",95,"ATAAA, GGG"
+0.4353351,removed,PC-3_replicate_1,"3, 22",96,"ATAAA, GGG"
+0.44897568,removed,Panc1_replicate_1,"3, 22",96,"ATAAA, GGG"
+0.5883684,removed,PC-3_replicate_1,"13, 20",97,"ATAAA, GGG"
+0.4158565,removed,Panc1_replicate_1,"13, 20",97,"ATAAA, GGG"
+0.4423573,removed,PC-3_replicate_1,"6, 26",98,"ATAAA, GGG"
+0.4208412,removed,Panc1_replicate_1,"6, 26",98,"ATAAA, GGG"
+0.4211731,removed,PC-3_replicate_1,"6, 17",99,"ATAAA, GGG"
+0.4259356,removed,Panc1_replicate_1,"6, 17",99,"ATAAA, GGG"
+0.3001726,original,PC-3_replicate_1,3,0,ATAAA
+0.35123813,original,Panc1_replicate_1,3,0,ATAAA
+0.27426276,original,PC-3_replicate_1,3,1,ATAAA
+0.3712461,original,Panc1_replicate_1,3,1,ATAAA
+0.17752895,original,PC-3_replicate_1,3,2,ATAAA
+0.30923218,original,Panc1_replicate_1,3,2,ATAAA
+0.7831569,original,PC-3_replicate_1,2,3,ATAAA
+0.8375682,original,Panc1_replicate_1,2,3,ATAAA
+0.33563998,original,PC-3_replicate_1,4,4,ATAAA
+0.48698336,original,Panc1_replicate_1,4,4,ATAAA
+0.23431587,original,PC-3_replicate_1,1,5,ATAAA
+0.44536725,original,Panc1_replicate_1,1,5,ATAAA
+2.523926,original,PC-3_replicate_1,2,6,ATAAA
+2.843946,original,Panc1_replicate_1,2,6,ATAAA
+0.22384995,original,PC-3_replicate_1,17,7,ATAAA
+0.27475503,original,Panc1_replicate_1,17,7,ATAAA
+0.21164565,original,PC-3_replicate_1,3,8,ATAAA
+0.36761594,original,Panc1_replicate_1,3,8,ATAAA
+0.22690456,original,PC-3_replicate_1,9,9,ATAAA
+0.32768667,original,Panc1_replicate_1,9,9,ATAAA
+0.3264833,original,PC-3_replicate_1,13,11,ATAAA
+0.33567625,original,Panc1_replicate_1,13,11,ATAAA
+0.29831314,original,PC-3_replicate_1,5,12,ATAAA
+0.37113717,original,Panc1_replicate_1,5,12,ATAAA
+0.4891304,original,PC-3_replicate_1,1,13,ATAAA
+0.55544037,original,Panc1_replicate_1,1,13,ATAAA
+0.3644594,original,PC-3_replicate_1,2,14,ATAAA
+0.511833,original,Panc1_replicate_1,2,14,ATAAA
+0.32304436,original,PC-3_replicate_1,3,15,ATAAA
+0.50365084,original,Panc1_replicate_1,3,15,ATAAA
+0.37303078,original,PC-3_replicate_1,1,16,ATAAA
+0.5422183,original,Panc1_replicate_1,1,16,ATAAA
+0.30061442,original,PC-3_replicate_1,12,17,ATAAA
+0.22180879,original,Panc1_replicate_1,12,17,ATAAA
+0.3681314,original,PC-3_replicate_1,2,18,ATAAA
+0.59103507,original,Panc1_replicate_1,2,18,ATAAA
+0.5387829,original,PC-3_replicate_1,1,19,ATAAA
+0.6496422,original,Panc1_replicate_1,1,19,ATAAA
+0.39991945,original,PC-3_replicate_1,5,20,ATAAA
+0.5527187,original,Panc1_replicate_1,5,20,ATAAA
+0.23936094,original,PC-3_replicate_1,4,21,ATAAA
+0.36738598,original,Panc1_replicate_1,4,21,ATAAA
+0.29302773,original,PC-3_replicate_1,5,22,ATAAA
+0.44204113,original,Panc1_replicate_1,5,22,ATAAA
+0.15011309,original,PC-3_replicate_1,7,24,ATAAA
+0.27054358,original,Panc1_replicate_1,7,24,ATAAA
+0.285542,original,PC-3_replicate_1,4,25,ATAAA
+0.3712516,original,Panc1_replicate_1,4,25,ATAAA
+0.5491471,original,PC-3_replicate_1,3,26,ATAAA
+0.31678227,original,Panc1_replicate_1,3,26,ATAAA
+0.46682945,original,PC-3_replicate_1,5,27,ATAAA
+0.6078134,original,Panc1_replicate_1,5,27,ATAAA
+0.23894335,original,PC-3_replicate_1,2,28,ATAAA
+0.33771858,original,Panc1_replicate_1,2,28,ATAAA
+0.50987357,original,PC-3_replicate_1,5,29,ATAAA
+0.562678,original,Panc1_replicate_1,5,29,ATAAA
+0.22044776,original,PC-3_replicate_1,1,30,ATAAA
+0.37413874,original,Panc1_replicate_1,1,30,ATAAA
+0.36807108,original,PC-3_replicate_1,4,31,ATAAA
+0.50034034,original,Panc1_replicate_1,4,31,ATAAA
+0.41946292,original,PC-3_replicate_1,2,32,ATAAA
+0.53291357,original,Panc1_replicate_1,2,32,ATAAA
+0.22762172,original,PC-3_replicate_1,8,34,ATAAA
+0.30649775,original,Panc1_replicate_1,8,34,ATAAA
+0.3305376,original,PC-3_replicate_1,1,35,ATAAA
+0.5823281,original,Panc1_replicate_1,1,35,ATAAA
+0.66672426,original,PC-3_replicate_1,1,36,ATAAA
+0.79220194,original,Panc1_replicate_1,1,36,ATAAA
+0.24018113,original,PC-3_replicate_1,8,37,ATAAA
+0.28977802,original,Panc1_replicate_1,8,37,ATAAA
+0.6133787,original,PC-3_replicate_1,3,39,ATAAA
+0.499077,original,Panc1_replicate_1,3,39,ATAAA
+0.2702145,original,PC-3_replicate_1,7,40,ATAAA
+0.3386581,original,Panc1_replicate_1,7,40,ATAAA
+0.46152952,original,PC-3_replicate_1,3,41,ATAAA
+0.3993137,original,Panc1_replicate_1,3,41,ATAAA
+0.6962158,original,PC-3_replicate_1,3,42,ATAAA
+0.5907312,original,Panc1_replicate_1,3,42,ATAAA
+0.32437655,original,PC-3_replicate_1,5,43,ATAAA
+0.33393198,original,Panc1_replicate_1,5,43,ATAAA
+0.47298583,original,PC-3_replicate_1,2,44,ATAAA
+0.65673244,original,Panc1_replicate_1,2,44,ATAAA
+0.30699158,original,PC-3_replicate_1,2,45,ATAAA
+0.4810325,original,Panc1_replicate_1,2,45,ATAAA
+0.38238856,original,PC-3_replicate_1,3,46,ATAAA
+0.58914787,original,Panc1_replicate_1,3,46,ATAAA
+0.47741458,original,PC-3_replicate_1,3,47,ATAAA
+0.4726192,original,Panc1_replicate_1,3,47,ATAAA
+0.4268225,original,PC-3_replicate_1,1,48,ATAAA
+0.6703132,original,Panc1_replicate_1,1,48,ATAAA
+0.7569603,original,PC-3_replicate_1,4,49,ATAAA
+0.5163384,original,Panc1_replicate_1,4,49,ATAAA
+0.3049651,original,PC-3_replicate_1,9,50,ATAAA
+0.3198722,original,Panc1_replicate_1,9,50,ATAAA
+0.44381222,original,PC-3_replicate_1,3,51,ATAAA
+0.32167172,original,Panc1_replicate_1,3,51,ATAAA
+0.45088473,original,PC-3_replicate_1,5,52,ATAAA
+0.44410834,original,Panc1_replicate_1,5,52,ATAAA
+0.37500885,original,PC-3_replicate_1,4,53,ATAAA
+0.36267543,original,Panc1_replicate_1,4,53,ATAAA
+0.30051172,original,PC-3_replicate_1,4,54,ATAAA
+0.4744126,original,Panc1_replicate_1,4,54,ATAAA
+0.40660647,original,PC-3_replicate_1,3,56,ATAAA
+0.6442553,original,Panc1_replicate_1,3,56,ATAAA
+0.32227227,original,PC-3_replicate_1,6,57,ATAAA
+0.42952433,original,Panc1_replicate_1,6,57,ATAAA
+0.597891,original,PC-3_replicate_1,6,59,ATAAA
+0.48421827,original,Panc1_replicate_1,6,59,ATAAA
+0.39295945,original,PC-3_replicate_1,2,60,ATAAA
+0.6178587,original,Panc1_replicate_1,2,60,ATAAA
+0.32352367,original,PC-3_replicate_1,3,61,ATAAA
+0.49673325,original,Panc1_replicate_1,3,61,ATAAA
+0.5564065,original,PC-3_replicate_1,6,62,ATAAA
+0.5308633,original,Panc1_replicate_1,6,62,ATAAA
+0.41524994,original,PC-3_replicate_1,9,63,ATAAA
+0.36645523,original,Panc1_replicate_1,9,63,ATAAA
+0.14594184,original,PC-3_replicate_1,5,64,ATAAA
+0.25217313,original,Panc1_replicate_1,5,64,ATAAA
+0.2802832,original,PC-3_replicate_1,5,65,ATAAA
+0.3691653,original,Panc1_replicate_1,5,65,ATAAA
+1.4756345,original,PC-3_replicate_1,2,66,ATAAA
+1.8361177,original,Panc1_replicate_1,2,66,ATAAA
+0.3467464,original,PC-3_replicate_1,2,67,ATAAA
+0.6551811,original,Panc1_replicate_1,2,67,ATAAA
+0.38203815,original,PC-3_replicate_1,5,68,ATAAA
+0.47627953,original,Panc1_replicate_1,5,68,ATAAA
+0.65034574,original,PC-3_replicate_1,3,69,ATAAA
+0.8486309,original,Panc1_replicate_1,3,69,ATAAA
+0.37593874,original,PC-3_replicate_1,12,70,ATAAA
+0.38236344,original,Panc1_replicate_1,12,70,ATAAA
+0.45647433,original,PC-3_replicate_1,1,71,ATAAA
+0.63936746,original,Panc1_replicate_1,1,71,ATAAA
+0.21815863,original,PC-3_replicate_1,5,72,ATAAA
+0.33820936,original,Panc1_replicate_1,5,72,ATAAA
+0.31471226,original,PC-3_replicate_1,1,73,ATAAA
+0.4315142,original,Panc1_replicate_1,1,73,ATAAA
+0.21916588,original,PC-3_replicate_1,13,74,ATAAA
+0.30513498,original,Panc1_replicate_1,13,74,ATAAA
+0.24563876,original,PC-3_replicate_1,3,75,ATAAA
+0.42056036,original,Panc1_replicate_1,3,75,ATAAA
+0.26638365,original,PC-3_replicate_1,1,76,ATAAA
+0.5254851,original,Panc1_replicate_1,1,76,ATAAA
+0.3511124,original,PC-3_replicate_1,4,77,ATAAA
+0.57675165,original,Panc1_replicate_1,4,77,ATAAA
+0.2130599,original,PC-3_replicate_1,9,78,ATAAA
+0.35135135,original,Panc1_replicate_1,9,78,ATAAA
+0.5372763,original,PC-3_replicate_1,3,79,ATAAA
+0.60620886,original,Panc1_replicate_1,3,79,ATAAA
+0.26631948,original,PC-3_replicate_1,3,80,ATAAA
+0.43925667,original,Panc1_replicate_1,3,80,ATAAA
+0.42810425,original,PC-3_replicate_1,11,81,ATAAA
+0.36799347,original,Panc1_replicate_1,11,81,ATAAA
+1.0963149,original,PC-3_replicate_1,3,83,ATAAA
+1.4691099,original,Panc1_replicate_1,3,83,ATAAA
+0.93874276,original,PC-3_replicate_1,9,84,ATAAA
+0.36305037,original,Panc1_replicate_1,9,84,ATAAA
+0.8135345,original,PC-3_replicate_1,3,85,ATAAA
+1.0861948,original,Panc1_replicate_1,3,85,ATAAA
+0.36398783,original,PC-3_replicate_1,3,87,ATAAA
+0.42696807,original,Panc1_replicate_1,3,87,ATAAA
+0.38933054,original,PC-3_replicate_1,5,90,ATAAA
+0.542555,original,Panc1_replicate_1,5,90,ATAAA
+0.4500887,original,PC-3_replicate_1,3,91,ATAAA
+0.6313886,original,Panc1_replicate_1,3,91,ATAAA
+0.23436952,original,PC-3_replicate_1,5,92,ATAAA
+0.24437082,original,Panc1_replicate_1,5,92,ATAAA
+0.14538546,original,PC-3_replicate_1,5,93,ATAAA
+0.3193083,original,Panc1_replicate_1,5,93,ATAAA
+0.31129918,original,PC-3_replicate_1,7,94,ATAAA
+0.4577029,original,Panc1_replicate_1,7,94,ATAAA
+0.44700095,original,PC-3_replicate_1,3,95,ATAAA
+0.41549924,original,Panc1_replicate_1,3,95,ATAAA
+0.39628205,original,PC-3_replicate_1,3,96,ATAAA
+0.4311561,original,Panc1_replicate_1,3,96,ATAAA
+0.5089602,original,PC-3_replicate_1,13,97,ATAAA
+0.3825984,original,Panc1_replicate_1,13,97,ATAAA
+0.31062153,original,PC-3_replicate_1,6,98,ATAAA
+0.38983107,original,Panc1_replicate_1,6,98,ATAAA
+0.4072492,original,PC-3_replicate_1,6,99,ATAAA
+0.4274182,original,Panc1_replicate_1,6,99,ATAAA
+0.3020024,removed,PC-3_replicate_1,3,0,ATAAA
+0.35751733,removed,Panc1_replicate_1,3,0,ATAAA
+0.27460447,removed,PC-3_replicate_1,3,1,ATAAA
+0.37669158,removed,Panc1_replicate_1,3,1,ATAAA
+0.18459679,removed,PC-3_replicate_1,3,2,ATAAA
+0.31969333,removed,Panc1_replicate_1,3,2,ATAAA
+0.7853367,removed,PC-3_replicate_1,2,3,ATAAA
+0.84585273,removed,Panc1_replicate_1,2,3,ATAAA
+0.3344067,removed,PC-3_replicate_1,4,4,ATAAA
+0.4953808,removed,Panc1_replicate_1,4,4,ATAAA
+0.2365051,removed,PC-3_replicate_1,1,5,ATAAA
+0.44794556,removed,Panc1_replicate_1,1,5,ATAAA
+2.524785,removed,PC-3_replicate_1,2,6,ATAAA
+2.8479812,removed,Panc1_replicate_1,2,6,ATAAA
+0.25752383,removed,PC-3_replicate_1,17,7,ATAAA
+0.31002912,removed,Panc1_replicate_1,17,7,ATAAA
+0.21381792,removed,PC-3_replicate_1,3,8,ATAAA
+0.37325934,removed,Panc1_replicate_1,3,8,ATAAA
+0.23868845,removed,PC-3_replicate_1,9,9,ATAAA
+0.3460251,removed,Panc1_replicate_1,9,9,ATAAA
+0.34310028,removed,PC-3_replicate_1,13,11,ATAAA
+0.36073187,removed,Panc1_replicate_1,13,11,ATAAA
+0.30106598,removed,PC-3_replicate_1,5,12,ATAAA
+0.38319245,removed,Panc1_replicate_1,5,12,ATAAA
+0.48860106,removed,PC-3_replicate_1,1,13,ATAAA
+0.55641234,removed,Panc1_replicate_1,1,13,ATAAA
+0.3681087,removed,PC-3_replicate_1,2,14,ATAAA
+0.51837265,removed,Panc1_replicate_1,2,14,ATAAA
+0.32752258,removed,PC-3_replicate_1,3,15,ATAAA
+0.5093854,removed,Panc1_replicate_1,3,15,ATAAA
+0.37220952,removed,PC-3_replicate_1,1,16,ATAAA
+0.5435001,removed,Panc1_replicate_1,1,16,ATAAA
+0.33878815,removed,PC-3_replicate_1,12,17,ATAAA
+0.2493968,removed,Panc1_replicate_1,12,17,ATAAA
+0.37283295,removed,PC-3_replicate_1,2,18,ATAAA
+0.59568274,removed,Panc1_replicate_1,2,18,ATAAA
+0.54674727,removed,PC-3_replicate_1,1,19,ATAAA
+0.6597848,removed,Panc1_replicate_1,1,19,ATAAA
+0.40343654,removed,PC-3_replicate_1,5,20,ATAAA
+0.5659015,removed,Panc1_replicate_1,5,20,ATAAA
+0.2519219,removed,PC-3_replicate_1,4,21,ATAAA
+0.379125,removed,Panc1_replicate_1,4,21,ATAAA
+0.29231006,removed,PC-3_replicate_1,5,22,ATAAA
+0.4457275,removed,Panc1_replicate_1,5,22,ATAAA
+0.1509277,removed,PC-3_replicate_1,7,24,ATAAA
+0.28054103,removed,Panc1_replicate_1,7,24,ATAAA
+0.2868049,removed,PC-3_replicate_1,4,25,ATAAA
+0.3787181,removed,Panc1_replicate_1,4,25,ATAAA
+0.5479617,removed,PC-3_replicate_1,3,26,ATAAA
+0.32545564,removed,Panc1_replicate_1,3,26,ATAAA
+0.47535488,removed,PC-3_replicate_1,5,27,ATAAA
+0.6216099,removed,Panc1_replicate_1,5,27,ATAAA
+0.2420045,removed,PC-3_replicate_1,2,28,ATAAA
+0.34356725,removed,Panc1_replicate_1,2,28,ATAAA
+0.51082283,removed,PC-3_replicate_1,5,29,ATAAA
+0.57324326,removed,Panc1_replicate_1,5,29,ATAAA
+0.21915211,removed,PC-3_replicate_1,1,30,ATAAA
+0.37301275,removed,Panc1_replicate_1,1,30,ATAAA
+0.36922416,removed,PC-3_replicate_1,4,31,ATAAA
+0.508295,removed,Panc1_replicate_1,4,31,ATAAA
+0.41970542,removed,PC-3_replicate_1,2,32,ATAAA
+0.5327796,removed,Panc1_replicate_1,2,32,ATAAA
+0.23836748,removed,PC-3_replicate_1,8,34,ATAAA
+0.32430845,removed,Panc1_replicate_1,8,34,ATAAA
+0.33119756,removed,PC-3_replicate_1,1,35,ATAAA
+0.58619404,removed,Panc1_replicate_1,1,35,ATAAA
+0.6669519,removed,PC-3_replicate_1,1,36,ATAAA
+0.7936469,removed,Panc1_replicate_1,1,36,ATAAA
+0.2416769,removed,PC-3_replicate_1,8,37,ATAAA
+0.30304497,removed,Panc1_replicate_1,8,37,ATAAA
+0.6150032,removed,PC-3_replicate_1,3,39,ATAAA
+0.5041877,removed,Panc1_replicate_1,3,39,ATAAA
+0.26740468,removed,PC-3_replicate_1,7,40,ATAAA
+0.35026592,removed,Panc1_replicate_1,7,40,ATAAA
+0.46005735,removed,PC-3_replicate_1,3,41,ATAAA
+0.40205905,removed,Panc1_replicate_1,3,41,ATAAA
+0.6868341,removed,PC-3_replicate_1,3,42,ATAAA
+0.6052218,removed,Panc1_replicate_1,3,42,ATAAA
+0.3458363,removed,PC-3_replicate_1,5,43,ATAAA
+0.34719697,removed,Panc1_replicate_1,5,43,ATAAA
+0.46827406,removed,PC-3_replicate_1,2,44,ATAAA
+0.6552965,removed,Panc1_replicate_1,2,44,ATAAA
+0.31013235,removed,PC-3_replicate_1,2,45,ATAAA
+0.48893163,removed,Panc1_replicate_1,2,45,ATAAA
+0.38208652,removed,PC-3_replicate_1,3,46,ATAAA
+0.59736246,removed,Panc1_replicate_1,3,46,ATAAA
+0.48263273,removed,PC-3_replicate_1,3,47,ATAAA
+0.48463422,removed,Panc1_replicate_1,3,47,ATAAA
+0.43701765,removed,PC-3_replicate_1,1,48,ATAAA
+0.67905074,removed,Panc1_replicate_1,1,48,ATAAA
+0.76193243,removed,PC-3_replicate_1,4,49,ATAAA
+0.5283437,removed,Panc1_replicate_1,4,49,ATAAA
+0.31777477,removed,PC-3_replicate_1,9,50,ATAAA
+0.33942074,removed,Panc1_replicate_1,9,50,ATAAA
+0.45820588,removed,PC-3_replicate_1,3,51,ATAAA
+0.3311035,removed,Panc1_replicate_1,3,51,ATAAA
+0.46174493,removed,PC-3_replicate_1,5,52,ATAAA
+0.4561627,removed,Panc1_replicate_1,5,52,ATAAA
+0.37279972,removed,PC-3_replicate_1,4,53,ATAAA
+0.36748713,removed,Panc1_replicate_1,4,53,ATAAA
+0.3021736,removed,PC-3_replicate_1,4,54,ATAAA
+0.48390427,removed,Panc1_replicate_1,4,54,ATAAA
+0.40906498,removed,PC-3_replicate_1,3,56,ATAAA
+0.64885306,removed,Panc1_replicate_1,3,56,ATAAA
+0.32452354,removed,PC-3_replicate_1,6,57,ATAAA
+0.44008827,removed,Panc1_replicate_1,6,57,ATAAA
+0.5994822,removed,PC-3_replicate_1,6,59,ATAAA
+0.493439,removed,Panc1_replicate_1,6,59,ATAAA
+0.3939958,removed,PC-3_replicate_1,2,60,ATAAA
+0.62080127,removed,Panc1_replicate_1,2,60,ATAAA
+0.3268611,removed,PC-3_replicate_1,3,61,ATAAA
+0.50667953,removed,Panc1_replicate_1,3,61,ATAAA
+0.5487273,removed,PC-3_replicate_1,6,62,ATAAA
+0.54279786,removed,Panc1_replicate_1,6,62,ATAAA
+0.45736748,removed,PC-3_replicate_1,9,63,ATAAA
+0.38404086,removed,Panc1_replicate_1,9,63,ATAAA
+0.14473799,removed,PC-3_replicate_1,5,64,ATAAA
+0.2532969,removed,Panc1_replicate_1,5,64,ATAAA
+0.2902247,removed,PC-3_replicate_1,5,65,ATAAA
+0.38672364,removed,Panc1_replicate_1,5,65,ATAAA
+1.4735824,removed,PC-3_replicate_1,2,66,ATAAA
+1.8365364,removed,Panc1_replicate_1,2,66,ATAAA
+0.3486066,removed,PC-3_replicate_1,2,67,ATAAA
+0.6613763,removed,Panc1_replicate_1,2,67,ATAAA
+0.38961002,removed,PC-3_replicate_1,5,68,ATAAA
+0.48939416,removed,Panc1_replicate_1,5,68,ATAAA
+0.65395534,removed,PC-3_replicate_1,3,69,ATAAA
+0.8561211,removed,Panc1_replicate_1,3,69,ATAAA
+0.381381,removed,PC-3_replicate_1,12,70,ATAAA
+0.41062918,removed,Panc1_replicate_1,12,70,ATAAA
+0.45853403,removed,PC-3_replicate_1,1,71,ATAAA
+0.64042205,removed,Panc1_replicate_1,1,71,ATAAA
+0.22380827,removed,PC-3_replicate_1,5,72,ATAAA
+0.35171577,removed,Panc1_replicate_1,5,72,ATAAA
+0.3166279,removed,PC-3_replicate_1,1,73,ATAAA
+0.4354151,removed,Panc1_replicate_1,1,73,ATAAA
+0.23697008,removed,PC-3_replicate_1,13,74,ATAAA
+0.33556318,removed,Panc1_replicate_1,13,74,ATAAA
+0.24924338,removed,PC-3_replicate_1,3,75,ATAAA
+0.42967734,removed,Panc1_replicate_1,3,75,ATAAA
+0.265852,removed,PC-3_replicate_1,1,76,ATAAA
+0.5242371,removed,Panc1_replicate_1,1,76,ATAAA
+0.35728043,removed,PC-3_replicate_1,4,77,ATAAA
+0.5861907,removed,Panc1_replicate_1,4,77,ATAAA
+0.2163689,removed,PC-3_replicate_1,9,78,ATAAA
+0.3662536,removed,Panc1_replicate_1,9,78,ATAAA
+0.5318274,removed,PC-3_replicate_1,3,79,ATAAA
+0.60775924,removed,Panc1_replicate_1,3,79,ATAAA
+0.272095,removed,PC-3_replicate_1,3,80,ATAAA
+0.44704497,removed,Panc1_replicate_1,3,80,ATAAA
+0.43255535,removed,PC-3_replicate_1,11,81,ATAAA
+0.39549986,removed,Panc1_replicate_1,11,81,ATAAA
+1.1010315,removed,PC-3_replicate_1,3,83,ATAAA
+1.4799728,removed,Panc1_replicate_1,3,83,ATAAA
+0.97387195,removed,PC-3_replicate_1,9,84,ATAAA
+0.38759223,removed,Panc1_replicate_1,9,84,ATAAA
+0.8112687,removed,PC-3_replicate_1,3,85,ATAAA
+1.0952499,removed,Panc1_replicate_1,3,85,ATAAA
+0.36683008,removed,PC-3_replicate_1,3,87,ATAAA
+0.43255103,removed,Panc1_replicate_1,3,87,ATAAA
+0.38930377,removed,PC-3_replicate_1,5,90,ATAAA
+0.5516623,removed,Panc1_replicate_1,5,90,ATAAA
+0.4451441,removed,PC-3_replicate_1,3,91,ATAAA
+0.6360052,removed,Panc1_replicate_1,3,91,ATAAA
+0.23651749,removed,PC-3_replicate_1,5,92,ATAAA
+0.2510742,removed,Panc1_replicate_1,5,92,ATAAA
+0.14453733,removed,PC-3_replicate_1,5,93,ATAAA
+0.3248461,removed,Panc1_replicate_1,5,93,ATAAA
+0.31575567,removed,PC-3_replicate_1,7,94,ATAAA
+0.46943924,removed,Panc1_replicate_1,7,94,ATAAA
+0.45451272,removed,PC-3_replicate_1,3,95,ATAAA
+0.42535695,removed,Panc1_replicate_1,3,95,ATAAA
+0.39866066,removed,PC-3_replicate_1,3,96,ATAAA
+0.44060358,removed,Panc1_replicate_1,3,96,ATAAA
+0.5359007,removed,PC-3_replicate_1,13,97,ATAAA
+0.4144078,removed,Panc1_replicate_1,13,97,ATAAA
+0.3493228,removed,PC-3_replicate_1,6,98,ATAAA
+0.41103414,removed,Panc1_replicate_1,6,98,ATAAA
+0.4248269,removed,PC-3_replicate_1,6,99,ATAAA
+0.44501877,removed,Panc1_replicate_1,6,99,ATAAA
+0.3001726,original,PC-3_replicate_1,19,0,GGG
+0.35123813,original,Panc1_replicate_1,19,0,GGG
+0.27426276,original,PC-3_replicate_1,25,1,GGG
+0.3712461,original,Panc1_replicate_1,25,1,GGG
+0.17752895,original,PC-3_replicate_1,20,2,GGG
+0.30923218,original,Panc1_replicate_1,20,2,GGG
+0.7831569,original,PC-3_replicate_1,33,3,GGG
+0.8375682,original,Panc1_replicate_1,33,3,GGG
+0.33563998,original,PC-3_replicate_1,28,4,GGG
+0.48698336,original,Panc1_replicate_1,28,4,GGG
+0.23431587,original,PC-3_replicate_1,70,5,GGG
+0.44536725,original,Panc1_replicate_1,70,5,GGG
+2.523926,original,PC-3_replicate_1,66,6,GGG
+2.843946,original,Panc1_replicate_1,66,6,GGG
+0.22384995,original,PC-3_replicate_1,16,7,GGG
+0.27475503,original,Panc1_replicate_1,16,7,GGG
+0.21164565,original,PC-3_replicate_1,23,8,GGG
+0.36761594,original,Panc1_replicate_1,23,8,GGG
+0.22690456,original,PC-3_replicate_1,23,9,GGG
+0.32768667,original,Panc1_replicate_1,23,9,GGG
+0.24463451,original,PC-3_replicate_1,21,10,GGG
+0.55689365,original,Panc1_replicate_1,21,10,GGG
+0.3264833,original,PC-3_replicate_1,12,11,GGG
+0.33567625,original,Panc1_replicate_1,12,11,GGG
+0.29831314,original,PC-3_replicate_1,9,12,GGG
+0.37113717,original,Panc1_replicate_1,9,12,GGG
+0.4891304,original,PC-3_replicate_1,30,13,GGG
+0.55544037,original,Panc1_replicate_1,30,13,GGG
+0.3644594,original,PC-3_replicate_1,34,14,GGG
+0.511833,original,Panc1_replicate_1,34,14,GGG
+0.32304436,original,PC-3_replicate_1,48,15,GGG
+0.50365084,original,Panc1_replicate_1,48,15,GGG
+0.37303078,original,PC-3_replicate_1,29,16,GGG
+0.5422183,original,Panc1_replicate_1,29,16,GGG
+0.30061442,original,PC-3_replicate_1,11,17,GGG
+0.22180879,original,Panc1_replicate_1,11,17,GGG
+0.3681314,original,PC-3_replicate_1,31,18,GGG
+0.59103507,original,Panc1_replicate_1,31,18,GGG
+0.5387829,original,PC-3_replicate_1,29,19,GGG
+0.6496422,original,Panc1_replicate_1,29,19,GGG
+0.39991945,original,PC-3_replicate_1,27,20,GGG
+0.5527187,original,Panc1_replicate_1,27,20,GGG
+0.23936094,original,PC-3_replicate_1,32,21,GGG
+0.36738598,original,Panc1_replicate_1,32,21,GGG
+0.29302773,original,PC-3_replicate_1,24,22,GGG
+0.44204113,original,Panc1_replicate_1,24,22,GGG
+0.31941548,original,PC-3_replicate_1,43,23,GGG
+0.61725885,original,Panc1_replicate_1,43,23,GGG
+0.15011309,original,PC-3_replicate_1,9,24,GGG
+0.27054358,original,Panc1_replicate_1,9,24,GGG
+0.285542,original,PC-3_replicate_1,24,25,GGG
+0.3712516,original,Panc1_replicate_1,24,25,GGG
+0.5491471,original,PC-3_replicate_1,13,26,GGG
+0.31678227,original,Panc1_replicate_1,13,26,GGG
+0.46682945,original,PC-3_replicate_1,29,27,GGG
+0.6078134,original,Panc1_replicate_1,29,27,GGG
+0.23894335,original,PC-3_replicate_1,24,28,GGG
+0.33771858,original,Panc1_replicate_1,24,28,GGG
+0.50987357,original,PC-3_replicate_1,42,29,GGG
+0.562678,original,Panc1_replicate_1,42,29,GGG
+0.22044776,original,PC-3_replicate_1,17,30,GGG
+0.37413874,original,Panc1_replicate_1,17,30,GGG
+0.36807108,original,PC-3_replicate_1,25,31,GGG
+0.50034034,original,Panc1_replicate_1,25,31,GGG
+0.41946292,original,PC-3_replicate_1,28,32,GGG
+0.53291357,original,Panc1_replicate_1,28,32,GGG
+1.6769688,original,PC-3_replicate_1,69,33,GGG
+1.9829228,original,Panc1_replicate_1,69,33,GGG
+0.22762172,original,PC-3_replicate_1,19,34,GGG
+0.30649775,original,Panc1_replicate_1,19,34,GGG
+0.3305376,original,PC-3_replicate_1,38,35,GGG
+0.5823281,original,Panc1_replicate_1,38,35,GGG
+0.66672426,original,PC-3_replicate_1,26,36,GGG
+0.79220194,original,Panc1_replicate_1,26,36,GGG
+0.24018113,original,PC-3_replicate_1,17,37,GGG
+0.28977802,original,Panc1_replicate_1,17,37,GGG
+0.45396742,original,PC-3_replicate_1,47,38,GGG
+0.6501612,original,Panc1_replicate_1,47,38,GGG
+0.6133787,original,PC-3_replicate_1,31,39,GGG
+0.499077,original,Panc1_replicate_1,31,39,GGG
+0.2702145,original,PC-3_replicate_1,17,40,GGG
+0.3386581,original,Panc1_replicate_1,17,40,GGG
+0.46152952,original,PC-3_replicate_1,27,41,GGG
+0.3993137,original,Panc1_replicate_1,27,41,GGG
+0.6962158,original,PC-3_replicate_1,34,42,GGG
+0.5907312,original,Panc1_replicate_1,34,42,GGG
+0.32437655,original,PC-3_replicate_1,25,43,GGG
+0.33393198,original,Panc1_replicate_1,25,43,GGG
+0.47298583,original,PC-3_replicate_1,31,44,GGG
+0.65673244,original,Panc1_replicate_1,31,44,GGG
+0.30699158,original,PC-3_replicate_1,19,45,GGG
+0.4810325,original,Panc1_replicate_1,19,45,GGG
+0.38238856,original,PC-3_replicate_1,47,46,GGG
+0.58914787,original,Panc1_replicate_1,47,46,GGG
+0.47741458,original,PC-3_replicate_1,25,47,GGG
+0.4726192,original,Panc1_replicate_1,25,47,GGG
+0.4268225,original,PC-3_replicate_1,34,48,GGG
+0.6703132,original,Panc1_replicate_1,34,48,GGG
+0.7569603,original,PC-3_replicate_1,28,49,GGG
+0.5163384,original,Panc1_replicate_1,28,49,GGG
+0.3049651,original,PC-3_replicate_1,29,50,GGG
+0.3198722,original,Panc1_replicate_1,29,50,GGG
+0.44381222,original,PC-3_replicate_1,21,51,GGG
+0.32167172,original,Panc1_replicate_1,21,51,GGG
+0.45088473,original,PC-3_replicate_1,21,52,GGG
+0.44410834,original,Panc1_replicate_1,21,52,GGG
+0.37500885,original,PC-3_replicate_1,25,53,GGG
+0.36267543,original,Panc1_replicate_1,25,53,GGG
+0.30051172,original,PC-3_replicate_1,31,54,GGG
+0.4744126,original,Panc1_replicate_1,31,54,GGG
+0.45164084,original,PC-3_replicate_1,54,55,GGG
+0.7181899,original,Panc1_replicate_1,54,55,GGG
+0.40660647,original,PC-3_replicate_1,41,56,GGG
+0.6442553,original,Panc1_replicate_1,41,56,GGG
+0.32227227,original,PC-3_replicate_1,19,57,GGG
+0.42952433,original,Panc1_replicate_1,19,57,GGG
+0.36655357,original,PC-3_replicate_1,49,58,GGG
+0.57402855,original,Panc1_replicate_1,49,58,GGG
+0.597891,original,PC-3_replicate_1,28,59,GGG
+0.48421827,original,Panc1_replicate_1,28,59,GGG
+0.39295945,original,PC-3_replicate_1,26,60,GGG
+0.6178587,original,Panc1_replicate_1,26,60,GGG
+0.32352367,original,PC-3_replicate_1,23,61,GGG
+0.49673325,original,Panc1_replicate_1,23,61,GGG
+0.5564065,original,PC-3_replicate_1,22,62,GGG
+0.5308633,original,Panc1_replicate_1,22,62,GGG
+0.41524994,original,PC-3_replicate_1,25,63,GGG
+0.36645523,original,Panc1_replicate_1,25,63,GGG
+0.14594184,original,PC-3_replicate_1,11,64,GGG
+0.25217313,original,Panc1_replicate_1,11,64,GGG
+0.2802832,original,PC-3_replicate_1,23,65,GGG
+0.3691653,original,Panc1_replicate_1,23,65,GGG
+1.4756345,original,PC-3_replicate_1,53,66,GGG
+1.8361177,original,Panc1_replicate_1,53,66,GGG
+0.3467464,original,PC-3_replicate_1,50,67,GGG
+0.6551811,original,Panc1_replicate_1,50,67,GGG
+0.38203815,original,PC-3_replicate_1,32,68,GGG
+0.47627953,original,Panc1_replicate_1,32,68,GGG
+0.65034574,original,PC-3_replicate_1,35,69,GGG
+0.8486309,original,Panc1_replicate_1,35,69,GGG
+0.37593856,original,PC-3_replicate_1,18,70,GGG
+0.3823628,original,Panc1_replicate_1,18,70,GGG
+0.45647413,original,PC-3_replicate_1,32,71,GGG
+0.63936776,original,Panc1_replicate_1,32,71,GGG
+0.21815857,original,PC-3_replicate_1,35,72,GGG
+0.33820903,original,Panc1_replicate_1,35,72,GGG
+0.31471235,original,PC-3_replicate_1,26,73,GGG
+0.43151465,original,Panc1_replicate_1,26,73,GGG
+0.21916544,original,PC-3_replicate_1,19,74,GGG
+0.30513492,original,Panc1_replicate_1,19,74,GGG
+0.24563865,original,PC-3_replicate_1,16,75,GGG
+0.42056027,original,Panc1_replicate_1,16,75,GGG
+0.26638362,original,PC-3_replicate_1,33,76,GGG
+0.5254846,original,Panc1_replicate_1,33,76,GGG
+0.35111225,original,PC-3_replicate_1,55,77,GGG
+0.5767519,original,Panc1_replicate_1,55,77,GGG
+0.2130599,original,PC-3_replicate_1,16,78,GGG
+0.3513513,original,Panc1_replicate_1,16,78,GGG
+0.53727734,original,PC-3_replicate_1,25,79,GGG
+0.60620964,original,Panc1_replicate_1,25,79,GGG
+0.26631898,original,PC-3_replicate_1,34,80,GGG
+0.4392573,original,Panc1_replicate_1,34,80,GGG
+0.4281046,original,PC-3_replicate_1,16,81,GGG
+0.36799312,original,Panc1_replicate_1,16,81,GGG
+0.39250562,original,PC-3_replicate_1,31,82,GGG
+0.57871604,original,Panc1_replicate_1,31,82,GGG
+1.0963163,original,PC-3_replicate_1,97,83,GGG
+1.46911,original,Panc1_replicate_1,97,83,GGG
+0.9387447,original,PC-3_replicate_1,10,84,GGG
+0.36304966,original,Panc1_replicate_1,10,84,GGG
+0.8135353,original,PC-3_replicate_1,52,85,GGG
+1.0861949,original,Panc1_replicate_1,52,85,GGG
+0.36231065,original,PC-3_replicate_1,47,86,GGG
+0.617034,original,Panc1_replicate_1,47,86,GGG
+0.36398804,original,PC-3_replicate_1,15,87,GGG
+0.42696834,original,Panc1_replicate_1,15,87,GGG
+0.7853275,original,PC-3_replicate_1,60,88,GGG
+1.0906888,original,Panc1_replicate_1,60,88,GGG
+0.49324888,original,PC-3_replicate_1,61,89,GGG
+0.7524574,original,Panc1_replicate_1,61,89,GGG
+0.3893302,original,PC-3_replicate_1,31,90,GGG
+0.54255474,original,Panc1_replicate_1,31,90,GGG
+0.45008862,original,PC-3_replicate_1,24,91,GGG
+0.63138837,original,Panc1_replicate_1,24,91,GGG
+0.23436946,original,PC-3_replicate_1,12,92,GGG
+0.24437079,original,Panc1_replicate_1,12,92,GGG
+0.14538527,original,PC-3_replicate_1,27,93,GGG
+0.31930846,original,Panc1_replicate_1,27,93,GGG
+0.31129894,original,PC-3_replicate_1,30,94,GGG
+0.457703,original,Panc1_replicate_1,30,94,GGG
+0.4470009,original,PC-3_replicate_1,21,95,GGG
+0.4154989,original,Panc1_replicate_1,21,95,GGG
+0.39621732,original,PC-3_replicate_1,22,96,GGG
+0.4311598,original,Panc1_replicate_1,22,96,GGG
+0.5088859,original,PC-3_replicate_1,20,97,GGG
+0.3825824,original,Panc1_replicate_1,20,97,GGG
+0.31057677,original,PC-3_replicate_1,26,98,GGG
+0.389835,original,Panc1_replicate_1,26,98,GGG
+0.4071836,original,PC-3_replicate_1,17,99,GGG
+0.42741168,original,Panc1_replicate_1,17,99,GGG
+0.3964452,removed,PC-3_replicate_1,19,0,GGG
+0.38514116,removed,Panc1_replicate_1,19,0,GGG
+0.33487624,removed,PC-3_replicate_1,25,1,GGG
+0.40539783,removed,Panc1_replicate_1,25,1,GGG
+0.19107112,removed,PC-3_replicate_1,20,2,GGG
+0.32022703,removed,Panc1_replicate_1,20,2,GGG
+0.9740179,removed,PC-3_replicate_1,33,3,GGG
+0.9305035,removed,Panc1_replicate_1,33,3,GGG
+0.37480122,removed,PC-3_replicate_1,28,4,GGG
+0.49457648,removed,Panc1_replicate_1,28,4,GGG
+0.34007353,removed,PC-3_replicate_1,70,5,GGG
+0.52067995,removed,Panc1_replicate_1,70,5,GGG
+2.9324777,removed,PC-3_replicate_1,66,6,GGG
+3.162586,removed,Panc1_replicate_1,66,6,GGG
+0.24382979,removed,PC-3_replicate_1,16,7,GGG
+0.27828166,removed,Panc1_replicate_1,16,7,GGG
+0.2244797,removed,PC-3_replicate_1,23,8,GGG
+0.38286865,removed,Panc1_replicate_1,23,8,GGG
+0.2595542,removed,PC-3_replicate_1,23,9,GGG
+0.33652347,removed,Panc1_replicate_1,23,9,GGG
+0.31035045,removed,PC-3_replicate_1,21,10,GGG
+0.6131906,removed,Panc1_replicate_1,21,10,GGG
+0.3729628,removed,PC-3_replicate_1,12,11,GGG
+0.328856,removed,Panc1_replicate_1,12,11,GGG
+0.315614,removed,PC-3_replicate_1,9,12,GGG
+0.36875552,removed,Panc1_replicate_1,9,12,GGG
+0.5621058,removed,PC-3_replicate_1,30,13,GGG
+0.59788406,removed,Panc1_replicate_1,30,13,GGG
+0.49712652,removed,PC-3_replicate_1,34,14,GGG
+0.56848055,removed,Panc1_replicate_1,34,14,GGG
+0.39771143,removed,PC-3_replicate_1,48,15,GGG
+0.5415405,removed,Panc1_replicate_1,48,15,GGG
+0.4432506,removed,PC-3_replicate_1,29,16,GGG
+0.5516606,removed,Panc1_replicate_1,29,16,GGG
+0.31600454,removed,PC-3_replicate_1,11,17,GGG
+0.22670229,removed,Panc1_replicate_1,11,17,GGG
+0.4041961,removed,PC-3_replicate_1,31,18,GGG
+0.58664334,removed,Panc1_replicate_1,31,18,GGG
+0.5725099,removed,PC-3_replicate_1,29,19,GGG
+0.6405335,removed,Panc1_replicate_1,29,19,GGG
+0.48926306,removed,PC-3_replicate_1,27,20,GGG
+0.58376443,removed,Panc1_replicate_1,27,20,GGG
+0.26442575,removed,PC-3_replicate_1,32,21,GGG
+0.36320874,removed,Panc1_replicate_1,32,21,GGG
+0.37163064,removed,PC-3_replicate_1,24,22,GGG
+0.45886144,removed,Panc1_replicate_1,24,22,GGG
+0.43017226,removed,PC-3_replicate_1,43,23,GGG
+0.6967748,removed,Panc1_replicate_1,43,23,GGG
+0.1538693,removed,PC-3_replicate_1,9,24,GGG
+0.270964,removed,Panc1_replicate_1,9,24,GGG
+0.30040893,removed,PC-3_replicate_1,24,25,GGG
+0.36966577,removed,Panc1_replicate_1,24,25,GGG
+0.5803056,removed,PC-3_replicate_1,13,26,GGG
+0.32283175,removed,Panc1_replicate_1,13,26,GGG
+0.5394858,removed,PC-3_replicate_1,29,27,GGG
+0.6250413,removed,Panc1_replicate_1,29,27,GGG
+0.27430725,removed,PC-3_replicate_1,24,28,GGG
+0.35160115,removed,Panc1_replicate_1,24,28,GGG
+0.5947383,removed,PC-3_replicate_1,42,29,GGG
+0.5691054,removed,Panc1_replicate_1,42,29,GGG
+0.23481315,removed,PC-3_replicate_1,17,30,GGG
+0.37184918,removed,Panc1_replicate_1,17,30,GGG
+0.49702057,removed,PC-3_replicate_1,25,31,GGG
+0.5353799,removed,Panc1_replicate_1,25,31,GGG
+0.5235812,removed,PC-3_replicate_1,28,32,GGG
+0.6017701,removed,Panc1_replicate_1,28,32,GGG
+2.0930352,removed,PC-3_replicate_1,69,33,GGG
+2.2545042,removed,Panc1_replicate_1,69,33,GGG
+0.23839231,removed,PC-3_replicate_1,19,34,GGG
+0.29800305,removed,Panc1_replicate_1,19,34,GGG
+0.4000129,removed,PC-3_replicate_1,38,35,GGG
+0.6194412,removed,Panc1_replicate_1,38,35,GGG
+0.71997863,removed,PC-3_replicate_1,26,36,GGG
+0.827479,removed,Panc1_replicate_1,26,36,GGG
+0.2861173,removed,PC-3_replicate_1,17,37,GGG
+0.2970668,removed,Panc1_replicate_1,17,37,GGG
+0.6013235,removed,PC-3_replicate_1,47,38,GGG
+0.7450485,removed,Panc1_replicate_1,47,38,GGG
+0.7976639,removed,PC-3_replicate_1,31,39,GGG
+0.549518,removed,Panc1_replicate_1,31,39,GGG
+0.26500922,removed,PC-3_replicate_1,17,40,GGG
+0.3227863,removed,Panc1_replicate_1,17,40,GGG
+0.5382279,removed,PC-3_replicate_1,27,41,GGG
+0.41144055,removed,Panc1_replicate_1,27,41,GGG
+0.9063853,removed,PC-3_replicate_1,34,42,GGG
+0.6337261,removed,Panc1_replicate_1,34,42,GGG
+0.3822486,removed,PC-3_replicate_1,25,43,GGG
+0.3491823,removed,Panc1_replicate_1,25,43,GGG
+0.577763,removed,PC-3_replicate_1,31,44,GGG
+0.70407027,removed,Panc1_replicate_1,31,44,GGG
+0.33124432,removed,PC-3_replicate_1,19,45,GGG
+0.4848107,removed,Panc1_replicate_1,19,45,GGG
+0.5866262,removed,PC-3_replicate_1,47,46,GGG
+0.6618839,removed,Panc1_replicate_1,47,46,GGG
+0.5754325,removed,PC-3_replicate_1,25,47,GGG
+0.49739432,removed,Panc1_replicate_1,25,47,GGG
+0.55632913,removed,PC-3_replicate_1,34,48,GGG
+0.7220901,removed,Panc1_replicate_1,34,48,GGG
+0.82118505,removed,PC-3_replicate_1,28,49,GGG
+0.51519936,removed,Panc1_replicate_1,28,49,GGG
+0.40186378,removed,PC-3_replicate_1,29,50,GGG
+0.34281135,removed,Panc1_replicate_1,29,50,GGG
+0.52933186,removed,PC-3_replicate_1,21,51,GGG
+0.34767827,removed,Panc1_replicate_1,21,51,GGG
+0.56572884,removed,PC-3_replicate_1,21,52,GGG
+0.45662782,removed,Panc1_replicate_1,21,52,GGG
+0.40272322,removed,PC-3_replicate_1,25,53,GGG
+0.35889897,removed,Panc1_replicate_1,25,53,GGG
+0.33928898,removed,PC-3_replicate_1,31,54,GGG
+0.4887031,removed,Panc1_replicate_1,31,54,GGG
+0.5849446,removed,PC-3_replicate_1,54,55,GGG
+0.80352795,removed,Panc1_replicate_1,54,55,GGG
+0.5002982,removed,PC-3_replicate_1,41,56,GGG
+0.7079119,removed,Panc1_replicate_1,41,56,GGG
+0.3598636,removed,PC-3_replicate_1,19,57,GGG
+0.4504571,removed,Panc1_replicate_1,19,57,GGG
+0.5102412,removed,PC-3_replicate_1,49,58,GGG
+0.61012304,removed,Panc1_replicate_1,49,58,GGG
+0.68205637,removed,PC-3_replicate_1,28,59,GGG
+0.508348,removed,Panc1_replicate_1,28,59,GGG
+0.4403624,removed,PC-3_replicate_1,26,60,GGG
+0.6341587,removed,Panc1_replicate_1,26,60,GGG
+0.39835536,removed,PC-3_replicate_1,23,61,GGG
+0.52960265,removed,Panc1_replicate_1,23,61,GGG
+0.5434131,removed,PC-3_replicate_1,22,62,GGG
+0.5189458,removed,Panc1_replicate_1,22,62,GGG
+0.49906915,removed,PC-3_replicate_1,25,63,GGG
+0.372064,removed,Panc1_replicate_1,25,63,GGG
+0.16029981,removed,PC-3_replicate_1,11,64,GGG
+0.26614738,removed,Panc1_replicate_1,11,64,GGG
+0.3164409,removed,PC-3_replicate_1,23,65,GGG
+0.381858,removed,Panc1_replicate_1,23,65,GGG
+1.8931365,removed,PC-3_replicate_1,53,66,GGG
+2.158872,removed,Panc1_replicate_1,53,66,GGG
+0.4644825,removed,PC-3_replicate_1,50,67,GGG
+0.7253534,removed,Panc1_replicate_1,50,67,GGG
+0.5059288,removed,PC-3_replicate_1,32,68,GGG
+0.5014937,removed,Panc1_replicate_1,32,68,GGG
+0.72468436,removed,PC-3_replicate_1,35,69,GGG
+0.8849647,removed,Panc1_replicate_1,35,69,GGG
+0.42084292,removed,PC-3_replicate_1,18,70,GGG
+0.39400592,removed,Panc1_replicate_1,18,70,GGG
+0.5406539,removed,PC-3_replicate_1,32,71,GGG
+0.64792585,removed,Panc1_replicate_1,32,71,GGG
+0.2515654,removed,PC-3_replicate_1,35,72,GGG
+0.34469426,removed,Panc1_replicate_1,35,72,GGG
+0.3422532,removed,PC-3_replicate_1,26,73,GGG
+0.44355232,removed,Panc1_replicate_1,26,73,GGG
+0.2580332,removed,PC-3_replicate_1,19,74,GGG
+0.32196045,removed,Panc1_replicate_1,19,74,GGG
+0.25360522,removed,PC-3_replicate_1,16,75,GGG
+0.40316373,removed,Panc1_replicate_1,16,75,GGG
+0.29827338,removed,PC-3_replicate_1,33,76,GGG
+0.5538317,removed,Panc1_replicate_1,33,76,GGG
+0.64439434,removed,PC-3_replicate_1,55,77,GGG
+0.66596144,removed,Panc1_replicate_1,55,77,GGG
+0.23295474,removed,PC-3_replicate_1,16,78,GGG
+0.3630071,removed,Panc1_replicate_1,16,78,GGG
+0.59918094,removed,PC-3_replicate_1,25,79,GGG
+0.62167424,removed,Panc1_replicate_1,25,79,GGG
+0.34461185,removed,PC-3_replicate_1,34,80,GGG
+0.45469838,removed,Panc1_replicate_1,34,80,GGG
+0.44754258,removed,PC-3_replicate_1,16,81,GGG
+0.36903122,removed,Panc1_replicate_1,16,81,GGG
+0.5012474,removed,PC-3_replicate_1,31,82,GGG
+0.6079767,removed,Panc1_replicate_1,31,82,GGG
+1.2657528,removed,PC-3_replicate_1,97,83,GGG
+1.5069705,removed,Panc1_replicate_1,97,83,GGG
+0.94810694,removed,PC-3_replicate_1,10,84,GGG
+0.3553996,removed,Panc1_replicate_1,10,84,GGG
+0.9927173,removed,PC-3_replicate_1,52,85,GGG
+1.2135147,removed,Panc1_replicate_1,52,85,GGG
+0.47074264,removed,PC-3_replicate_1,47,86,GGG
+0.6935911,removed,Panc1_replicate_1,47,86,GGG
+0.37497458,removed,PC-3_replicate_1,15,87,GGG
+0.42460668,removed,Panc1_replicate_1,15,87,GGG
+0.9401142,removed,PC-3_replicate_1,60,88,GGG
+1.1697156,removed,Panc1_replicate_1,60,88,GGG
+0.57279086,removed,PC-3_replicate_1,61,89,GGG
+0.8070098,removed,Panc1_replicate_1,61,89,GGG
+0.45111245,removed,PC-3_replicate_1,31,90,GGG
+0.5491629,removed,Panc1_replicate_1,31,90,GGG
+0.45498815,removed,PC-3_replicate_1,24,91,GGG
+0.6062329,removed,Panc1_replicate_1,24,91,GGG
+0.24304129,removed,PC-3_replicate_1,12,92,GGG
+0.23806818,removed,Panc1_replicate_1,12,92,GGG
+0.16464974,removed,PC-3_replicate_1,27,93,GGG
+0.3379091,removed,Panc1_replicate_1,27,93,GGG
+0.38494614,removed,PC-3_replicate_1,30,94,GGG
+0.46703783,removed,Panc1_replicate_1,30,94,GGG
+0.47431242,removed,PC-3_replicate_1,21,95,GGG
+0.42013806,removed,Panc1_replicate_1,21,95,GGG
+0.43265685,removed,PC-3_replicate_1,22,96,GGG
+0.4412307,removed,Panc1_replicate_1,22,96,GGG
+0.5344768,removed,PC-3_replicate_1,20,97,GGG
+0.37564778,removed,Panc1_replicate_1,20,97,GGG
+0.38515612,removed,PC-3_replicate_1,26,98,GGG
+0.39949283,removed,Panc1_replicate_1,26,98,GGG
+0.40641207,removed,PC-3_replicate_1,17,99,GGG
+0.408759,removed,Panc1_replicate_1,17,99,GGG
