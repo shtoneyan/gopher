@@ -66,7 +66,7 @@ class GlobalImportance():
         print(motif_key)
         self.seqs_with[motif_key], self.seqs_removed[motif_key], self.n_instances, self.seq_idx[
             motif_key] = randomize_multiple_seqs(self.seqs_to_remove_motif,
-                                                 tandem_motifs_to_remove, window_size=None)
+                                                 tandem_motifs_to_remove)
         if len(self.seqs_with[motif_key]) > 0:
             self.seqs_with[motif_key], self.seqs_removed[motif_key] = [np.array(n) for n in [self.seqs_with[motif_key],
                                                                                              self.seqs_removed[
