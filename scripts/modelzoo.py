@@ -8,7 +8,7 @@ from tensorflow import keras
 
 
 def basenji_v2(input_shape, output_shape, wandb_config={}):
-    config = {'filtN_1': 128, 'filtN_2': 1024}
+    config = {'filtN_1': 256, 'filtN_2': 2048}
     for k in config.keys():
         if k in wandb_config.keys():
             config[k] = wandb_config[k]
