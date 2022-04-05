@@ -191,17 +191,16 @@ def basenji_w1_b64(input_shape, output_shape, wandb_config={}):
 
 def basenji_binary(input_shape,exp_num,wandb_config={}):
     assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
-    config = {'filtN_1': 128, 'filtN_2': 1024,'l_rate':0.001}
-    pool_1 = 2
+    config = {'filtN_1': 256, 'filtN_2': 2048,'l_rate':0.001,'activation':None}
     for k in config.keys():
         if k in wandb_config.keys():
             config[k] = wandb_config[k]
 
     sequence = tf.keras.Input(shape=input_shape, name='sequence')
 
-    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation='gelu', activation_end=wandb_config['activation'],
+    current = conv_block(sequence, filters=config['filtN_1'], kernel_size=15, activation='gelu', activation_end=config['activation'],
                          strides=1, dilation_rate=1, l2_scale=0, dropout=0, conv_type='standard', residual=False,
-                         pool_size=pool_1, batch_norm=True, bn_momentum=0.9, bn_gamma=None, bn_type='standard',
+                         pool_size=2, batch_norm=True, bn_momentum=0.9, bn_gamma=None, bn_type='standard',
                          kernel_initializer='he_normal', padding='same')
 
     current = dilated_residual(current, filters=int(config['filtN_1']//2), kernel_size=3, rate_mult=1.5,
@@ -211,12 +210,11 @@ def basenji_binary(input_shape,exp_num,wandb_config={}):
     current = conv_block(current, filters=config['filtN_2'], kernel_size=1, activation='gelu',
                          dropout=0.05, batch_norm=True, bn_momentum=0.9)
 
-    current = tf.keras.layers.AveragePooling1D(int(input_shape[0]/pool_1))(current)
+    current = tf.keras.layers.AveragePooling1D(pool_size=1024)(current)
     outputs = dense_layer(current, exp_num, activation='sigmoid',
                           batch_norm=False, bn_momentum=0.9)
 
-    model = tf.keras.Model(inputs=sequence, outputs=outputs)
-    return model
+    model = tf.keras.Model(inputs=sequence, outputs=tf.squeeze(outputs))
     #complie with optimizer
     auroc = tf.keras.metrics.AUC(curve='ROC', name='auroc')
     aupr = tf.keras.metrics.AUC(curve='PR', name='aupr')
@@ -224,14 +222,10 @@ def basenji_binary(input_shape,exp_num,wandb_config={}):
     loss = tf.keras.losses.BinaryCrossentropy(from_logits=False, label_smoothing=0)
     model.compile(optimizer=optimizer,
                   loss=loss,
-                  #metrics = ['mse'])
                   metrics=['binary_accuracy', auroc, aupr])
     model.summary()
 
-    if not all(i <= j for i, j in zip(filtN_list, filtN_list[1:])):
-        return False
-    else:
-        return model
+    return model
 
 def Basset(inputs,exp_num,padding='same',wandb_config={}):
     assert 'activation' in wandb_config.keys(), 'ERROR: no activation defined!'
