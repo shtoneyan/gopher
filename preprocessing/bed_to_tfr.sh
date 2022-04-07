@@ -21,7 +21,6 @@ eval $(parse_yaml config.yaml)
 
 o_prefix=$output_dir/$output_prefix
 mkdir -p $o_prefix
-
 #check if basset_samplefile exists
 
 # if file present
@@ -43,21 +42,27 @@ python act_bed_construction.py "$o_prefix.bed" "$o_prefix"_act.txt
 clean_bedfile="$o_prefix"_cleanpeak.bed
 clean_actfile="$o_prefix"_cleanact.bed
 
+if [ ! -z "$var" ]
+then
+    echo remove unmappable regions
+    bedtools intersect -a $bedfile -b $genomefile_unmap -v > $clean_bedfile
+    bedtools intersect -a $actfile -b $genomefile_unmap -v > $clean_actfile
+else 
+    clean_bedfile=$bedfile
+    clean_actfile=$actfile
+fi
 
-bedtools intersect -a $bedfile -b $genomefile_unmap -v > $clean_bedfile
-bedtools intersect -a $actfile -b $genomefile_unmap -v > $clean_actfile
+echo train test validation split
 
-rm $bedfile
-rm $actfile
 rm ${o_prefix}_act.txt
 
 grep -w $chroms_valid $clean_bedfile > "valid_bedfile.bed"
 grep -w $chroms_test $clean_bedfile > "test_bedfile.bed"
-grep -w -v -e $chroms_valid -e $chroms_test $clean_bedfile > "train_bedfile.bed"
+grep -wv -e $chroms_valid -e $chroms_test $clean_bedfile > "train_bedfile.bed"
 
 grep -w $chroms_valid $clean_actfile > "valid_actfile.bed"
 grep -w $chroms_test $clean_actfile > "test_actfile.bed"
-grep  -w -v -e $chroms_valid -e $chroms_test $clean_actfile > "train_actfile.bed"
+grep  -wv -e $chroms_valid -e $chroms_test $clean_actfile > "train_actfile.bed"
 
 
 bedtools getfasta -fi $genomefile_fa -s -bed "train_bedfile.bed" -fo 'train.fa'
@@ -70,6 +75,7 @@ mv ${o_prefix}*.* $o_prefix
 rm train_bedfile.bed valid_bedfile.bed test_bedfile.bed
 rm valid_actfile.bed test_actfile.bed train_actfile.bed
 rm test.fa train.fa valid.fa
+rm $bedfile
+rm $actfile
 mv config.yaml $o_prefix
 fi
-
