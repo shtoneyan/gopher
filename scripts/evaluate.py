@@ -12,7 +12,26 @@ import wandb
 import yaml
 from scipy import stats
 from tqdm import tqdm
+import h5py
 
+def get_metrics_fast(h5_filename, true_mean, pred_mean, sts, bin_size, batch_size=64):
+    x_den = 0
+    y_den = 0
+    nom = 0
+    se = 0
+    with h5py.File(h5_filename, "r") as f:
+        true_batch = utils.batch_np(f['true'], batch_size)
+        pred_batch = utils.batch_np(f['pred'], batch_size)
+        for true, pred in tqdm(zip(true_batch, pred_batch)):
+            true = true.reshape(-1, sts['num_targets'])
+            pred = pred.reshape(-1, sts['num_targets'])
+            nom += np.sum((true - true_mean) * (pred - pred_mean), axis=0)
+            x_den += np.sum((true - true_mean) ** 2, axis=0)
+            y_den += np.sum((pred - pred_mean) ** 2, axis=0)
+            se += ((true - pred) ** 2).sum(axis=0)
+    concatenated_pr = (nom / np.sqrt((x_den * y_den)))
+    mse = se/(sts['test_seqs'] * sts['seq_length']//bin_size)
+    return concatenated_pr, mse
 
 def change_resolution(cov, bin_size_orig, eval_bin):
     """
@@ -135,7 +154,7 @@ def evaluate_run(model, bin_size, testset, targets, eval_type='whole'):
 
 
 def collect_whole_testset(data_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/chr8/complete/random_chop/i_2048_w_1/',
-                          coords=False, batch_size=32):
+                          coords=False, batch_size=32, return_sts=False):
     """
     Collects a test fold of a given testset without shuffling it
     :param data_dir: testset directory
@@ -146,10 +165,13 @@ def collect_whole_testset(data_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/ch
     sts = utils.load_stats(data_dir)
     testset = utils.make_dataset(data_dir, 'test', sts, batch_size=batch_size, shuffle=False, coords=coords)
     targets = pd.read_csv(os.path.join(data_dir, 'targets.txt'), sep='\t')['identifier'].values
-    return testset, targets
+    if return_sts:
+        return testset, targets, sts
+    else:
+        return testset, targets
 
 
-def merge_performance_with_metadata(performance, scaling_factors, run_dir):
+def merge_performance_with_metadata(performance, run_dir, scaling_factors):
     """
     Merges performance evaluation data table with run metadata
     :param performance: pandas dataframe of performance values
@@ -164,11 +186,24 @@ def merge_performance_with_metadata(performance, scaling_factors, run_dir):
     metadata_broadcasted = pd.DataFrame(np.repeat(metadata.values, n_rows, axis=0), columns=metadata.columns)
     performance_w_metadata = pd.concat([performance.reset_index(), metadata_broadcasted], axis=1)
     performance_w_metadata['run_dir'] = run_dir
-    performance_w_metadata['scaling_factors'] = [1 for i in range(len(scaling_factors))].append(scaling_factors)
+    if scaling_factors:
+        performance_w_metadata['scaling_factors'] = [1 for i in range(len(scaling_factors))].append(scaling_factors)
     return performance_w_metadata
 
+def evaluate_run_fast(run_dir, testset, targets, sts, model, bin_size, batch_size):
+    # load model
+    tmp_file = os.path.basename(os.path.abspath(run_dir))+'.h5'
+    # save truth and predictions in h5 and return true mean of each
+    true_mean, pred_mean = utils.write_true_pred_to_h5(testset, sts, model, h5_filename=tmp_file, bin_size=bin_size)
+    # calculate pearson r and mse using h5
+    concatenated_pr, mse = get_metrics_fast(tmp_file, true_mean, pred_mean, sts, bin_size, batch_size)
+    os.remove(tmp_file) # clean up h5
+    summary_results = pd.DataFrame({'mse': mse, 'pr_corr': concatenated_pr, 'targets': targets})  # summary per target
+    summary_results['eval type'] = 'whole'
+    return summary_results
 
-def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, eval_type='whole'):
+
+def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, eval_type='whole', fast=False):
     """
     Evaluate a set of runs
     :param run_dirs: iterable of run directories
@@ -176,18 +211,22 @@ def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, ev
     :return:
     """
     # get datasets
-    testset, targets = collect_whole_testset(data_dir=data_dir,
-                                             coords=False, batch_size=batch_size)
+    testset, targets, sts = collect_whole_testset(data_dir=data_dir,
+                                             coords=False, batch_size=batch_size,  return_sts=True)
     # process runs
     all_run_summaries = []
-    for run_dir in tqdm(run_dirs):
+    for run_dir in run_dirs:
         print(run_dir)
         # load model
         model, bin_size = utils.read_model(run_dir, compile_model=False)
         # evaluate run
-        performance, scaling_factors = evaluate_run(model, bin_size, testset, targets, eval_type=eval_type)
+        if fast:
+            performance = evaluate_run_fast(run_dir, testset, targets, sts, model, bin_size, batch_size)
+            scaling_factors = None
+        else:
+            performance, scaling_factors = evaluate_run(model, bin_size, testset, targets, eval_type=eval_type)
         # combine with run metadata
-        run_summary = merge_performance_with_metadata(performance, scaling_factors, run_dir)
+        run_summary = merge_performance_with_metadata(performance, run_dir, scaling_factors)
         all_run_summaries.append(run_summary)  # save each run data into a list
     pd.concat(all_run_summaries).to_csv(output_summary_filepath, index=False)
 
@@ -205,7 +244,7 @@ def collect_run_dirs(project_name, wandb_dir='paper_runs/*/*/*'):
     run_dirs = []
     for run in runs:
         matching_run_paths = glob.glob(wandb_dir + run.id)
-        if len(matching_run_paths) == 1 and model_filename in os.listdir(matching_run_paths[0]):
+        if len(matching_run_paths) == 1:
             run_dirs.append(matching_run_paths[0])
         elif len(matching_run_paths) == 0:
             print(run, 'FOLDER NOT FOUND')
@@ -230,7 +269,7 @@ def collect_sweep_dirs(sweep_id, wandb_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af3
 
 def evaluate_project(data_dir, run_dir_list=None, project_dir=None, wandb_project_name=None,
                      wandb_dir=None, output_dir='output',
-                     output_prefix=None, batch_size=32, eval_type='whole'):
+                     output_prefix=None, batch_size=32, eval_type='whole', fast=False):
     """
     Evaluates a set of runs useing whole and IDR test sets, raw and scaled predictions and multiple metrics.
     :param data_dir: whole test set directory
@@ -273,4 +312,4 @@ def evaluate_project(data_dir, run_dir_list=None, project_dir=None, wandb_projec
     csv_filename = output_prefix + '.csv'  # filename
     result_path = os.path.join(output_dir, csv_filename)  # output path
     # process a list of runs for evaluation
-    process_run_list(run_dir_list, result_path, data_dir, batch_size=batch_size, eval_type=eval_type)
+    process_run_list(run_dir_list, result_path, data_dir, batch_size=batch_size, eval_type=eval_type, fast=fast)
