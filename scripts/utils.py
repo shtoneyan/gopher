@@ -1,16 +1,43 @@
-import sys
-import json
-import os
-import glob
-import pandas as pd
-import numpy as np
-import tensorflow as tf
-from natsort import natsorted
-import yaml
-import pyBigWig
 import csv
-from modelzoo import GELU
+import glob
+import json
 import losses
+import numpy as np
+import os
+import pandas as pd
+import pyBigWig
+import sys
+import tensorflow as tf
+import yaml
+from modelzoo import GELU
+from natsort import natsorted
+import h5py
+from tqdm import tqdm
+
+
+def write_true_pred_to_h5(testset, sts, model, h5_filename, bin_size):
+
+    hf = h5py.File(h5_filename, 'w')
+    empty_array = np.empty((sts['test_seqs'], sts['seq_length'] // bin_size, sts['num_targets']))
+    hf.create_dataset('true', data=empty_array.copy())
+    hf.create_dataset('pred', data=empty_array.copy())
+    true_mean_sum = 0  # initialize sum of true
+    pred_mean_sum = 0  # initialize sum of pred
+    pointer = 0
+    for i, (x, y) in tqdm(enumerate(testset)):
+        N = y.shape[0]
+        p = model.predict(x)
+        binned_y = bin_resolution(y, bin_size)  # change resolution
+        y = binned_y.numpy()
+        hf['true'][pointer:pointer + N, :, :] = y
+        hf['pred'][pointer:pointer + N, :, :] = p
+        true_mean_sum += y.sum(axis=0).sum(axis=0)
+        pred_mean_sum += p.sum(axis=0).sum(axis=0)
+        pointer += N
+    true_mean = true_mean_sum / (pointer * sts['seq_length'] // bin_size)
+    pred_mean = pred_mean_sum / (pointer * sts['seq_length'] // bin_size)
+    hf.close()
+    return true_mean, pred_mean
 
 
 def read_chrom_size(chrom_size_path):
@@ -19,8 +46,9 @@ def read_chrom_size(chrom_size_path):
     with open(chrom_size_path) as fd:
         rd = csv.reader(fd, delimiter="\t", quotechar='"')
         for line in rd:
-            chrom_size[line[0]]=int(line[1])
+            chrom_size[line[0]] = int(line[1])
     return chrom_size
+
 
 def bin_resolution(y, bin_size):
     """
@@ -249,7 +277,7 @@ def onehot_to_str(onehot):
     """
     full_str = []
     for one_onehot in onehot:
-        assert one_onehot.shape == (4,)
+        assert one_onehot.shape == (4,), print(one_onehot)
         full_str.append(list('ACGT')[np.argwhere(one_onehot)[0][0]])
     return ''.join(full_str)
 
@@ -357,7 +385,7 @@ def read_model(run_path, compile_model=False):
     trained_model = tf.keras.models.load_model(model_path, custom_objects={"GELU": GELU})
     if compile_model:
         loss_fn_str = config['loss_fn']['value']  # get loss
-        loss_fn = eval('losses.'+loss_fn_str)()  # turn loss into function
+        loss_fn = eval('losses.' + loss_fn_str)()  # turn loss into function
         trained_model.compile(optimizer="Adam", loss=loss_fn)
     return trained_model, bin_size  # model and bin size
 

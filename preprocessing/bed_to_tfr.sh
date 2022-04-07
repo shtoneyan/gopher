@@ -51,13 +51,13 @@ rm $bedfile
 rm $actfile
 rm ${o_prefix}_act.txt
 
-grep $chroms_valid $clean_bedfile > "valid_bedfile.bed"
-grep $chroms_test $clean_bedfile > "test_bedfile.bed"
-grep -v -e $chroms_valid -e $chroms_test $clean_bedfile > "train_bedfile.bed"
+grep -w $chroms_valid $clean_bedfile > "valid_bedfile.bed"
+grep -w $chroms_test $clean_bedfile > "test_bedfile.bed"
+grep -w -v -e $chroms_valid -e $chroms_test $clean_bedfile > "train_bedfile.bed"
 
-grep $chroms_valid $clean_actfile > "valid_actfile.bed"
-grep $chroms_test $clean_actfile > "test_actfile.bed"
-grep -v -e $chroms_valid -e $chroms_test $clean_actfile > "train_actfile.bed"
+grep -w $chroms_valid $clean_actfile > "valid_actfile.bed"
+grep -w $chroms_test $clean_actfile > "test_actfile.bed"
+grep  -w -v -e $chroms_valid -e $chroms_test $clean_actfile > "train_actfile.bed"
 
 
 bedtools getfasta -fi $genomefile_fa -s -bed "train_bedfile.bed" -fo 'train.fa'
