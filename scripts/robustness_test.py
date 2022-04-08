@@ -112,16 +112,16 @@ def get_robustness_values(model_paths, testset_path, output_dir='robustness_test
     utils.make_dir(output_dir)
     testset, targets = evaluate.collect_whole_testset(testset_path, coords=True, batch_size=batch_size)
     robust_dict = {}
-    
+
     for model_path in model_paths:
-        
+
         model, _ = utils.read_model(model_path)
         # compute variance of predictions and avg predictions
         predictions_and_variance, center_1K_coordinates, center_ground_truth_1K = batch_pred_robustness_test(testset, stats,
                                                                                                                     model,
                                                                                                                     shift_num=shift_num,
                                                                                                                     get_preds=True)
-        
+
         if intermediate == True:
             new_dir = os.path.join(output_dir, os.path.basename(os.path.abspath(model_path)))
             if not os.path.isdir(new_dir):
@@ -129,7 +129,7 @@ def get_robustness_values(model_paths, testset_path, output_dir='robustness_test
             else:
                 output_directory = new_dir
             # save variance as h5
-            variance_dataset_path = os.path.join(output_directory, 'variance_of_preds.h5')
+            variance_dataset_path = os.path.join(output_directory, model_path.split('/')[-1]+'.h5')
             h5_dataset = h5py.File(variance_dataset_path, 'w')
             h5_dataset.create_dataset('prediction_variance', data=np.concatenate(predictions_and_variance['var'], axis=0))
             h5_dataset.create_dataset('center_pred', data=np.concatenate(predictions_and_variance['center_pred'], axis=0))
@@ -137,14 +137,12 @@ def get_robustness_values(model_paths, testset_path, output_dir='robustness_test
             h5_dataset.create_dataset('center_ground_truth_1K', data=np.concatenate(center_ground_truth_1K, axis=0))
             h5_dataset.close()
 
-        mean_var = np.concatenate(predictions_and_variance['var'], axis=0).sum()
+        mean_var = np.concatenate(predictions_and_variance['var'], axis=0).mean()
         robust_dict[model_path] = mean_var
-            
-    variance_dict_path = os.path.join(output_dir, 'average_variance.csv')    
+
+    variance_dict_path = os.path.join(output_dir, 'average_variance.csv')
     with open(variance_dict_path, 'w') as csvfile:
         writer = csv.writer(csvfile, )
         writer.writerow(['model_path','variation_score'])
         for key,value in robust_dict.items():
             writer.writerow([key,value])
-     
-  
