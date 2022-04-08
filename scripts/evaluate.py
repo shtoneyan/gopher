@@ -186,7 +186,7 @@ def merge_performance_with_metadata(performance, run_dir, scaling_factors):
     metadata_broadcasted = pd.DataFrame(np.repeat(metadata.values, n_rows, axis=0), columns=metadata.columns)
     performance_w_metadata = pd.concat([performance.reset_index(), metadata_broadcasted], axis=1)
     performance_w_metadata['run_dir'] = run_dir
-    if scaling_factors:
+    if len(scaling_factors)>0:
         performance_w_metadata['scaling_factors'] = [1 for i in range(len(scaling_factors))].append(scaling_factors)
     return performance_w_metadata
 
@@ -222,7 +222,7 @@ def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, ev
         # evaluate run
         if fast:
             performance = evaluate_run_fast(run_dir, testset, targets, sts, model, bin_size, batch_size)
-            scaling_factors = None
+            scaling_factors = []
         else:
             performance, scaling_factors = evaluate_run(model, bin_size, testset, targets, eval_type=eval_type)
         # combine with run metadata
