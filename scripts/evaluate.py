@@ -249,7 +249,7 @@ def collect_run_dirs(project_name, wandb_dir='paper_runs/*/*/*'):
         elif len(matching_run_paths) == 0:
             print(run, 'FOLDER NOT FOUND')
         else:
-            raise Exception('too many runs match id or no model found')
+            raise Exception('too many runs match id {}'.format(run))
     return run_dirs
 
 
