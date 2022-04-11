@@ -13,21 +13,28 @@ import yaml
 from scipy import stats
 from tqdm import tqdm
 import h5py
+from collections import OrderedDict
 
-def get_metrics_fast(h5_filename, true_mean, pred_mean, sts, bin_size, batch_size=64):
+def get_metrics_fast(h5_filename, true_mean, pred_mean, sts,
+                     bin_size, batch_size=64, scaling_factors=[]):
     x_den = 0
     y_den = 0
     nom = 0
     se = 0
+    if len(scaling_factors) > 0:
+        pred_mean = pred_mean * scaling_factors
     with h5py.File(h5_filename, "r") as f:
         true_batch = utils.batch_np(f['true'], batch_size)
         pred_batch = utils.batch_np(f['pred'], batch_size)
         for true, pred in tqdm(zip(true_batch, pred_batch)):
             true = true.reshape(-1, sts['num_targets'])
             pred = pred.reshape(-1, sts['num_targets'])
+            if len(scaling_factors) > 0:
+                pred = pred * scaling_factors
             nom += np.sum((true - true_mean) * (pred - pred_mean), axis=0)
             x_den += np.sum((true - true_mean) ** 2, axis=0)
-            y_den += np.sum((pred - pred_mean) ** 2, axis=0)
+            diff_pred = np.around((pred - pred_mean)**2, 14)
+            y_den += np.sum(diff_pred, axis=0)
             se += ((true - pred) ** 2).sum(axis=0)
     concatenated_pr = (nom / np.sqrt((x_den * y_den)))
     mse = se/(sts['test_seqs'] * sts['seq_length']//bin_size)
@@ -74,7 +81,9 @@ def get_performance(all_truth, all_pred, targets, testset_type):
     """
     assert all_truth.shape[-1] == all_pred.shape[-1], 'Incorrect number of cell lines for true and pred'
     assert testset_type == 'whole' or testset_type == 'per_seq', 'Unknown testset type'
+
     mse = metrics.get_mse(all_truth, all_pred).mean(axis=1).mean(axis=0)
+
     js_per_seq = metrics.get_js_per_seq(all_truth, all_pred).mean(axis=0)
     js_conc = metrics.get_js_concatenated(all_truth, all_pred)
     poiss = metrics.get_poiss_nll(all_truth, all_pred).mean(axis=1).mean(axis=0)
@@ -92,6 +101,7 @@ def get_performance(all_truth, all_pred, targets, testset_type):
     performance = {'mse': mse, 'js_per_seq': js_per_seq, 'js_conc': js_conc,
                    'poiss': poiss, 'pr_corr': pr_corr, 'sp_corr': sp_corr,
                    'targets': targets}
+
     return pd.DataFrame(performance)
 
 
@@ -120,6 +130,7 @@ def get_performance_raw_scaled(truth, targets, pred_labels, eval_type):
     :param eval_type: 'whole' or 'per_seq' corresponding to concatenated or per sequence correlations
     :return: dataframe of performance values
     """
+
     complete_performance = []
     for label, pred in pred_labels.items():
         # get performance df
@@ -145,12 +156,19 @@ def evaluate_run(model, bin_size, testset, targets, eval_type='whole'):
     scaling_factors = get_scaling_factors(truth, raw_pred)
     if (np.isfinite(scaling_factors)).sum() == len(scaling_factors):  # do only if all factors are ok
         scaled_pred = raw_pred * scaling_factors
-        sets_to_process = {'raw': raw_pred, 'scaled': scaled_pred}
+        sets_to_process = OrderedDict()
+        sets_to_process['raw'] = raw_pred
+        sets_to_process['scaled'] = scaled_pred
+        all_scaling_factors = [1 for i in range(len(scaling_factors))]
+        all_scaling_factors += list(scaling_factors)
     else:
         sets_to_process = {'raw': raw_pred}
+        all_scaling_factors = [1 for i in range(len(scaling_factors))]
     complete_performance = get_performance_raw_scaled(truth, targets,
                                                       sets_to_process, eval_type)
-    return complete_performance, scaling_factors
+
+    complete_performance['scaling_factors'] = all_scaling_factors
+    return complete_performance
 
 
 def collect_whole_testset(data_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/chr8/complete/random_chop/i_2048_w_1/',
@@ -171,14 +189,13 @@ def collect_whole_testset(data_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/ch
         return testset, targets
 
 
-def merge_performance_with_metadata(performance, run_dir, scaling_factors):
+def merge_performance_with_metadata(performance, run_dir):
     """
     Merges performance evaluation data table with run metadata
     :param performance: pandas dataframe of performance values
     :param run_dir: run directory with model and config
     :return: pandas dataframe of performance and run summary descriptions and scaling factors for each cell line
     """
-
     # get metadata for the run
     metadata = utils.get_run_metadata(run_dir)
     # add metadata to performance dataframes
@@ -186,24 +203,37 @@ def merge_performance_with_metadata(performance, run_dir, scaling_factors):
     metadata_broadcasted = pd.DataFrame(np.repeat(metadata.values, n_rows, axis=0), columns=metadata.columns)
     performance_w_metadata = pd.concat([performance.reset_index(), metadata_broadcasted], axis=1)
     performance_w_metadata['run_dir'] = run_dir
-    if len(scaling_factors)>0:
-        performance_w_metadata['scaling_factors'] = [1 for i in range(len(scaling_factors))].append(scaling_factors)
+    # print('SCALING FACTORS')
+    # print(scaling_factors)
+    # if len(scaling_factors)>0:
+    #     performance_w_metadata['scaling_factors'] = scaling_factors
+    # else:
+    #     performance_w_metadata['scaling_factors'] = [1 for i in range(len(scaling_factors))].append(scaling_factors)
     return performance_w_metadata
 
-def evaluate_run_fast(run_dir, testset, targets, sts, model, bin_size, batch_size):
+def evaluate_run_fast(run_dir, testset, targets, sts, model, bin_size, batch_size, scale):
     # load model
     tmp_file = os.path.basename(os.path.abspath(run_dir))+'.h5'
     # save truth and predictions in h5 and return true mean of each
     true_mean, pred_mean = utils.write_true_pred_to_h5(testset, sts, model, h5_filename=tmp_file, bin_size=bin_size)
+    if scale:
+        scaling_factors = true_mean / pred_mean
+        pred_type = 'scaled'
+    else:
+        scaling_factors = [1 for i in range(sts['num_targets'])]
+        pred_type = 'raw'
     # calculate pearson r and mse using h5
-    concatenated_pr, mse = get_metrics_fast(tmp_file, true_mean, pred_mean, sts, bin_size, batch_size)
+    concatenated_pr, mse = get_metrics_fast(tmp_file, true_mean, pred_mean, sts, bin_size, batch_size,
+                                            scaling_factors=scaling_factors)
     os.remove(tmp_file) # clean up h5
     summary_results = pd.DataFrame({'mse': mse, 'pr_corr': concatenated_pr, 'targets': targets})  # summary per target
     summary_results['eval type'] = 'whole'
+    summary_results['pred type'] = pred_type
+    summary_results['scaling_factors'] = scaling_factors
     return summary_results
 
 
-def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, eval_type='whole', fast=False):
+def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, eval_type='whole', fast=False, scale=False):
     """
     Evaluate a set of runs
     :param run_dirs: iterable of run directories
@@ -221,17 +251,17 @@ def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, ev
         model, bin_size = utils.read_model(run_dir, compile_model=False)
         # evaluate run
         if fast:
-            performance = evaluate_run_fast(run_dir, testset, targets, sts, model, bin_size, batch_size)
-            scaling_factors = []
+            performance = evaluate_run_fast(run_dir, testset, targets, sts, model, bin_size,
+                                                             batch_size, scale=scale)
         else:
-            performance, scaling_factors = evaluate_run(model, bin_size, testset, targets, eval_type=eval_type)
+            performance = evaluate_run(model, bin_size, testset, targets, eval_type=eval_type)
         # combine with run metadata
-        run_summary = merge_performance_with_metadata(performance, run_dir, scaling_factors)
+        run_summary = merge_performance_with_metadata(performance, run_dir)
         all_run_summaries.append(run_summary)  # save each run data into a list
     pd.concat(all_run_summaries).to_csv(output_summary_filepath, index=False)
 
 
-def collect_run_dirs(project_name, wandb_dir='paper_runs/*/*/*'):
+def collect_run_dirs(project_name, wandb_dir='paper_runs/*/*/*', ignore_duplicates=False):
     """
     Collects saved directories for a given WandB project
     :param project_name: name used in the WandB run
@@ -249,7 +279,12 @@ def collect_run_dirs(project_name, wandb_dir='paper_runs/*/*/*'):
         elif len(matching_run_paths) == 0:
             print(run, 'FOLDER NOT FOUND')
         else:
-            raise Exception('too many runs match id {}'.format(run))
+            if ignore_duplicates:
+                print('Warning: multiple matches found')
+#                 run_dirs.append([m for m in matching_run_paths if 'best_model.h5' in os.listdir(m+'/files')][0])
+                run_dirs.append(matching_run_paths)
+            else:
+                raise Exception('too many runs match id {}'.format(run))
     return run_dirs
 
 
@@ -269,7 +304,7 @@ def collect_sweep_dirs(sweep_id, wandb_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af3
 
 def evaluate_project(data_dir, run_dir_list=None, project_dir=None, wandb_project_name=None,
                      wandb_dir=None, output_dir='output',
-                     output_prefix=None, batch_size=32, eval_type='whole', fast=False):
+                     output_prefix=None, batch_size=32, eval_type='whole', fast=False, scale=False):
     """
     Evaluates a set of runs useing whole and IDR test sets, raw and scaled predictions and multiple metrics.
     :param data_dir: whole test set directory
@@ -312,4 +347,4 @@ def evaluate_project(data_dir, run_dir_list=None, project_dir=None, wandb_projec
     csv_filename = output_prefix + '.csv'  # filename
     result_path = os.path.join(output_dir, csv_filename)  # output path
     # process a list of runs for evaluation
-    process_run_list(run_dir_list, result_path, data_dir, batch_size=batch_size, eval_type=eval_type, fast=fast)
+    process_run_list(run_dir_list, result_path, data_dir, batch_size=batch_size, eval_type=eval_type, fast=fast, scale=scale)
