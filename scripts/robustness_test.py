@@ -6,7 +6,7 @@ import os
 import tensorflow as tf
 import evaluate
 import csv
-
+from custom_fit import center_crop
 
 def get_center_coordinates(coord, conserve_start, conserve_end):
     """
@@ -57,8 +57,7 @@ def batch_pred_robustness_test(testset, sts, model,
 
     for t, (C, seq, Y) in enumerate(testset):
         batch_n = seq.shape[0]
-        shifted_seq, _, shift_idx = utils.window_shift(seq, seq, window_size, shift_num)
-
+        shifted_seq,_,shift_idx = utils.window_shift(seq, seq, window_size, shift_num)
         # get prediction for shifted read
         shift_pred = model.predict(shifted_seq)
         bin_size = window_size / shift_pred.shape[1]
@@ -74,8 +73,9 @@ def batch_pred_robustness_test(testset, sts, model,
         # get pred 1k part
         shift_pred_1k = tf.gather_nd(shift_pred[range(shift_pred.shape[0]), :, :], crop_f_index)
         sep_pred = np.array(np.array_split(shift_pred_1k, batch_n))
-        var_pred = np.var(sep_pred, axis=1)
-        predictions_and_variance['var'].append(np.mean(var_pred, axis=1))
+        var_pred = np.mean(np.std(sep_pred, axis=1),axis = 1)
+        cov_pred = np.mean(sep_pred,axis = (2,1))
+        predictions_and_variance['var'].append(var_pred/cov_pred)
         if get_preds:
             predictions_and_variance['robust_pred'].append(sep_pred.mean(axis=1))
 
