@@ -104,9 +104,9 @@ def get_poiss_nll(y_true, y_pred):
     :param y_pred: prediction np array
     :return: poisson NLL
     """
-    y_pred += 1
-    y_true += 1
-    return y_pred - y_true * np.log(y_pred)
+    y_pred_pseudo = y_true + 1
+    y_true_pseudo = y_pred + 1
+    return y_pred_pseudo - y_true_pseudo * np.log(y_pred_pseudo)
 
 
 class PearsonR(tf.keras.metrics.Metric):
