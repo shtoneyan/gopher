@@ -11,10 +11,10 @@ import utils
 
 def cov_pearson(run_dir,profile_data_dir):
     """
-
-    :param run_dir:
-    :param profile_data_dir:
-    :return:
+    Calculates Pearson's R with resolution of model input size
+    :param run_dir: Run directory of a quantitative model
+    :param profile_data_dir: Data direcotry on which the evaluation is done, need to be a quantiative dataset
+    :return: A list consist of a Pearson's R per prediction task
     """
     model = utils.read_model(run_dir,False)[0]
     testset = utils.make_dataset(profile_data_dir, 'test', utils.load_stats(profile_data_dir), batch_size=128)
@@ -42,10 +42,10 @@ def cov_pearson(run_dir,profile_data_dir):
 
 def binary_metrics(run_dir,binary_data_dir):
     """
-
-    :param run_dir:
-    :param binary_data_dir:
-    :return:
+    This function can take both binary or quantitative model and outputs AUPR and AUROC
+    :param run_dir: Run directory of the evaluated model
+    :param binary_data_dir: Data direcotry on which the evaluation is done, need to be a binary dataset
+    :return: Average AURP and AUROC across all prediction targets
     """
     model = utils.read_model(run_dir,False)[0]
     f = h5py.File(binary_data_dir,'r')
@@ -72,10 +72,10 @@ def binary_metrics(run_dir,binary_data_dir):
 
 def binary_to_profile(binary_model_dir,profile_data_dir):
     """
-
-    :param binary_model_dir:
-    :param profile_data_dir:
-    :return:
+    This function evaluates the performance of a binary model using Pearson's R
+    :param binary_model_dir: Save directory for the binary model
+    :param profile_data_dir: Data direcotry on which the evaluation is done, need to be a quantiative dataset
+    :return: A list consist of a Pearson's R per prediction task
     """
     model =utils.read_model(binary_model_dir,False)[0]
     intermediate_layer_model = tf.keras.Model(inputs=model.input,
@@ -96,10 +96,10 @@ def binary_to_profile(binary_model_dir,profile_data_dir):
 
     target = np.concatenate(target_list)
     pred = np.concatenate(pred_list)
-    
+
     target = np.squeeze(target)
     pred = np.squeeze(pred)
-    
+
     r_list = []
     for i in range(0,target.shape[1]):
         r_list.append(scipy.stats.pearsonr(target[:,i],pred[:,i])[0])
