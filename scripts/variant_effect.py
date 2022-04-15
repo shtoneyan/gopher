@@ -38,16 +38,16 @@ def expand_range(bedfile, output_filename, window=3072):
 
 def vcf_quantitative(model_path, ref_seq, alt_seq, input_size, output_pre, robust=True, batch_size=64, shift_num=10):
     """
-
-    :param model_path:
-    :param ref_seq:
-    :param alt_seq:
-    :param input_size:
-    :param output_pre:
-    :param robust:
-    :param batch_size:
-    :param shift_num:
-    :return:
+    Wraper function for running variant effect prediction on quantitative models
+    :param model_path: saving directory of model to be evaluated
+    :param ref_seq: sequence input with reference allele in it
+    :param alt_seq: sequence input with alternative allele in it
+    :param input_size: input size of model
+    :param output_pre: prefix for output files
+    :param robust: Use robust prediction to mesaure effect size or not
+    :param batch_size: batch size used during prediction
+    :param shift_num: how many shifts to generate for robust predictions
+    :return: a h5 file with effect size recorded for each ref/alt sequence pair
     """
     model = utils.read_model(model_path, False)[0]
     if robust == True:
@@ -68,17 +68,16 @@ def vcf_quantitative(model_path, ref_seq, alt_seq, input_size, output_pre, robus
 
 def vcf_binary(model_path, ref_seq, alt_seq, input_size, output_pre, robust=True, batch_size=64, shift_num=10):
     """
-
-    :param model_path:
-    :param ref_seq:
-    :param alt_seq:
-    :param layer:
-    :param input_size:
-    :param output_pre:
-    :param robust:
-    :param batch_size:
-    :param shift_num:
-    :return:
+    Wraper function for running VCF on binary models
+    :param model_path: saving directory of model to be evaluated
+    :param ref_seq: sequence input with reference allele in it
+    :param alt_seq: sequence input with alternative allele in it
+    :param input_size: input size of model
+    :param output_pre: prefix for output files
+    :param robust: Use robust prediction to mesaure effect size or not
+    :param batch_size: batch size used during prediction
+    :param shift_num: how many shifts to generate for robust predictions
+    :return: a h5 file with effect size recorded for each ref/alt sequence pair
     """
     model = utils.read_model(model_path, False)[0]
     if robust == True:
