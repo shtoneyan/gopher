@@ -170,25 +170,6 @@ def evaluate_run(model, bin_size, testset, targets, eval_type='whole'):
     complete_performance['scaling_factors'] = all_scaling_factors
     return complete_performance
 
-
-def collect_whole_testset(data_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/chr8/complete/random_chop/i_2048_w_1/',
-                          coords=False, batch_size=32, return_sts=False):
-    """
-    Collects a test fold of a given testset without shuffling it
-    :param data_dir: testset directory
-    :param coords: bool indicating if coordinates should be taken
-    :param batch_size: batch size, important to set to smaller number for inference on large models
-    :return:
-    """
-    sts = utils.load_stats(data_dir)
-    testset = utils.make_dataset(data_dir, 'test', sts, batch_size=batch_size, shuffle=False, coords=coords)
-    targets = pd.read_csv(os.path.join(data_dir, 'targets.txt'), sep='\t')['identifier'].values
-    if return_sts:
-        return testset, targets, sts
-    else:
-        return testset, targets
-
-
 def merge_performance_with_metadata(performance, run_dir):
     """
     Merges performance evaluation data table with run metadata
@@ -241,7 +222,7 @@ def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, ev
     :return:
     """
     # get datasets
-    testset, targets, sts = collect_whole_testset(data_dir=data_dir,
+    testset, targets, sts = utils.collect_whole_testset(data_dir=data_dir,
                                              coords=False, batch_size=batch_size,  return_sts=True)
     # process runs
     all_run_summaries = []
