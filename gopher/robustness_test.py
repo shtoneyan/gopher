@@ -4,7 +4,6 @@ import utils
 import numpy as np
 import os
 import tensorflow as tf
-import evaluate
 import csv
 from custom_fit import center_crop
 
@@ -110,7 +109,7 @@ def get_robustness_values(model_paths, testset_path, output_dir='robustness_test
     """
     stats = utils.load_stats(testset_path)
     utils.make_dir(output_dir)
-    testset, targets = evaluate.collect_whole_testset(testset_path, coords=True, batch_size=batch_size)
+    testset = utils.make_dataset(test_path,'test',stats,batch_size = batch_size,shuffle=False)
     robust_dict = {}
 
     for model_path in model_paths:
