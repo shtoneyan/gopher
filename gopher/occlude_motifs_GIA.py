@@ -15,7 +15,7 @@ from tqdm import tqdm
 import glob
 from scipy.stats import mannwhitneyu
 from statannotations.Annotator import Annotator
-import tfr_evaluate, utils
+import utils
 from test_to_bw_fast import read_model, get_config
 import explain
 import embed
@@ -27,7 +27,7 @@ from modelzoo import GELU
 
 def gia_occlude_motifs(run_path, data_dir, motif_cluster, background_model, cell_line_name, out_dir='GIA_occlude_results'):
     utils.make_dir(out_dir)  # make output dir
-    testset, targets = evaluate.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
+    testset, targets = utils.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
     C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
     model, _ = utils.read_model(run_path)  # load model
     run_name = os.path.basename(os.path.abspath(run_path))  # get identifier for the outputs
@@ -79,7 +79,7 @@ def main():
     model = tf.keras.models.load_model(run_path, custom_objects={"GELU": GELU})
     util.make_dir(options.out_dir)
     # load and threshold data
-    testset, targets = tfr_evaluate.collect_whole_testset(coords=True)
+    testset, targets = utils.collect_whole_testset(coords=True)
     C, X, Y = util.convert_tfr_to_np(testset, 3)
     run_name = [p for p in run_path.split('/') if 'run-' in p][0]
     gia_occ_dir = util.make_dir(os.path.join(options.out_dir, run_name))
