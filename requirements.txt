@@ -15,5 +15,4 @@ tensorflow-gpu
 tensorflow_probability
 logomaker
 umap-learn
-https://github.com/p-koo/tfomics/tarball/master
 h5py

@@ -6,7 +6,6 @@ import os
 import pandas as pd
 import subprocess
 import tensorflow as tf
-import tfomics
 import umap.umap_ as umap
 import utils
 from tensorflow import keras
@@ -257,6 +256,23 @@ def function_batch(X, fun, batch_size=128, **kwargs):
         outputs.append(f)
     return np.concatenate(outputs, axis=0)
 
+def grad_times_input_to_df(x, grad, alphabet='ACGT'):
+    """generate pandas dataframe for saliency plot
+     based on grad x inputs """
+
+    x_index = np.argmax(np.squeeze(x), axis=1)
+    grad = np.squeeze(grad)
+    L, A = grad.shape
+
+    seq = ''
+    saliency = np.zeros((L))
+    for i in range(L):
+    seq += alphabet[x_index[i]]
+    saliency[i] = grad[i,x_index[i]]
+
+    # create saliency matrix
+    saliency_df = logomaker.saliency_to_matrix(seq=seq, values=saliency)
+    return saliency_df
 
 @tf.function
 def saliency_map(X, model, class_index=None, func=tf.math.reduce_mean, binary=False):
@@ -288,6 +304,18 @@ def plot_mean_coverages(data_and_labels, ax):
         ax.fill_between(x, cis[0], cis[1], alpha=0.08, color=p)
         ax.plot(x, est, p, label=label)
 
+def plot_attribution_map(saliency_df, ax=None, figsize=(20,1)):
+    """plot an attribution map using logomaker"""
+
+    logomaker.Logo(saliency_df, figsize=figsize, ax=ax)
+    if ax is None:
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.yaxis.set_ticks_position('none')
+    ax.xaxis.set_ticks_position('none')
+    plt.xticks([])
+    plt.yticks([])
 
 def plot_saliency_logos_oneplot(saliency_scores, X_sample, window=20,
                                 titles=[],
@@ -319,8 +347,8 @@ def plot_saliency_logos_oneplot(saliency_scores, X_sample, window=20,
             start = index - window
             end = index + window
 
-        saliency_df = tfomics.impress.grad_times_input_to_df(x_sample[:, start:end, :], scores[:, start:end, :])
-        tfomics.impress.plot_attribution_map(saliency_df, ax, figsize=(20, 1))
+        saliency_df = grad_times_input_to_df(x_sample[:, start:end, :], scores[:, start:end, :])
+        plot_attribution_map(saliency_df, ax, figsize=(20, 1))
         if len(titles):
             ax.set_title(titles[i])
     plt.tight_layout()
