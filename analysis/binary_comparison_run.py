@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../scripts')
+sys.path.append('../gopher')
 import binary_comparison
 import pandas as pd
 import numpy as np
@@ -63,4 +63,4 @@ quantitative_p_df = pd.DataFrame({'model':model_fn,'chr pearson r' :pearson_c_li
 performance_df = pd.merge(binary_metric_df,quantitative_p_df)
 performance_df = performance_df[['model','chrom auroc','chrom aupr','chr pearson r','peak auroc','peak aupr','peak pearson r']]
 performance_df['model type'] = ['Binary' if'binary' in m_f else 'Quantitative' for m_f in performance_df['model']]
-performance_df.to_csv('./binary_comparison_performance.csv')
+performance_df.to_csv('./inter_result/binary_comparison_performance.csv')
