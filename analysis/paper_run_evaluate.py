@@ -3,8 +3,8 @@ import glob
 import os
 from tqdm import tqdm
 
-data_dir = '../../datasets/quantitative_data/testset/'
-trained_models_dir = '../../trained_models'
+data_dir = '../datasets/quantitative_data/testset/'
+trained_models_dir = '../trained_models'
 output_dir = '../../figure/inter_results/model_evaluations/'
 
 folder_label_pairs = {'basenji_v2/augmentation_basenji_v2': 'basenji_v2_augmentation',
@@ -12,7 +12,7 @@ folder_label_pairs = {'basenji_v2/augmentation_basenji_v2': 'basenji_v2_augmenta
                       'basenji_v2/binloss_basenji_v2': 'binloss_basenji_v2',
                       'bpnet/bin_loss_40': 'bpnet_bin_loss_40',
                       'bpnet/augmentation_48/': 'bpnet_augmentation_48',
-                      'new_models': 'new_model'}
+                      'new_models': 'new_models'}
 
 scale_these = ['basenji_v2/binloss_basenji_v2', 'bpnet/bin_loss_40']
 
