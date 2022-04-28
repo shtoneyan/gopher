@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import sys
+sys.path.append('../gopher')
 import glob
 import metrics
 import numpy as np
@@ -305,10 +307,12 @@ def evaluate_project(data_dir, run_dir_list=None, project_dir=None, wandb_projec
     # option 1: project directory is provided with run outputs all of which should be evaluated
     if os.path.isdir(str(project_dir)):  # check if dir exists
         # get all subdirs that have model saved
-        run_dir_list = [os.path.join(project_dir, d) for d in os.listdir(project_dir)
-                        if os.path.isfile(os.path.join(project_dir, d, 'files/best_model.h5'))]
+        all_run_dirs = [g for g in glob.glob(project_dir + '/**/run*', recursive=True) if os.path.isdir(g)]
+        run_dir_list = [os.path.join(project_dir, d) for d in all_run_dirs
+                        if os.path.isfile(os.path.join(d, 'files/best_model.h5'))]
         if not output_prefix:
             output_prefix = os.path.basename(project_dir.rstrip('/'))  # if no project name use run dir name
+
         print('SELECTED ALL RUNS IN DIRECTORY: ' + project_dir)
     # option 2: use a list of predefined run paths
     elif run_dir_list:
@@ -327,5 +331,6 @@ def evaluate_project(data_dir, run_dir_list=None, project_dir=None, wandb_projec
     assert run_dir_list, 'No run paths found'
     csv_filename = output_prefix + '.csv'  # filename
     result_path = os.path.join(output_dir, csv_filename)  # output path
+    print(len(run_dir_list))
     # process a list of runs for evaluation
     process_run_list(run_dir_list, result_path, data_dir, batch_size=batch_size, eval_type=eval_type, fast=fast, scale=scale)
