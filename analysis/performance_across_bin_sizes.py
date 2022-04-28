@@ -3,6 +3,7 @@ import pandas as pd
 import sys
 sys.path.append('../gopher')
 import utils
+import numpy as np
 
 
 result_base_dir = utils.make_dir('inter_results')
