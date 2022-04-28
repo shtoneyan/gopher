@@ -1,4 +1,3 @@
-import evaluate
 import logomaker
 import matplotlib.pyplot as plt
 import numpy as np
@@ -267,8 +266,8 @@ def grad_times_input_to_df(x, grad, alphabet='ACGT'):
     seq = ''
     saliency = np.zeros((L))
     for i in range(L):
-    seq += alphabet[x_index[i]]
-    saliency[i] = grad[i,x_index[i]]
+        seq += alphabet[x_index[i]]
+        saliency[i] = grad[i,x_index[i]]
 
     # create saliency matrix
     saliency_df = logomaker.saliency_to_matrix(seq=seq, values=saliency)
@@ -309,7 +308,7 @@ def plot_attribution_map(saliency_df, ax=None, figsize=(20,1)):
 
     logomaker.Logo(saliency_df, figsize=figsize, ax=ax)
     if ax is None:
-    ax = plt.gca()
+        ax = plt.gca()
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.yaxis.set_ticks_position('none')
