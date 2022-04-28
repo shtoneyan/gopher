@@ -1,24 +1,30 @@
 import evaluate
-from tqdm import tqdm
 import glob
 import os
+from tqdm import tqdm
 
-paper_run_base_dir = '/home/shush/profile/QuantPred/paper_runs/*/*'
-projects_to_evaluate = [dir for dir in glob.glob(paper_run_base_dir) if ('finetune' not in dir) and ('fintune' not in dir)
-                    and ('binary' not in dir) and ('coverage' not in dir)]
+data_dir = '../../datasets/quantitative_data/testset/'
+trained_models_dir = '../../trained_models'
+output_dir = '../../figure/inter_results/model_evaluations/'
 
-output_dir = '../paper_run_evaluations'
-data_dir = '/home/shush/profile/QuantPred/datasets/chr8/complete/random_chop/i_2048_w_1/'
-idr_data_dir_pattern = '/mnt/1a18a49e-9a31-4dbf-accd-3fb8abbfab2d/shush/15_IDR_test_sets_6K/cell_line_*/i_6144_w_1/'
-for project_dir in tqdm(projects_to_evaluate):
-    if 'new_models' in project_dir:
-        batch_size = 2
-    else:
-        batch_size = 32
-    if os.path.isfile(os.path.join(output_dir, os.path.basename(project_dir)+'.csv')):
-        print('Skipping '+project_dir)
-    else:
-        print('Processing ', os.path.join(output_dir, project_dir+'.csv'))
-        evaluate.evaluate_project(data_dir=data_dir, idr_data_dir_pattern=idr_data_dir_pattern,
-                                  run_dir_list=None, project_dir=project_dir, wandb_project_name=None, wandb_dir=None,
-                                  output_dir='../paper_run_evaluations', output_prefix=None, batch_size=batch_size)
+folder_label_pairs = {'basenji_v2/augmentation_basenji_v2': 'basenji_v2_augmentation',
+                      'basenji_v2/train_threshold_basenji_v2': 'train_threshold_basenji_v2',
+                      'basenji_v2/binloss_basenji_v2': 'binloss_basenji_v2',
+                      'bpnet/bin_loss_40': 'bpnet_bin_loss_40',
+                      'bpnet/augmentation_48/': 'bpnet_augmentation_48',
+                      'new_models': 'new_model'}
+
+scale_these = ['basenji_v2/binloss_basenji_v2', 'bpnet/bin_loss_40']
+
+for folder, label in folder_label_pairs.items():
+
+    evaluate.evaluate_project(data_dir,
+                              project_dir=os.path.join(trained_models_dir, folder),
+                              output_dir=output_dir,
+                              output_prefix=label, fast=True, scale=False)
+    if folder in scale_these:
+        evaluate.evaluate_project(data_dir,
+                                  project_dir=os.path.join(trained_models_dir, folder),
+                                  output_dir=output_dir,
+                                  output_prefix='scaled_'+label, fast=True, scale=True)
+
