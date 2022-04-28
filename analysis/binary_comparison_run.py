@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../scripts')
+sys.path.append('../gopher')
 import binary_comparison
 import pandas as pd
 import numpy as np

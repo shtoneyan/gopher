@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../scripts')
+sys.path.append('../gopher')
 import h5py
 import glob
 import pandas as pd
@@ -101,12 +101,9 @@ ref = onehot_ref_alt['ref'][()]
 alt = onehot_ref_alt['alt'][()]
 
 for model in model_paths:
-    print(model)
-    print(robust_output_dir)
     variant_effect.vcf_quantitative(model,ref,alt,2048,
                                     robust_output_dir+'/'+model.split('/')[-1],
                                     robust = True)
-    print(n_robust_output_dir)
     variant_effect.vcf_quantitative(model,ref,alt,2048,
                                     n_robust_output_dir+'/'+model.split('/')[-1],
                                     robust = False)
