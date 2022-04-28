@@ -9,7 +9,6 @@ import umap.umap_ as umap
 import utils
 from tensorflow import keras
 
-
 def select(embeddings, lower_lim_1=None,
            upper_lim_1=None, lower_lim_2=None,
            upper_lim_2=None, idr=''):
@@ -56,6 +55,7 @@ def get_cell_line_overlaps(file_prefix, bedfile1, bedfile2, fraction_overlap=0.5
     _ = process.communicate()
     df = pd.read_csv('{}_IDR.bed'.format(file_prefix), sep='\t', header=None)
     idr_starts = df.iloc[:, 1].values
+    os.remove('{}_IDR.bed'.format(file_prefix))
     return idr_starts
 
 
