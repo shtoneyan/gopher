@@ -14,4 +14,4 @@ The repo contains a set of tutorial jupyter notebooks that illustrate these step
 download dataset.zip, trained_models.zip.
 Put them inside this git directory and unzip without changing folder name
 download and unzip training_dataset.zip and unzip within datasets.
-All analysis output to ./figure_output/
+All analysis output to analysis/inter_result/
