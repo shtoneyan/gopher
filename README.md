@@ -6,6 +6,11 @@
 This repository contains scripts for data preprocessing, training deep learning models for DNA sequence to epigenetic function prediction and evaluation of models.
 
 The repo contains a set of tutorial jupyter notebooks that illustrate these steps on a toy dataset. The two notebooks below are required prerequisites for the rest of tutorials:
-- preprocessing/preprocessing/quant_dataset_tutorial.ipynb 
+- preprocessing/preprocessing/quant_dataset_tutorial.ipynb
 - tutorials/train_model.ipynb
 
+
+
+download dataset.zip, trained_models.zip.
+Put them inside this git directory and unzip without changing folder name
+All analysis output to ./figure_output/ 
