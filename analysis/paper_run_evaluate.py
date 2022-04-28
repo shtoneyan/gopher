@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../gopher')
+import utils
 import evaluate
 import glob
 import os
@@ -5,7 +8,8 @@ from tqdm import tqdm
 
 data_dir = '../datasets/quantitative_data/testset/'
 trained_models_dir = '../trained_models'
-output_dir = '../../figure/inter_results/model_evaluations/'
+result_base_dir = utils.make_dir('inter_results')
+output_dir = utils.make_dir(result_base_dir+'/model_evaluations/')
 
 folder_label_pairs = {'basenji_v2/augmentation_basenji_v2': 'basenji_v2_augmentation',
                       'basenji_v2/train_threshold_basenji_v2': 'train_threshold_basenji_v2',
