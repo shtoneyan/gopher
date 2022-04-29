@@ -32,7 +32,7 @@ for run_path in run_paths:
     else:
         model_logits = tf.keras.Model(inputs=model.input,
                                outputs=model.output.op.inputs[0].op.inputs[0])
-    model_logits.save(os.path.join(run_path, 'logit.h5'))
+    # model_logits.save(os.path.join(run_path, 'logit.h5'))
 
 
 
