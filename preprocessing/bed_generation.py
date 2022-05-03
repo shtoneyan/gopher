@@ -158,7 +158,7 @@ def main():
     # ignore auxiliary
     if options.ignore_auxiliary:
         primary_re = re.compile('chr\d+$')
-        for chrom_key in chrom_files.keys():
+        for chrom_key in list(chrom_files.keys()):
             chrom,strand = chrom_key
             primary_m = primary_re.match(chrom)
             if not primary_m and chrom != 'chrX':

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function parse_yaml {
    local prefix=$2
    local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
@@ -30,7 +32,7 @@ echo Peak centering
 
 # get merged peaks from bed files
 echo Generating bed region combined file for all TFs
-./bed_generation.py -y -m 200 -s $input_size \
+./bed_generation.py -yi -m 500 -s $input_size \
                   -o $o_prefix -c $genomefile_size \
                   $samplefile_basset
 # sort bedfile and genomesize file

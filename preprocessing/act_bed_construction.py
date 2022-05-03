@@ -14,15 +14,20 @@ def main():
     data.rename(columns={'Unnamed: 0':'loci'}, inplace=True)
     
     chrom = [i.split(':')[0] for i in list(data.loci)]
-    start = [re.split(':|-',i)[1] for i in list(data.loci)]
-    end = [re.split(":|-",i)[2] for i in list(data.loci)]
-    clean_end = [i[:-3] for i in end]
-    strand = [i[-2] for i in end]
+    coord = [re.split(':()',i)[-1] for i in list(data.loci)]
+    start = [i.split('(')[0].split('-')[0] for i in coord]
+    end = [i.split('(')[0].split('-')[1] for i in coord]
+    strand = [i[-2] for i in coord]
     data = data.drop(columns=['loci'])
+#     chrom = [i.split(':')[0] for i in list(data.loci)]
+#     start = [re.split(':|-',i)[1] for i in list(data.loci)]
+#     end = [re.split(":|-",i)[2] for i in list(data.loci)]
+#     clean_end = [i[:-3] for i in end]
+#     strand = [i[-2] for i in end]
     
     data['chrom'] = chrom
     data['start'] = start
-    data['end'] = clean_end
+    data['end'] = end
     data['strand'] = strand
     cols = data.columns.tolist()
     cols = cols[-4:]+cols[:-4]
