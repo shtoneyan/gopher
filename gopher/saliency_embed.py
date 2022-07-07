@@ -90,7 +90,7 @@ def tomtom_upstream(model_path, filter_layer, seq, output_path, threshold=0.5, p
     model = utils.read_model(model_path, True)[0]
     max_filter, counter = filter_max_align_batch(seq, model, layer=filter_layer)
     clip_filter = clip_filters(max_filter, threshold=threshold, pad=pad)
-    meme_generate(clip_filter, output_file=ooutput_path + '.txt')
+    meme_generate(clip_filter, output_file=output_path + '.txt')
 
 
 def meme_generate(W, output_file='meme.txt', prefix='filter'):

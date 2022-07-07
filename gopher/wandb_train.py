@@ -2,18 +2,16 @@
 import custom_fit
 import h5py
 import json
-import losses
 import modelzoo
-import numpy as np
 import os
 import sys
 import tensorflow as tf
-import time
 import utils
 import wandb
 import yaml
 import sys
 from wandb.keras import WandbCallback
+
 
 def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
                output_dir, config={}):

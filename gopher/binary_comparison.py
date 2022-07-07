@@ -3,7 +3,6 @@ import utils
 import numpy as np
 import h5py
 import scipy
-import modelzoo
 import os
 import json
 import sklearn

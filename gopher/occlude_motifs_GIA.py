@@ -1,25 +1,8 @@
-import sys
 import tensorflow as tf
-import h5py, os, yaml
-import umap.umap_ as umap
+import os
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-import re
-import seaborn as sns
-from scipy import stats
 import pandas as pd
-import subprocess
-from scipy.stats import pearsonr
-from tqdm import tqdm
-import glob
-from scipy.stats import mannwhitneyu
-from statannotations.Annotator import Annotator
 import utils
-from test_to_bw_fast import read_model, get_config
-import explain
-import embed
-import metrics
 import quant_GIA
 from optparse import OptionParser
 from modelzoo import GELU
@@ -31,9 +14,9 @@ def gia_occlude_motifs(run_path, data_dir, motif_cluster, background_model, cell
     C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
     model, _ = utils.read_model(run_path)  # load model
     run_name = os.path.basename(os.path.abspath(run_path))  # get identifier for the outputs
-    gia_occ_dir = util.make_dir(os.path.join(options.out_dir, run_name))
-    base_dir = util.make_dir(os.path.join(gia_occ_dir, '{}_{}'.format(cell_line_name, args[1])))
-    output_dir = util.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
+    gia_occ_dir = utils.make_dir(os.path.join(options.out_dir, run_name))
+    base_dir = utils.make_dir(os.path.join(gia_occ_dir, '{}_{}'.format(cell_line_name, args[1])))
+    output_dir = utils.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
     X_set = select_set('all_threshold', C, X, Y)
     gi = GlobalImportance(model, targets)
     if len(motif_cluster) > 1:
@@ -65,26 +48,26 @@ def main():
         help='take logits [Default: %default]')
     (options, args) = parser.parse_args()
     if len(args) != 4:
-      parser.error('Must provide motifs and cell line.')
+        parser.error('Must provide motifs and cell line.')
     else:
-      run_path = args[0]
-      motif_cluster = args[1].split(',')
-      background_model = args[2]
-      cell_line_name = args[3]
+        run_path = args[0]
+        motif_cluster = args[1].split(',')
+        background_model = args[2]
+        cell_line_name = args[3]
 
     print('Processing')
     print(motif_cluster)
     # load and get model layer
     # run_path = 'paper_runs/new_models/32_res/run-20211023_095131-w6okxt01'
     model = tf.keras.models.load_model(run_path, custom_objects={"GELU": GELU})
-    util.make_dir(options.out_dir)
+    utils.make_dir(options.out_dir)
     # load and threshold data
     testset, targets = utils.collect_whole_testset(coords=True)
-    C, X, Y = util.convert_tfr_to_np(testset, 3)
+    C, X, Y = utils.convert_tfr_to_np(testset, 3)
     run_name = [p for p in run_path.split('/') if 'run-' in p][0]
-    gia_occ_dir = util.make_dir(os.path.join(options.out_dir, run_name))
-    base_dir = util.make_dir(os.path.join(gia_occ_dir, '{}_{}'.format(cell_line_name, args[1])))
-    output_dir = util.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
+    gia_occ_dir = utils.make_dir(os.path.join(options.out_dir, run_name))
+    base_dir = utils.make_dir(os.path.join(gia_occ_dir, '{}_{}'.format(cell_line_name, args[1])))
+    output_dir = utils.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
     # for each element in the cluster of 2 and both together
     # base_dir = util.make_dir(os.path.join(gia_add_dir, '{}_{}'.format(cell_line_name, motif)))
     if background_model == 'dinuc':
@@ -107,4 +90,4 @@ def main():
 
 ################################################################################
 if __name__ == '__main__':
-  main()
+    main()

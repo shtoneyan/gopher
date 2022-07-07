@@ -1,15 +1,13 @@
 import tensorflow as tf
-import h5py, os, yaml
+import os
 import numpy as np
 import pandas as pd
 from modelzoo import GELU
 from tqdm import tqdm
 import utils
-import explain
-import embed
-import metrics
 import quant_GIA
 from optparse import OptionParser
+
 
 def main():
     usage = 'usage: %prog [options] <run_path> <motif> <background_model> <cell_lines>'
