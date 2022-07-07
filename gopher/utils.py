@@ -1,18 +1,18 @@
 import csv
 import glob
 import json
-import losses
+import re
 import numpy as np
 import os
 import pandas as pd
 import pyBigWig
-import sys
 import tensorflow as tf
 import yaml
 from modelzoo import GELU
 from natsort import natsorted
 import h5py
 from tqdm import tqdm
+
 
 def collect_whole_testset(data_dir,
                           coords=False, batch_size=32, return_sts=False):
