@@ -56,8 +56,10 @@ def get_cell_line_overlaps(file_prefix, bedfile1, bedfile2, fraction_overlap=0.5
                                                                                 file_prefix)
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     _ = process.communicate()
-    df = pd.read_csv('{}_IDR.bed'.format(file_prefix), sep='\t', header=None)
+    out_filename = '{}_IDR.bed'.format(file_prefix)
+    df = pd.read_csv(out_filename, sep='\t', header=None)
     idr_starts = df.iloc[:, 1].values
+    os.remove(out_filename)
     return idr_starts
 
 
@@ -85,6 +87,7 @@ def get_embeddings(input_features):
     reducer = umap.UMAP(random_state=28)
     embedding = reducer.fit_transform(input_features)
     df = pd.DataFrame({'UMAP 1': embedding[:, 1], 'UMAP 2': embedding[:, 0]})
+    print('Finished embedding in UMAP')
     return df
 
 

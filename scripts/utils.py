@@ -277,7 +277,7 @@ def onehot_to_str(onehot):
     """
     full_str = []
     for one_onehot in onehot:
-        assert one_onehot.shape == (4,), print(one_onehot)
+        assert one_onehot.shape == (4,), one_onehot
         full_str.append(list('ACGT')[np.argwhere(one_onehot)[0][0]])
     return ''.join(full_str)
 
@@ -315,7 +315,7 @@ def predict_np(X, model, batch_size=32, reshape_to_2D=False):
     :return:
     """
     model_output = []
-    for x_batch in batch_np(X, batch_size):
+    for x_batch in tqdm(batch_np(X, batch_size)):
         model_output.append(model(x_batch).numpy())
     model_output = np.squeeze(np.concatenate(model_output))
     if reshape_to_2D:
@@ -375,14 +375,18 @@ def read_model(run_path, compile_model=False):
     :param compile_model: bool compile model using loss from config
     :return: model and resolution
     '''
-    config = get_config(run_path)  # load wandb config
-    if 'bin_size' in config.keys():
-        bin_size = config['bin_size']['value']  # get bin size
+    if run_path.endswith('.h5'):
+        trained_model = tf.keras.models.load_model(run_path, custom_objects={"GELU": GELU})
+        bin_size = ''
     else:
-        bin_size = 'NA'
-    model_path = os.path.join(run_path, 'files', 'best_model.h5')  # pretrained model
-    # load model
-    trained_model = tf.keras.models.load_model(model_path, custom_objects={"GELU": GELU})
+        config = get_config(run_path)  # load wandb config
+        if 'bin_size' in config.keys():
+            bin_size = config['bin_size']['value']  # get bin size
+        else:
+            bin_size = 'NA'
+        model_path = os.path.join(run_path, 'files', 'best_model.h5')  # pretrained model
+        # load model
+        trained_model = tf.keras.models.load_model(model_path, custom_objects={"GELU": GELU})
     if compile_model:
         loss_fn_str = config['loss_fn']['value']  # get loss
         loss_fn = eval('losses.' + loss_fn_str)()  # turn loss into function

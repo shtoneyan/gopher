@@ -563,7 +563,7 @@ def test_interaction(gi, optimized_motifs, targets, output_dir, filename):
 
 
 def gia_add_motifs(run_path, data_dir, motif_cluster, cell_lines, out_dir='GIA_results',
-                       n_background=1000, motif1_positions=[1024], background_model='dinuc'):
+                       n_background=1000, motif1_positions=[1024], background_model='dinuc', sample_seed=42):
     """
     GIA addition experiment with one or pair of motifs. This optimizes any positions marked by '.' in the motifs, finds
     the optimal distance in case of pair of motifs and then tests for interaction by inserting them separately or together
@@ -582,7 +582,12 @@ def gia_add_motifs(run_path, data_dir, motif_cluster, cell_lines, out_dir='GIA_r
     C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
     model, _ = utils.read_model(run_path)  # load model
 
-    run_name = os.path.basename(os.path.abspath(run_path))  # get identifier for the outputs
+    run_name_found = [r for r in os.path.abspath(run_path).split('/') if 'run-' in r]  # get identifier for the outputs
+    if run_name_found:
+        run_name = run_name_found[0]
+    else:
+        run_name = 'results_' + str(hash(run_path))
+    print('Saving results in subfolder '+run_name)
     gia_add_dir = utils.make_dir(os.path.join(out_dir, run_name))  # make a subdirectory for outputs
 
     # select background sequences to add the motif(s) to
@@ -590,7 +595,7 @@ def gia_add_motifs(run_path, data_dir, motif_cluster, cell_lines, out_dir='GIA_r
 
     gi = GlobalImportance(model, targets)
     # subsample background to given size
-    gi.set_null_model(background_model, base_sequence=X_set, num_sample=n_background)
+    gi.set_null_model(background_model, base_sequence=X_set, num_sample=n_background, seed=sample_seed)
     for cell_line_name in cell_lines:  # for each cell line of interest
         if isinstance(cell_line_name, int):
             cell_line_name = targets[cell_line_name]
