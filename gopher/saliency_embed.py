@@ -354,3 +354,104 @@ def plot_saliency_logos_oneplot(saliency_scores, X_sample, window=20,
     if filename:
         assert not os.path.isfile(filename), 'File exists!'
         plt.savefig(filename, format='svg')
+
+#------------------------------------------------------------------------------
+
+def smoothgrad(x, model, num_samples=50, mean=0.0, stddev=0.1, 
+               class_index=None, func=tf.math.reduce_mean):
+
+  _,L,A = x.shape
+  x_noise = tf.tile(x, (num_samples,1,1)) + tf.random.normal((num_samples,L,A), mean, stddev)
+  grad = saliency_map(x_noise, model, class_index=class_index, func=func)
+  return tf.reduce_mean(grad, axis=0, keepdims=True)
+
+
+#------------------------------------------------------------------------------
+
+def integrated_grad(x, model, baseline, num_steps=25, 
+                         class_index=None, func=tf.math.reduce_mean):
+
+  def integral_approximation(gradients):
+    # riemann_trapezoidal
+    grads = (gradients[:-1] + gradients[1:]) / tf.constant(2.0)
+    integrated_gradients = tf.math.reduce_mean(grads, axis=0)
+    return integrated_gradients
+  
+  def interpolate_data(baseline, x, steps):
+    steps_x = steps[:, tf.newaxis, tf.newaxis]   
+    delta = x - baseline
+    x = baseline +  steps_x * delta
+    return x
+
+  steps = tf.linspace(start=0.0, stop=1.0, num=num_steps+1)
+  x_interp = interpolate_data(baseline, x, steps)
+  grad = saliency_map(x_interp, model, class_index=class_index, func=func)
+  avg_grad = integral_approximation(grad)
+  avg_grad= np.expand_dims(avg_grad, axis=0)
+  return avg_grad 
+
+
+#------------------------------------------------------------------------------
+
+def expected_integrated_grad(x, model, baselines, num_steps=25,
+                             class_index=None, func=tf.math.reduce_mean):
+  """average integrated gradients across different backgrounds"""
+
+  grads = []
+  for baseline in baselines:
+    grads.append(integrated_grad(x, model, baseline, num_steps=num_steps, 
+                                 class_index=class_index, func=tf.math.reduce_mean))
+  return np.mean(np.array(grads), axis=0)
+
+
+#------------------------------------------------------------------------------
+
+def mutagenesis(x, model, class_index=None):
+  """ in silico mutagenesis analysis for a given sequence"""
+
+  def generate_mutagenesis(x):
+    _,L,A = x.shape 
+    x_mut = []
+    for l in range(L):
+      for a in range(A):
+        x_new = np.copy(x)
+        x_new[0,l,:] = 0
+        x_new[0,l,a] = 1
+        x_mut.append(x_new)
+    return np.concatenate(x_mut, axis=0)
+
+  def reconstruct_map(predictions):
+    _,L,A = x.shape 
+    
+    mut_score = np.zeros((1,L,A))
+    k = 0
+    for l in range(L):
+      for a in range(A):
+        mut_score[0,l,a] = predictions[k]
+        k += 1
+    return mut_score
+
+  def get_score(x, model, class_index):
+    score = model.predict(x)
+    if class_index == None:
+      score = np.sqrt(np.sum(score**2, axis=-1, keepdims=True))
+    else:
+      score = score[:,class_index]
+    return score
+
+  # generate mutagenized sequences
+  x_mut = generate_mutagenesis(x)
+  
+  # get baseline wildtype score
+  wt_score = get_score(x, model, class_index)
+  predictions = get_score(x_mut, model, class_index)
+
+  # reshape mutagenesis predictiosn
+  mut_score = reconstruct_map(predictions)
+
+  return mut_score - wt_score
+
+
+
+
+
