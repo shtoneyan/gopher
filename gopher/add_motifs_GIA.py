@@ -4,9 +4,7 @@ import numpy as np
 import pandas as pd
 from modelzoo import GELU
 from tqdm import tqdm
-import tfr_evaluate, utils
-import explain
-import embed
+import utils
 import metrics
 import quant_GIA
 from optparse import OptionParser
@@ -34,8 +32,8 @@ def main():
       cell_lines = args[3].split(',')
 
 
-    util.make_dir(options.out_dir)
-    testset, targets = tfr_evaluate.collect_whole_testset(coords=True)
+    utils.make_dir(options.out_dir)
+    testset, targets = utils.collect_whole_testset(coords=True)
     model = tf.keras.models.load_model(run_path, custom_objects={"GELU": GELU})
     if options.logits:
         print('USING LOGITS!')
@@ -46,8 +44,8 @@ def main():
         suffix = ''
 
     run_name = suffix + [p for p in run_path.split('/') if 'run-' in p][0]
-    gia_add_dir = util.make_dir(os.path.join(options.out_dir, run_name))
-    C, X, Y = util.convert_tfr_to_np(testset, 3)
+    gia_add_dir = utils.make_dir(os.path.join(options.out_dir, run_name))
+    C, X, Y = utils.convert_tfr_to_np(testset, 3)
 
     if background_model == 'dinuc':
         X_set = quant_GIA.select_set('all_threshold', C, X, Y)
@@ -60,16 +58,16 @@ def main():
         optimized_motifs = []
         for motif in motif_cluster:
             print('Optimizing motif '+motif)
-            base_dir = util.make_dir(os.path.join(gia_add_dir, '{}_{}'.format(cell_line_name, motif)))
-            output_dir = util.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
+            base_dir = utils.make_dir(os.path.join(gia_add_dir, '{}_{}'.format(cell_line_name, motif)))
+            output_dir = utils.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
             flanks_path = os.path.join(output_dir, 'flanks.csv')
             optimized_motifs.append(record_flank_test(gi, motif, targets,
                                                      cell_line_name, flanks_path))
         if len(motif_cluster)==2:
             print('Testing distance effect on motif interaction')
             # check for positional interaction by fixing one in the middle and sliding the other
-            base_dir = util.make_dir(os.path.join(gia_add_dir, '{}_{}_and_{}'.format(cell_line_name, motif_cluster[0], motif_cluster[1])))
-            output_dir = util.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
+            base_dir = utils.make_dir(os.path.join(gia_add_dir, '{}_{}_and_{}'.format(cell_line_name, motif_cluster[0], motif_cluster[1])))
+            output_dir = utils.make_dir(os.path.join(base_dir, '{}_N{}'.format(background_model, options.n_background)))
             # test_interaction(gi, optimized_motifs, targets, output_dir, 'optimal_position_interaction.csv')
             # for first_motif_pos in [800, 1024, 1200]:
             for first_motif_pos in [1024]:

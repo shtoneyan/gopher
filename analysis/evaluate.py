@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import sys
+sys.path.append('../gopher')
 import glob
 import metrics
 import numpy as np
@@ -170,25 +172,6 @@ def evaluate_run(model, bin_size, testset, targets, eval_type='whole'):
     complete_performance['scaling_factors'] = all_scaling_factors
     return complete_performance
 
-
-def collect_whole_testset(data_dir='/mnt/31dac31c-c4e2-4704-97bd-0788af37c5eb/chr8/complete/random_chop/i_2048_w_1/',
-                          coords=False, batch_size=32, return_sts=False):
-    """
-    Collects a test fold of a given testset without shuffling it
-    :param data_dir: testset directory
-    :param coords: bool indicating if coordinates should be taken
-    :param batch_size: batch size, important to set to smaller number for inference on large models
-    :return:
-    """
-    sts = utils.load_stats(data_dir)
-    testset = utils.make_dataset(data_dir, 'test', sts, batch_size=batch_size, shuffle=False, coords=coords)
-    targets = pd.read_csv(os.path.join(data_dir, 'targets.txt'), sep='\t')['identifier'].values
-    if return_sts:
-        return testset, targets, sts
-    else:
-        return testset, targets
-
-
 def merge_performance_with_metadata(performance, run_dir):
     """
     Merges performance evaluation data table with run metadata
@@ -241,7 +224,7 @@ def process_run_list(run_dirs, output_summary_filepath, data_dir, batch_size, ev
     :return:
     """
     # get datasets
-    testset, targets, sts = collect_whole_testset(data_dir=data_dir,
+    testset, targets, sts = utils.collect_whole_testset(data_dir=data_dir,
                                              coords=False, batch_size=batch_size,  return_sts=True)
     # process runs
     all_run_summaries = []
@@ -324,10 +307,12 @@ def evaluate_project(data_dir, run_dir_list=None, project_dir=None, wandb_projec
     # option 1: project directory is provided with run outputs all of which should be evaluated
     if os.path.isdir(str(project_dir)):  # check if dir exists
         # get all subdirs that have model saved
-        run_dir_list = [os.path.join(project_dir, d) for d in os.listdir(project_dir)
-                        if os.path.isfile(os.path.join(project_dir, d, 'files/best_model.h5'))]
+        all_run_dirs = [g for g in glob.glob(project_dir + '/**/run*', recursive=True) if os.path.isdir(g)]
+        run_dir_list = [os.path.join(project_dir, d) for d in all_run_dirs
+                        if os.path.isfile(os.path.join(d, 'files/best_model.h5'))]
         if not output_prefix:
             output_prefix = os.path.basename(project_dir.rstrip('/'))  # if no project name use run dir name
+
         print('SELECTED ALL RUNS IN DIRECTORY: ' + project_dir)
     # option 2: use a list of predefined run paths
     elif run_dir_list:
@@ -346,5 +331,6 @@ def evaluate_project(data_dir, run_dir_list=None, project_dir=None, wandb_projec
     assert run_dir_list, 'No run paths found'
     csv_filename = output_prefix + '.csv'  # filename
     result_path = os.path.join(output_dir, csv_filename)  # output path
+    print(len(run_dir_list))
     # process a list of runs for evaluation
     process_run_list(run_dir_list, result_path, data_dir, batch_size=batch_size, eval_type=eval_type, fast=fast, scale=scale)

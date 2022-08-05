@@ -14,6 +14,22 @@ from natsort import natsorted
 import h5py
 from tqdm import tqdm
 
+def collect_whole_testset(data_dir,
+                          coords=False, batch_size=32, return_sts=False):
+    """
+    Collects a test fold of a given testset without shuffling it
+    :param data_dir: testset directory
+    :param coords: bool indicating if coordinates should be taken
+    :param batch_size: batch size, important to set to smaller number for inference on large models
+    :return:
+    """
+    sts = load_stats(data_dir)
+    testset = make_dataset(data_dir, 'test', sts, batch_size=batch_size, shuffle=False, coords=coords)
+    targets = pd.read_csv(os.path.join(data_dir, 'targets.txt'), sep='\t')['identifier'].values
+    if return_sts:
+        return testset, targets, sts
+    else:
+        return testset, targets
 
 def write_true_pred_to_h5(testset, sts, model, h5_filename, bin_size):
 

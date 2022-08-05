@@ -122,7 +122,7 @@ class PearsonR(tf.keras.metrics.Metric):
         self._pred_sum = self.add_weight(name='pred_sum', shape=self._shape, initializer='zeros')
         self._pred_sumsq = self.add_weight(name='pred_sumsq', shape=self._shape, initializer='zeros')
 
-    def update_state(self, y_true, y_pred):
+    def update_state(self, y_true, y_pred,**kwargs):
         y_true = tf.cast(y_true, 'float32')
         y_pred = tf.cast(y_pred, 'float32')
 

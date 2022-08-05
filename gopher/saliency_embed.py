@@ -1,4 +1,3 @@
-import evaluate
 import logomaker
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,11 +5,9 @@ import os
 import pandas as pd
 import subprocess
 import tensorflow as tf
-import tfomics
 import umap.umap_ as umap
 import utils
 from tensorflow import keras
-
 
 def select(embeddings, lower_lim_1=None,
            upper_lim_1=None, lower_lim_2=None,
@@ -60,6 +57,7 @@ def get_cell_line_overlaps(file_prefix, bedfile1, bedfile2, fraction_overlap=0.5
     df = pd.read_csv(out_filename, sep='\t', header=None)
     idr_starts = df.iloc[:, 1].values
     os.remove(out_filename)
+
     return idr_starts
 
 
@@ -260,6 +258,23 @@ def function_batch(X, fun, batch_size=128, **kwargs):
         outputs.append(f)
     return np.concatenate(outputs, axis=0)
 
+def grad_times_input_to_df(x, grad, alphabet='ACGT'):
+    """generate pandas dataframe for saliency plot
+     based on grad x inputs """
+
+    x_index = np.argmax(np.squeeze(x), axis=1)
+    grad = np.squeeze(grad)
+    L, A = grad.shape
+
+    seq = ''
+    saliency = np.zeros((L))
+    for i in range(L):
+        seq += alphabet[x_index[i]]
+        saliency[i] = grad[i,x_index[i]]
+
+    # create saliency matrix
+    saliency_df = logomaker.saliency_to_matrix(seq=seq, values=saliency)
+    return saliency_df
 
 @tf.function
 def saliency_map(X, model, class_index=None, func=tf.math.reduce_mean, binary=False):
@@ -291,6 +306,18 @@ def plot_mean_coverages(data_and_labels, ax):
         ax.fill_between(x, cis[0], cis[1], alpha=0.08, color=p)
         ax.plot(x, est, p, label=label)
 
+def plot_attribution_map(saliency_df, ax=None, figsize=(20,1)):
+    """plot an attribution map using logomaker"""
+
+    logomaker.Logo(saliency_df, figsize=figsize, ax=ax)
+    if ax is None:
+        ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.yaxis.set_ticks_position('none')
+    ax.xaxis.set_ticks_position('none')
+    plt.xticks([])
+    plt.yticks([])
 
 def plot_saliency_logos_oneplot(saliency_scores, X_sample, window=20,
                                 titles=[],
@@ -322,11 +349,112 @@ def plot_saliency_logos_oneplot(saliency_scores, X_sample, window=20,
             start = index - window
             end = index + window
 
-        saliency_df = tfomics.impress.grad_times_input_to_df(x_sample[:, start:end, :], scores[:, start:end, :])
-        tfomics.impress.plot_attribution_map(saliency_df, ax, figsize=(20, 1))
+        saliency_df = grad_times_input_to_df(x_sample[:, start:end, :], scores[:, start:end, :])
+        plot_attribution_map(saliency_df, ax, figsize=(20, 1))
         if len(titles):
             ax.set_title(titles[i])
     plt.tight_layout()
     if filename:
         assert not os.path.isfile(filename), 'File exists!'
         plt.savefig(filename, format='svg')
+
+#------------------------------------------------------------------------------
+
+def smoothgrad(x, model, num_samples=50, mean=0.0, stddev=0.1, 
+               class_index=None, func=tf.math.reduce_mean):
+
+  _,L,A = x.shape
+  x_noise = tf.tile(x, (num_samples,1,1)) + tf.random.normal((num_samples,L,A), mean, stddev)
+  grad = saliency_map(x_noise, model, class_index=class_index, func=func)
+  return tf.reduce_mean(grad, axis=0, keepdims=True)
+
+
+#------------------------------------------------------------------------------
+
+def integrated_grad(x, model, baseline, num_steps=25, 
+                         class_index=None, func=tf.math.reduce_mean):
+
+  def integral_approximation(gradients):
+    # riemann_trapezoidal
+    grads = (gradients[:-1] + gradients[1:]) / tf.constant(2.0)
+    integrated_gradients = tf.math.reduce_mean(grads, axis=0)
+    return integrated_gradients
+  
+  def interpolate_data(baseline, x, steps):
+    steps_x = steps[:, tf.newaxis, tf.newaxis]   
+    delta = x - baseline
+    x = baseline +  steps_x * delta
+    return x
+
+  steps = tf.linspace(start=0.0, stop=1.0, num=num_steps+1)
+  x_interp = interpolate_data(baseline, x, steps)
+  grad = saliency_map(x_interp, model, class_index=class_index, func=func)
+  avg_grad = integral_approximation(grad)
+  avg_grad= np.expand_dims(avg_grad, axis=0)
+  return avg_grad 
+
+
+#------------------------------------------------------------------------------
+
+def expected_integrated_grad(x, model, baselines, num_steps=25,
+                             class_index=None, func=tf.math.reduce_mean):
+  """average integrated gradients across different backgrounds"""
+
+  grads = []
+  for baseline in baselines:
+    grads.append(integrated_grad(x, model, baseline, num_steps=num_steps, 
+                                 class_index=class_index, func=tf.math.reduce_mean))
+  return np.mean(np.array(grads), axis=0)
+
+
+#------------------------------------------------------------------------------
+
+def mutagenesis(x, model, class_index=None):
+  """ in silico mutagenesis analysis for a given sequence"""
+
+  def generate_mutagenesis(x):
+    _,L,A = x.shape 
+    x_mut = []
+    for l in range(L):
+      for a in range(A):
+        x_new = np.copy(x)
+        x_new[0,l,:] = 0
+        x_new[0,l,a] = 1
+        x_mut.append(x_new)
+    return np.concatenate(x_mut, axis=0)
+
+  def reconstruct_map(predictions):
+    _,L,A = x.shape 
+    
+    mut_score = np.zeros((1,L,A))
+    k = 0
+    for l in range(L):
+      for a in range(A):
+        mut_score[0,l,a] = predictions[k]
+        k += 1
+    return mut_score
+
+  def get_score(x, model, class_index):
+    score = model.predict(x)
+    if class_index == None:
+      score = np.sqrt(np.sum(score**2, axis=-1, keepdims=True))
+    else:
+      score = score[:,class_index]
+    return score
+
+  # generate mutagenized sequences
+  x_mut = generate_mutagenesis(x)
+  
+  # get baseline wildtype score
+  wt_score = get_score(x, model, class_index)
+  predictions = get_score(x_mut, model, class_index)
+
+  # reshape mutagenesis predictiosn
+  mut_score = reconstruct_map(predictions)
+
+  return mut_score - wt_score
+
+
+
+
+

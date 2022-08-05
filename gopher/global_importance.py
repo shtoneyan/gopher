@@ -1,4 +1,3 @@
-import evaluate
 import h5py
 import itertools
 import numpy as np
@@ -578,7 +577,7 @@ def gia_add_motifs(run_path, data_dir, motif_cluster, cell_lines, out_dir='GIA_r
     :return: None
     """
     utils.make_dir(out_dir)  # make output dir
-    testset, targets = evaluate.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
+    testset, targets = utils.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
     C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
     model, _ = utils.read_model(run_path)  # load model
 
@@ -644,7 +643,7 @@ def gia_occlude_motifs(run_path, data_dir, motif_cluster, X_subset_type='all_thr
     :return: None
     """
     utils.make_dir(out_dir)  # make output dir
-    testset, targets = evaluate.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
+    testset, targets = utils.collect_whole_testset(data_dir=data_dir, coords=True)  # get test set
     C, X, Y = utils.convert_tfr_to_np(testset)  # convert to np arrays for easy filtering
     model, _ = utils.read_model(run_path)  # load model
     run_name = os.path.basename(os.path.abspath(run_path))  # get identifier for the outputs
