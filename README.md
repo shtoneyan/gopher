@@ -1,5 +1,5 @@
 
-<img src="./crop_gh.png" width="100" height='100'>
+<img src="./DALL·E 2022-10-05 14.40.17 - Constellation in a shape of groundhog. graphical art.png" width="100" height='100'>
 
 **GOPHER**: **G**en**O**mic **P**rofile-model compre**H**ensive **E**valuato**R**
 
