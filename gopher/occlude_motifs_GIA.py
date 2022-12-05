@@ -17,8 +17,6 @@ from scipy.stats import mannwhitneyu
 from statannotations.Annotator import Annotator
 import utils
 from test_to_bw_fast import read_model, get_config
-import explain
-import embed
 import metrics
 import quant_GIA
 from optparse import OptionParser

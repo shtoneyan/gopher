@@ -293,7 +293,7 @@ def onehot_to_str(onehot):
     """
     full_str = []
     for one_onehot in onehot:
-        assert one_onehot.shape == (4,), print(one_onehot)
+        assert one_onehot.shape == (4,), one_onehot
         full_str.append(list('ACGT')[np.argwhere(one_onehot)[0][0]])
     return ''.join(full_str)
 
@@ -331,7 +331,7 @@ def predict_np(X, model, batch_size=32, reshape_to_2D=False):
     :return:
     """
     model_output = []
-    for x_batch in batch_np(X, batch_size):
+    for x_batch in tqdm(batch_np(X, batch_size)):
         model_output.append(model(x_batch).numpy())
     model_output = np.squeeze(np.concatenate(model_output))
     if reshape_to_2D:

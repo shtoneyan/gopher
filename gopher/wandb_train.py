@@ -65,7 +65,7 @@ def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
 
     trainset = utils.make_dataset(data_dir, 'train', utils.load_stats(data_dir),
                                   batch_size=default_config['batch_size'])
-    validset = utils.make_dataset(data_dir, 'valid', utils.load_stats(data_dir), batch_size=59)
+    validset = utils.make_dataset(data_dir, 'valid', utils.load_stats(data_dir), batch_size=default_config['batch_size'])
 
     json_path = os.path.join(data_dir, 'statistics.json')
     with open(json_path) as json_file:

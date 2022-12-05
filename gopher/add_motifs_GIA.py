@@ -5,8 +5,6 @@ import pandas as pd
 from modelzoo import GELU
 from tqdm import tqdm
 import utils
-import explain
-import embed
 import metrics
 import quant_GIA
 from optparse import OptionParser
