@@ -109,7 +109,7 @@ def get_robustness_values(model_paths, testset_path, output_dir='robustness_test
     """
     stats = utils.load_stats(testset_path)
     utils.make_dir(output_dir)
-    testset = utils.make_dataset(test_path,'test',stats,batch_size = batch_size,shuffle=False)
+    testset = utils.make_dataset(testset_path,'test',stats,batch_size = batch_size,shuffle=False)
     robust_dict = {}
 
     for model_path in model_paths:
