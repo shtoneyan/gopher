@@ -6,9 +6,7 @@
 ## Installation
 
 ```
-$ pip install sequence-models
-$ pip install git+https://github.com/microsoft/protein-sequence-models.git  # bleeding edge, current repo main branch
-
+$ pip install bio-gopher
 ```
 
 This repository contains scripts for data preprocessing, training deep learning models for DNA sequence to epigenetic function prediction and evaluation of models.
