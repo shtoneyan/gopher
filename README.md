@@ -3,6 +3,14 @@
 
 **GOPHER**: **G**en**O**mic **P**rofile-model compre**H**ensive **E**valuato**R**
 
+## Installation
+
+```
+$ pip install sequence-models
+$ pip install git+https://github.com/microsoft/protein-sequence-models.git  # bleeding edge, current repo main branch
+
+```
+
 This repository contains scripts for data preprocessing, training deep learning models for DNA sequence to epigenetic function prediction and evaluation of models.
 
 The repo contains a set of tutorial jupyter notebooks that illustrate these steps on a toy dataset. The two notebooks below are required prerequisites for the rest of tutorials:
