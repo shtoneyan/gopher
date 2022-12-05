@@ -1,11 +1,9 @@
 import h5py
-import robustness_test
 import utils
 import numpy as np
 import os
 import tensorflow as tf
 import csv
-from custom_fit import center_crop
 
 def get_center_coordinates(coord, conserve_start, conserve_end):
     """

@@ -1,5 +1,4 @@
 import h5py
-import modelzoo
 import numpy as np
 import subprocess
 import tensorflow as tf

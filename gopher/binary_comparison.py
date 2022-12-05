@@ -1,13 +1,12 @@
 import tensorflow as tf
-import utils
 import numpy as np
 import h5py
 import scipy
-import modelzoo
+from gopher import utils
 import os
 import json
 import sklearn
-import utils
+
 
 def cov_pearson(run_dir,profile_data_dir):
     """

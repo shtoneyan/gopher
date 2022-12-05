@@ -1,8 +1,5 @@
-
-import pandas as pd
 import numpy as np
 from tensorflow import keras
-import tensorflow as tf
 
 def filter_max_align_batch(X, model, layer=3, window=24, threshold=0.5, batch_size=1024, max_align=1e4, verbose=1):
   """get alignment of filter activations for visualization"""

@@ -1,14 +1,7 @@
 import numpy as np
-import pandas as pd
 import tensorflow as tf
-import matplotlib.pyplot as plt
-from scipy.stats import pearsonr
-import seaborn as sns
-import scipy
-import sklearn.metrics as skm
 from tensorflow.python.keras import backend as K
 from scipy.spatial import distance
-from scipy import stats
 
 
 def get_correlation_concatenated(all_truth, all_pred, corr_type='pearsonr'):
