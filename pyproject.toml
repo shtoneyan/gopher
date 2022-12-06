@@ -7,7 +7,7 @@ packages=['gopher']
 
 [project]
 name = "bio-gopher"
-version = "1.0.0"
+version = "1.0.2"
 authors = [
   { name="Shushan Toneyan", email="toneyan@cshl.edu" },
   { name="Ziqi Tang", email="ztang@cshl.edu" },
