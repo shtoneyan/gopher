@@ -3,7 +3,7 @@ import numpy as np
 import subprocess
 import tensorflow as tf
 import pandas as pd
-import utils
+from gopher import utils
 from custom_fit import center_crop
 
 def enforce_const_range(site, window):

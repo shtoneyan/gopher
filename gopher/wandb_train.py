@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-import custom_fit
+from gopher import custom_fit
 import h5py
 import json
 import modelzoo
 import os
 import sys
 import tensorflow as tf
-import utils
+from gopher import utils
 import wandb
 import yaml
 import sys

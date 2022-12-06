@@ -6,7 +6,7 @@ import pandas as pd
 import subprocess
 import tensorflow as tf
 import umap.umap_ as umap
-import utils
+from gopher import utils
 from tensorflow import keras
 
 def select(embeddings, lower_lim_1=None,

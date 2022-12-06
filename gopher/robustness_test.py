@@ -1,5 +1,5 @@
 import h5py
-import utils
+from gopher import utils
 import numpy as np
 import os
 import tensorflow as tf
