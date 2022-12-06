@@ -2,7 +2,7 @@
 from gopher import custom_fit
 import h5py
 import json
-import modelzoo
+from gopher import modelzoo
 import os
 import sys
 import tensorflow as tf

@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import re
 from gopher import utils
-from dinuc_shuffle import dinuc_shuffle
+from gopher.dinuc_shuffle import dinuc_shuffle
 from tqdm import tqdm
 
 

@@ -1,7 +1,7 @@
 import sys, time
 import numpy as np
 import tensorflow as tf
-import metrics
+from gopher import metrics
 
 
 class RobustTrainer():
