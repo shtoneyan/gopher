@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.keras import backend as K
 from scipy.spatial import distance
+from scipy import stats
 
 
 def get_correlation_concatenated(all_truth, all_pred, corr_type='pearsonr'):
