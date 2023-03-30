@@ -11,6 +11,7 @@ import wandb
 import yaml
 import sys
 from wandb.keras import WandbCallback
+from gopher import losses
 
 def fit_robust(model_name_str, loss_type_str, window_size, bin_size, data_dir,
                output_dir, config={}):
