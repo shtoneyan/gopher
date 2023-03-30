@@ -8,6 +8,7 @@
 ```
 $ pip install bio-gopher
 ```
+Note that for proper installation, numpy needs to be installed before pyBigWig.
 
 This repository contains scripts for data preprocessing, training deep learning models for DNA sequence to epigenetic function prediction and evaluation of models.
 
