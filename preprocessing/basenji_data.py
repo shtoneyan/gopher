@@ -242,8 +242,8 @@ def main():
     contigs = [ctg for ctg in contigs if ctg.end - ctg.start >= options.seq_length]
 
     # break up large contigs
-    if options.break_t is not None:
-      contigs = break_large_contigs(contigs, options.break_t)
+    # if options.break_t is not None:
+    #   contigs = break_large_contigs(contigs, options.break_t)
 
     # print contigs to BED file
     # ctg_bed_file = '%s/contigs.bed' % options.out_dir
